@@ -70,6 +70,7 @@
                         'status': '{{ $filterStatus }}'
                     }
                 },
+                order: [ [2, 'desc'] ],
                 columns: [
                     { data: 'code', name: 'code', class: 'text-center' },
                     { data: 'pr_code', name: 'pr_code', class: 'text-center', orderable: false, searchable: false },

@@ -57,7 +57,7 @@
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <input id="division" type="text" class="form-control col-md-7 col-xs-12 @if($errors->has('division')) parsley-error @endif"
-                           name="division" value="{{ $account->division) }}" />
+                           name="division" value="{{ $account->division }}" />
                 </div>
             </div>
 

@@ -25,6 +25,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
@@ -711,15 +712,22 @@ class ApprovalRuleController extends Controller
             return redirect()->back()->withErrors('Anda tidak berhak melakukan approval dokumen ini!', 'default');
         }
 
-        ApprovalPurchaseOrder::create([
-            'purchase_order_id'   => $id,
-            'user_id'             => $user->id,
-            'status_id'           => 12,
-            'created_at'          => $dateTimeNow->toDateTimeString(),
-            'updated_at'          => $dateTimeNow->toDateTimeString(),
-            'created_by'          => $user->id,
-            'updated_by'          => $user->id
-        ]);
+        $approvalPoUser = ApprovalPurchaseOrder::where('user_id', $user->id)
+                            ->where('purchase_order_id', $id)
+                            ->where('status_id', 12)
+                            ->first();
+
+        if(empty($approvalPoUser)){
+            ApprovalPurchaseOrder::create([
+                'purchase_order_id'   => $id,
+                'user_id'             => $user->id,
+                'status_id'           => 12,
+                'created_at'          => $dateTimeNow->toDateTimeString(),
+                'updated_at'          => $dateTimeNow->toDateTimeString(),
+                'created_by'          => $user->id,
+                'updated_by'          => $user->id
+            ]);
+        }
 
         // Check kondisi Approval
         $environment = env('APP_ENV','local');
@@ -749,13 +757,18 @@ class ApprovalRuleController extends Controller
                     }
                 }
 
-                Mail::to($header->createdBy->email_address)->send(new PurchaseOrderMailToCreator($header, $header->createdBy));
+                try{
+                    Mail::to($header->createdBy->email_address)->send(new PurchaseOrderMailToCreator($header, $header->createdBy));
 
-                if($environment === 'prod'){
-                    $logisticUser1 = User::find(26);
-                    $logisticUser2 = User::find(28);
-                    Mail::to($logisticUser1->email_address)->send(new PurchaseOrderMailToLogistic($header, $header->createdBy));
-                    Mail::to($logisticUser2->email_address)->send(new PurchaseOrderMailToLogistic($header, $header->createdBy));
+                    if($environment === 'prod'){
+                        $logisticUser1 = User::find(26);
+                        $logisticUser2 = User::find(28);
+                        Mail::to($logisticUser1->email_address)->send(new PurchaseOrderMailToLogistic($header, $header->createdBy));
+                        Mail::to($logisticUser2->email_address)->send(new PurchaseOrderMailToLogistic($header, $header->createdBy));
+                    }
+                }
+                catch(\Exception $ex){
+                    Log::error('ApprovalRuleController - approvePo : '. $ex);
                 }
 
                 // Send web notification to PO creator

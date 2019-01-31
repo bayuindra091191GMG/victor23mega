@@ -1289,8 +1289,6 @@ class PurchaseOrderHeaderController extends Controller
                 }
             }
 
-            $purchaseOrders = $purchaseOrders->dateDescending();
-
             return DataTables::of($purchaseOrders)
                 ->setTransformer(new PurchaseOrderHeaderTransformer($mode))
                 ->make(true);

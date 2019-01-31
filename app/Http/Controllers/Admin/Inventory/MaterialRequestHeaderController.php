@@ -85,7 +85,7 @@ class MaterialRequestHeaderController extends Controller
         $sysNo = NumberingSystem::where('doc_id', '9')->first();
         $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
         $autoNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
-        $warehouses = Warehouse::all();
+        $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
 
         $data = [
             'departments'   => $departments,
@@ -104,7 +104,7 @@ class MaterialRequestHeaderController extends Controller
         $sysNo = NumberingSystem::where('doc_id', '10')->first();
         $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
         $autoNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
-        $warehouses = Warehouse::all();
+        $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
 
         $data = [
             'departments'   => $departments,
@@ -123,7 +123,7 @@ class MaterialRequestHeaderController extends Controller
         $sysNo = NumberingSystem::where('doc_id', '11')->first();
         $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
         $autoNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
-        $warehouses = Warehouse::all();
+        $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
 
         $data = [
             'departments'   => $departments,
@@ -1099,7 +1099,6 @@ class MaterialRequestHeaderController extends Controller
             }
         }
 
-
         $qtys = $request->input('qty');
         $valid = true;
         $i = 0;
@@ -1204,7 +1203,12 @@ class MaterialRequestHeaderController extends Controller
             $priorityApproval = 'NON-PART';
         }
 
-        if($preference->approval_setting == 1) {
+        $approvalSetting = $preference->approval_setting;
+        if($user->id === 39){
+            $approvalSetting = 0;
+        }
+
+        if($approvalSetting === 1) {
             if($approvals->count() > 0){
                 foreach($approvals as $approval){
                     if(!empty($approval->user->email_address)){
@@ -1236,7 +1240,6 @@ class MaterialRequestHeaderController extends Controller
                             catch (\Exception $ex){
                                 error_log($ex);
                             }
-
                         }
                     }
                 }
