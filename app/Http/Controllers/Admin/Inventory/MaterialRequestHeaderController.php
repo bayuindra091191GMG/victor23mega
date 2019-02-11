@@ -1216,6 +1216,7 @@ class MaterialRequestHeaderController extends Controller
                             for ($try = 0; $try < 3; $try++){
                                 try{
                                     Mail::to($approval->user->email_address)->send(new ApprovalMaterialRequestCreated($mrHeader, $approval->user));
+                                    Log::info($approval->user->email_address. ' Send Approval Material Request '. $mrHeader->code);
                                     break 1;
                                 }
                                 catch (\Exception $ex){
@@ -1517,6 +1518,7 @@ class MaterialRequestHeaderController extends Controller
                             for ($try = 0; $try < 3; $try++){
                                 try{
                                     Mail::to($approval->user->email_address)->send(new ApprovalMaterialRequestCreated($mrHeader, $approval->user));
+                                    Log::info($approval->user->email_address. ' Send Approval Material Request '. $mrHeader->code);
                                     break 1;
                                 }
                                 catch (\Exception $ex){

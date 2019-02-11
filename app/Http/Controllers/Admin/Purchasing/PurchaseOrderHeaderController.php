@@ -617,6 +617,7 @@ class PurchaseOrderHeaderController extends Controller
                                 for ($try = 0; $try < 3; $try++){
                                     try{
                                         Mail::to($approval->user->email_address)->send(new ApprovalPurchaseOrderCreated($poHeader, $approval->user));
+                                        Log::info($approval->user->email_address. ' Send Approval Purchase Order '. $poHeader->code);
                                         break 1;
                                     }
                                     catch (\Exception $ex){
