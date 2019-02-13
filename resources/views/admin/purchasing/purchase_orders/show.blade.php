@@ -183,6 +183,15 @@
 
                         <div class="form-group">
                             <label class="col-md-3 col-sm-3 col-xs-12">
+                                Dibuat Oleh
+                            </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                : {{ $header->createdBy->email }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-3 col-sm-3 col-xs-12">
                                 Nomor PR
                             </label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
