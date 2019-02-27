@@ -13,7 +13,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class PurchaseOrderMailToLogistic extends Mailable
+class PurchaseOrderApprovedMailNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -62,7 +62,7 @@ class PurchaseOrderMailToLogistic extends Mailable
 
         return $this->from($fromMail)
             ->subject($subject)
-            ->view('email.purchase_order_mail_to_logistic')
+            ->view('email.purchase_order_approved_mail_notification')
             ->with($data);
     }
 }

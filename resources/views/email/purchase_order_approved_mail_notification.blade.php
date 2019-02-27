@@ -143,7 +143,8 @@
                             <td align="left" class="long-text links-color" style="font-weight: normal; color: #3f3f3f; font-size: 13px; font-family: Arial, Helvetica, sans-serif; text-align: left; line-height: normal;" valign="top" width="100%">
                                 <p style="margin: 1em 0px; margin-top: 0px; text-align: center;">Kepada Yth. {{ $user->name }}</p>
                                 <p style="margin: 1em 0px; text-align: center;">Dokumen Purchase Order {{ $purchase_request->code }} sudah diapprove.</p>
-                                <p style="margin: 1em 0px; margin-bottom: 0px; text-align: center;">Silahkan klik di&nbsp;<a href="{{ $url }}" style="color: #3f3f3f; color: #3f3f3f; text-decoration: underline;" title="sini">sini</a>&nbsp;untuk detil</p>
+                                <p style="margin: 1em 0px; margin-bottom: 0px; text-align: center;">Silahkan klik di&nbsp;<a href="{{ $url }}" style="color: #3f3f3f; color: #3f3f3f; text-decoration: underline;" title="sini">sini</a> atau link di bawah ini&nbsp;untuk detil lebih lanjut</p>
+                                <p style="margin: 1em 0px; margin-bottom: 0px; text-align: center;"><a href="{{ $url }}" style="color: #3f3f3f; color: #3f3f3f; text-decoration: underline;" title="sini">{{ $url }}</a></p>
                             </td>
                         </tr>
                         </tbody>

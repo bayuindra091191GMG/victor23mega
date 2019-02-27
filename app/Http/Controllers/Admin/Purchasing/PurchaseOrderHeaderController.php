@@ -14,7 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Libs\Utilities;
 use App\Mail\ApprovalPurchaseOrderCreated;
 use App\Mail\PurchaseOrderMailToCreator;
-use App\Mail\PurchaseOrderMailToLogistic;
+use App\Mail\PurchaseOrderApprovedMailNotification;
 use App\Models\ApprovalPurchaseOrder;
 use App\Models\ApprovalRule;
 use App\Models\Auth\Role\Role;
@@ -670,8 +670,8 @@ class PurchaseOrderHeaderController extends Controller
                 if($environment === 'prod'){
                     $logisticUser1 = User::find(26);
                     $logisticUser2 = User::find(28);
-                    Mail::to($logisticUser1->email_address)->send(new PurchaseOrderMailToLogistic($poHeader, $poHeader->createdBy));
-                    Mail::to($logisticUser2->email_address)->send(new PurchaseOrderMailToLogistic($poHeader, $poHeader->createdBy));
+                    Mail::to($logisticUser1->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+                    Mail::to($logisticUser2->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
                 }
 
                 // Send notification
@@ -970,8 +970,8 @@ class PurchaseOrderHeaderController extends Controller
                 if($environment === 'prod'){
                     $logisticUser1 = User::find(26);
                     $logisticUser2 = User::find(28);
-                    Mail::to($logisticUser1->email_address)->send(new PurchaseOrderMailToLogistic($poHeader, $poHeader->createdBy));
-                    Mail::to($logisticUser2->email_address)->send(new PurchaseOrderMailToLogistic($poHeader, $poHeader->createdBy));
+                    Mail::to($logisticUser1->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+                    Mail::to($logisticUser2->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
                 }
 
                 // Send notification

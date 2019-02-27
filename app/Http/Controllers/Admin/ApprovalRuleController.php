@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\PurchaseOrderMailToCreator;
-use App\Mail\PurchaseOrderMailToLogistic;
+use App\Mail\PurchaseOrderApprovedMailNotification;
 use App\Models\ApprovalMaterialRequest;
 use App\Models\ApprovalPaymentRequest;
 use App\Models\ApprovalPurchaseOrder;
@@ -763,8 +763,8 @@ class ApprovalRuleController extends Controller
                     if($environment === 'prod'){
                         $logisticUser1 = User::find(26);
                         $logisticUser2 = User::find(28);
-                        Mail::to($logisticUser1->email_address)->send(new PurchaseOrderMailToLogistic($header, $header->createdBy));
-                        Mail::to($logisticUser2->email_address)->send(new PurchaseOrderMailToLogistic($header, $header->createdBy));
+                        Mail::to($logisticUser1->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
+                        Mail::to($logisticUser2->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
                     }
                 }
                 catch(\Exception $ex){
