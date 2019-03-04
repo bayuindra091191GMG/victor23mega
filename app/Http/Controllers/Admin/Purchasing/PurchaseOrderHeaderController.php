@@ -27,7 +27,6 @@ use App\Models\PermissionMenu;
 use App\Models\PreferenceCompany;
 use App\Models\PurchaseOrderDetail;
 use App\Models\PurchaseOrderHeader;
-use App\Models\PurchaseRequestDetail;
 use App\Models\PurchaseRequestHeader;
 use App\Models\QuotationHeader;
 use App\Models\Status;
@@ -672,6 +671,21 @@ class PurchaseOrderHeaderController extends Controller
                     $logisticUser2 = User::find(28);
                     Mail::to($logisticUser1->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
                     Mail::to($logisticUser2->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+
+                    $purchasingUser1 = User::find(27);
+                    Mail::to($purchasingUser1->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
+
+                    $purchasingUser2 = User::find(25);
+                    Mail::to($purchasingUser2->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
+
+                    $purchasingUser3 = User::find(47);
+                    Mail::to($purchasingUser3->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
+
+                    $purchasingUser4 = User::find(16);
+                    Mail::to($purchasingUser4->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
+
+                    $purchasingUser5 = User::find(40);
+                    Mail::to($purchasingUser5->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
                 }
 
                 // Send notification
