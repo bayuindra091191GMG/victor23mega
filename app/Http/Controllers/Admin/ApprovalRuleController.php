@@ -765,6 +765,21 @@ class ApprovalRuleController extends Controller
                         $logisticUser2 = User::find(28);
                         Mail::to($logisticUser1->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
                         Mail::to($logisticUser2->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
+
+                        $purchasingUser1 = User::find(27);
+                        Mail::to($purchasingUser1->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
+
+                        $purchasingUser2 = User::find(25);
+                        Mail::to($purchasingUser2->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
+
+                        $purchasingUser3 = User::find(47);
+                        Mail::to($purchasingUser3->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
+
+                        $purchasingUser4 = User::find(16);
+                        Mail::to($purchasingUser4->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
+
+                        $purchasingUser5 = User::find(40);
+                        Mail::to($purchasingUser5->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
                     }
                 }
                 catch(\Exception $ex){
