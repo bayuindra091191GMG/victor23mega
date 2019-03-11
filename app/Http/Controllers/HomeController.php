@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ItemIssuedCalibrationJob;
 use App\Models\ApprovalMaterialRequest;
 use App\Models\ApprovalPurchaseOrder;
 use App\Models\Auth\User\User;
@@ -513,18 +514,31 @@ class HomeController extends Controller
                                     ->get();
 
 
-        //dd($issuedDocketDetails);
+//        dd($issuedDocketDetails);
+//
+//        DB::table('item_stocks')->orderBy('id')->chunk(100, function ($itemStocks) use ($issuedDocketDetails) {
+//            foreach ($itemStocks as $itemStock){
+//                $itemIssuedDetails = $issuedDocketDetails->where('issued_docket_details.item_id', $itemStock->item_id);
+//                $totalIssued = $itemIssuedDetails->sum('issued_docket_details.quantity');
+//
+//                DB::table('item_stocks')
+//                    ->where('item_id', $itemStock->item_id)
+//                    ->update(['qty_issued_12_months' => $totalIssued]);
+//            }
+//        });
 
-        DB::table('item_stocks')->orderBy('id')->chunk(100, function ($itemStocks) use ($issuedDocketDetails) {
-            foreach ($itemStocks as $itemStock){
-                $itemIssuedDetails = $issuedDocketDetails->where('issued_docket_details.item_id', $itemStock->item_id);
-                $totalIssued = $itemIssuedDetails->sum('issued_docket_details.quantity');
+        $totalRow = $issuedDocketDetails->count();
 
-                DB::table('item_stocks')
-                    ->where('item_id', $itemStock->item_id)
-                    ->update(['qty_issued_12_months' => $totalIssued]);
-            }
-        });
+        //dd($totalRow);
+
+        ini_set('memory_limit', '512M');
+
+        $totalRowDivided = ceil(($totalRow / 2000));
+        //dd($totalRowDivided);
+        for($h = 0; $h < $totalRowDivided; $h++){
+            $offset = $h * 2000;
+            dispatch(new ItemIssuedCalibrationJob(2000, $offset, $issuedDocketDetails));
+        }
 
         dd('SUCCESS!!');
     }
