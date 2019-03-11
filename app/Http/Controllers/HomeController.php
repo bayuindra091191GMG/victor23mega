@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ApprovalMaterialRequest;
 use App\Models\ApprovalPurchaseOrder;
 use App\Models\Auth\User\User;
+use App\Models\IssuedDocketDetail;
 use App\Models\IssuedDocketHeader;
 use App\Models\Item;
 use App\Models\ItemReceiptHeader;
@@ -21,6 +22,7 @@ use App\Models\Warehouse;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Mpdf\Tag\I;
 
 class HomeController extends Controller
@@ -431,70 +433,99 @@ class HomeController extends Controller
 //            $itemStock->save();
 //        }
 
-        $itemReceipt = ItemReceiptHeader::find(1598);
-        foreach ($itemReceipt->item_receipt_details as $detail){
-            $itemStock = ItemStock::where('item_id', $detail->item_id)
-                            ->where('warehouse_id', 3)
-                            ->first();
+//        $itemReceipt = ItemReceiptHeader::find(1598);
+//        foreach ($itemReceipt->item_receipt_details as $detail){
+//            $itemStock = ItemStock::where('item_id', $detail->item_id)
+//                            ->where('warehouse_id', 3)
+//                            ->first();
+//
+//            if(!empty($itemStock)){
+//                $itemStock->stock = $itemStock->stock - $detail->quantity;
+//                $itemStock->save();
+//            }
+//
+//            $item = Item::find($detail->item_id);
+//            $undoStock = $item->stock - $detail->quantity;
+//            $item->stock = $undoStock;
+//            if($undoStock == 0){
+//                $item->value = 0;
+//            }
+//
+//            $item->stock_on_order += $detail->quantity;
+//            $item->save();
+//
+//            $stockCard = StockCard::where('item_id', $detail->item_id)
+//                            ->where('reference', 'Goods Receipt GR-HO/2019/1/1597')
+//                            ->first();
+//
+//            if(!empty($stockCard)){
+//                $stockCard->delete();
+//            }
+//
+//            $detail->delete();
+//        }
+//
+//        $poHeader = $itemReceipt->purchase_order_header;
+//        foreach ($poHeader->purchase_order_details as $detail){
+//            $detail->received_quantity = 0;
+//            $detail->save();
+//
+//            $item = Item::find($detail->item_id);
+//            if($item->stock - $detail->quantity > 0){
+//                $oldValuation = $item->value * $item->stock;
+//                $returValiation = $detail->quantity * $detail->price;
+//                $newValuation = ($oldValuation - $returValiation) / ($item->stock - $detail->quantity);
+//                $item->value = $newValuation;
+//                $item->save();
+//            }
+//
+//            $mrDetail = $poHeader->purchase_request_header->material_request_header->material_request_details->where('item_id', $detail->item_id)->first();
+//            if(!empty($mrDetail)){
+//                $mrDetail->quantity_received -= $detail->quantity;
+//                $mrDetail->save();
+//            }
+//        }
+//
+//        $mrHeader = $poHeader->purchase_request_header->material_request_header;
+//        $mrHeader->status_id = 3;
+//        $mrHeader->save();
+//
+//        $poHeader->is_all_received = 0;
+//        $poHeader->save();
+//
+//
+//
+//        $itemReceipt->delete();
 
-            if(!empty($itemStock)){
-                $itemStock->stock = $itemStock->stock - $detail->quantity;
-                $itemStock->save();
+
+        //$itemStocks = ItemStock::all();
+        $dateBefore1Year = Carbon::now()->subMonths(12);
+        $dateBefore1YearStr = $dateBefore1Year->toDateTimeString();
+//        $issuedDocketDetails = IssuedDocketDetail::with(['issued_docket_header' => function ($query) use($dateBefore1YearStr) {
+//            $query->where('date', '>=', $dateBefore1YearStr)
+//                ->orderBy('date', 'desc');
+//        }])->get();
+
+        $issuedDocketDetails = DB::table('issued_docket_details')
+                                    ->join('issued_docket_headers', 'issued_docket_details.header_id', '=', 'issued_docket_headers.id')
+                                    ->select('issued_docket_details.*', 'issued_docket_headers.*')
+                                    ->where('issued_docket_headers.date', '>=', $dateBefore1YearStr)
+                                    ->get();
+
+
+        //dd($issuedDocketDetails);
+
+        DB::table('item_stocks')->orderBy('id')->chunk(100, function ($itemStocks) use ($issuedDocketDetails) {
+            foreach ($itemStocks as $itemStock){
+                $itemIssuedDetails = $issuedDocketDetails->where('issued_docket_details.item_id', $itemStock->item_id);
+                $totalIssued = $itemIssuedDetails->sum('issued_docket_details.quantity');
+
+                DB::table('item_stocks')
+                    ->where('item_id', $itemStock->item_id)
+                    ->update(['qty_issued_12_months' => $totalIssued]);
             }
+        });
 
-            $item = Item::find($detail->item_id);
-            $undoStock = $item->stock - $detail->quantity;
-            $item->stock = $undoStock;
-            if($undoStock == 0){
-                $item->value = 0;
-            }
-
-            $item->stock_on_order += $detail->quantity;
-            $item->save();
-
-            $stockCard = StockCard::where('item_id', $detail->item_id)
-                            ->where('reference', 'Goods Receipt GR-HO/2019/1/1597')
-                            ->first();
-
-            if(!empty($stockCard)){
-                $stockCard->delete();
-            }
-
-            $detail->delete();
-        }
-
-        $poHeader = $itemReceipt->purchase_order_header;
-        foreach ($poHeader->purchase_order_details as $detail){
-            $detail->received_quantity = 0;
-            $detail->save();
-
-            $item = Item::find($detail->item_id);
-            if($item->stock - $detail->quantity > 0){
-                $oldValuation = $item->value * $item->stock;
-                $returValiation = $detail->quantity * $detail->price;
-                $newValuation = ($oldValuation - $returValiation) / ($item->stock - $detail->quantity);
-                $item->value = $newValuation;
-                $item->save();
-            }
-
-            $mrDetail = $poHeader->purchase_request_header->material_request_header->material_request_details->where('item_id', $detail->item_id)->first();
-            if(!empty($mrDetail)){
-                $mrDetail->quantity_received -= $detail->quantity;
-                $mrDetail->save();
-            }
-        }
-
-        $mrHeader = $poHeader->purchase_request_header->material_request_header;
-        $mrHeader->status_id = 3;
-        $mrHeader->save();
-
-        $poHeader->is_all_received = 0;
-        $poHeader->save();
-
-
-
-        $itemReceipt->delete();
-
-        dd('SUCCESS!! '. $i);
+        dd('SUCCESS!!');
     }
 }

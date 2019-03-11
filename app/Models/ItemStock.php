@@ -25,6 +25,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $stock_max
  * @property bool $is_stock_warning
  * @property float $stock_on_order
+ * @property float $qty_issued_12_months
  * 
  * @property \App\Models\Item $item
  * @property \App\Models\Warehouse $warehouse
@@ -44,7 +45,8 @@ class ItemStock extends Eloquent
 		'stock_min' => 'int',
 		'stock_max' => 'int',
 		'is_stock_warning' => 'bool',
-        'stock_on_order' => 'float'
+        'stock_on_order' => 'float',
+        'qty_issued_12_months' => 'float'
 	];
 
 	protected $appends = [
@@ -63,7 +65,8 @@ class ItemStock extends Eloquent
 		'stock_min',
 		'stock_max',
 		'is_stock_warning',
-        'stock_on_order'
+        'stock_on_order',
+        'qty_issued_12_months'
 	];
 
     public function getSiteNameAttribute(){
