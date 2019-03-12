@@ -6799,7 +6799,8 @@
         <tbody>
         @foreach($idHeaders as $header)
             <tr>
-                <td colspan="9"><b>{{ $header->code }} - {{ $header->date_string }} - Departemen: {{ $header->department->name }} - Dibuat Oleh: {{ $header->createdBy->email }}</b></td>
+                @php( $costCode = !empty($header->account_id) ? $header->account->code : "Tidak Ada" )
+                <td colspan="9"><b>{{ $header->code }} - {{ $header->date_string }} - Site: {{ $header->site->name }} - Departemen: {{ $header->department->name }} - Cost Code: {{ $costCode }} - Dibuat Oleh: {{ $header->createdBy->email }}</b></td>
             </tr>
             @php( $totalQtyHeader = 0 )
             @php( $totalValueHeader = 0 )

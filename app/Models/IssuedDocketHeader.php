@@ -112,6 +112,11 @@ class IssuedDocketHeader extends Eloquent
 		return $this->belongsTo(\App\Models\Department::class);
 	}
 
+    public function site()
+    {
+        return $this->belongsTo(\App\Models\Site::class);
+    }
+
     public function warehouse()
     {
         return $this->belongsTo(\App\Models\Warehouse::class, 'warehouse_id');

@@ -6791,7 +6791,8 @@
         <tbody>
         @foreach($idHeaders as $header)
             <tr>
-                <td colspan="5"><b>{{ $header->code }} - {{ $header->date_string }} - Departemen: {{ $header->department->name }} - Dibuat Oleh: {{ $header->createdBy->email }}</b></td>
+                @php( $costCode = !empty($header->account_id) ? $header->account->code : "Tidak Ada" )
+                <td colspan="5"><b>{{ $header->code }} - {{ $header->date_string }} - Site: {{ $header->site->name }} - Departemen: {{ $header->department->name }} - Cost Code: {{ $costCode }} - Dibuat Oleh: {{ $header->createdBy->email }}</b></td>
             </tr>
             @foreach($header->issued_docket_details as $detail)
                 @if($filterMachineryId > -1 && $detail->machinery_id !== $filterMachineryId)

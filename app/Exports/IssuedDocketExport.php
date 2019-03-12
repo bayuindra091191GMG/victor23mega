@@ -60,7 +60,8 @@ class IssuedDocketExport implements FromView, ShouldAutoSize, WithStrictNullComp
      */
     public function view(): View
     {
-        $idHeaders = IssuedDocketHeader::whereBetween('date', array($this->dateStart, $this->dateEnd));
+        $idHeaders = IssuedDocketHeader::with(['issued_docket_details', 'issued_docket_details.item', 'account', 'site', 'issued_docket_details.machinery', 'createdBy', 'department'])
+            ->whereBetween('date', array($this->dateStart, $this->dateEnd));
 
         // Filter departemen
         $department = $this->departmentId;
@@ -199,11 +200,13 @@ class IssuedDocketExport implements FromView, ShouldAutoSize, WithStrictNullComp
         if($this->type === 'bbm'){
             return [
                 'G' => NumberFormat::FORMAT_NUMBER,
+                'D' => '@'
             ];
         }
         else{
             return [
                 'A' => '@',
+                'D' => '@'
             ];
         }
     }

@@ -3,6 +3,8 @@
     <tr>
         <th>No.ID</th>
         <th>Tanggal</th>
+        <th>Site</th>
+        <th>Cost Code</th>
         <th>Kode Inventory</th>
         <th>Unit Alat Berat</th>
         <th>Shift</th>
@@ -20,6 +22,9 @@
         <tr>
             <td>{{ $header->code }}</td>
             <td>{{ $header->date_string }}</td>
+            <td>{{ $header->site->name }}</td>
+            @php( $costCode = !empty($header->account_id) ? $header->account->code : "Tidak Ada" )
+            <td>{{ $costCode }}</td>
             <td></td>
             <td></td>
             <td></td>
@@ -44,6 +49,8 @@
                 <tr>
                     <td></td>
                     <td></td>
+                    <td></td>
+                    <td></td>
                     <td>{{ $detail->item->code }}</td>
                     <td>{{ $detail->machinery->code }}</td>
                     <td>{{ $detail->shift }}</td>
@@ -59,7 +66,7 @@
         @endforeach
     @endforeach
         <tr>
-            <td colspan="10">TOTAL</td>
+            <td colspan="12">TOTAL</td>
             <td> {{ $totalQty }}</td>
             <td> {{ $totalValue}}</td>
         </tr>

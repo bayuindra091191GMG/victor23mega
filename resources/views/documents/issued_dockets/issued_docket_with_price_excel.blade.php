@@ -3,6 +3,8 @@
     <tr>
         <th>No.ID</th>
         <th>Tanggal</th>
+        <th>Site</th>
+        <th>Cost Code</th>
         <th>Kode Inventory</th>
         <th>Part Number</th>
         <th>Keterangan</th>
@@ -17,6 +19,9 @@
         <tr>
             <td>{{ $header->code }}</td>
             <td>{{ $header->date_string }}</td>
+            <td>{{ $header->site->name }}</td>
+            @php( $costCode = !empty($header->account_id) ? $header->account->code : "Tidak Ada" )
+            <td>{{ $costCode }}</td>
             <td></td>
             <td></td>
             <td></td>
@@ -34,6 +39,8 @@
             @php( $value = $detail->item->value ?? 0 )
             @php( $subTotalValue = $value * $detail->quantity )
             <tr>
+                <td></td>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td>{{ $detail->item->code }}</td>
@@ -56,10 +63,12 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
+            <td></td>
         </tr>
     @endforeach
         <tr>
-            <td colspan="8">TOTAL COST</td>
+            <td colspan="10">TOTAL COST</td>
             <td>{{ $totalValue }}</td>
         </tr>
     </tbody>

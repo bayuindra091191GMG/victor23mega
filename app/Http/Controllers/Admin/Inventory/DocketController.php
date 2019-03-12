@@ -845,7 +845,8 @@ class DocketController extends Controller
                 ->download($filenameExcel);
         }
 
-        $idHeaders = IssuedDocketHeader::whereBetween('date', array($start->toDateTimeString(), $end->toDateTimeString()));
+        $idHeaders = IssuedDocketHeader::with(['issued_docket_details', 'issued_docket_details.item', 'account', 'site', 'issued_docket_details.machinery', 'createdBy', 'department'])
+            ->whereBetween('date', array($start->toDateTimeString(), $end->toDateTimeString()));
 
         // Filter departemen
         $filterDepartment = 'Semua';
