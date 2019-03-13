@@ -513,6 +513,11 @@ class HomeController extends Controller
                                     ->where('issued_docket_headers.date', '>=', $dateBefore1YearStr)
                                     ->get();
 
+//        $itemIssuedDetails = $issuedDocketDetails->where('item_id', 2669);
+//        $totalIssued = $itemIssuedDetails->sum('quantity');
+//
+//        dd($totalIssued);
+
 
 //        dd($issuedDocketDetails);
 //
@@ -531,7 +536,7 @@ class HomeController extends Controller
 
         //dd($totalRow);
 
-        ini_set('memory_limit', '512M');
+        ini_set('memory_limit', '2048M');
 
         //$totalRowDivided = ceil(($totalRow / 2000));
         //dd($totalRowDivided);
@@ -540,7 +545,7 @@ class HomeController extends Controller
 //            dispatch(new ItemIssuedCalibrationJob(2000, $offset, $issuedDocketDetails));
 //        }
 
-        DB::table('item_stocks')->chunkById(2000, function($itemStocks) use($issuedDocketDetails){
+        DB::table('item_stocks')->chunkById(1000, function($itemStocks) use($issuedDocketDetails){
             dispatch(new ItemIssuedCalibrationJob($itemStocks, $issuedDocketDetails));
         });
 

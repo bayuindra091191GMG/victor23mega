@@ -9,10 +9,14 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ItemIssuedCalibrationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public $tries = 3;
+    public $timeout = 0;
 
     //protected $skip;
     //protected $offset;
@@ -44,14 +48,14 @@ class ItemIssuedCalibrationJob implements ShouldQueue
     public function handle()
     {
         try{
-//            $itemStocks = DB::table('item_stocks')
-//                ->offset($this->offset)
-//                ->limit($this->skip)
-//                ->get();
 
             foreach ($this->itemStocks as $itemStock){
-                $itemIssuedDetails = $this->issuedDocketDetails->where('issued_docket_details.item_id', $itemStock->item_id);
-                $totalIssued = $itemIssuedDetails->sum('issued_docket_details.quantity');
+                $itemIssuedDetails = $this->issuedDocketDetails->where('item_id', $itemStock->item_id);
+                $totalIssued = $itemIssuedDetails->sum('quantity');
+
+                //error_log("total count: ". $this->itemStocks->count());
+                //error_log("total count: ". $this->issuedDocketDetails->count());
+                //error_log("total issued: ". $totalIssued);
 
                 DB::table('item_stocks')
                     ->where('item_id', $itemStock->item_id)
@@ -59,7 +63,7 @@ class ItemIssuedCalibrationJob implements ShouldQueue
             }
         }
         catch( \Exception $ex){
-            error_log($ex);
+            Log::error($ex->getMessage());
         }
     }
 }
