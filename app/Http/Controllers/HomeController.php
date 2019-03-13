@@ -527,18 +527,22 @@ class HomeController extends Controller
 //            }
 //        });
 
-        $totalRow = $issuedDocketDetails->count();
+        //$totalRow = $issuedDocketDetails->count();
 
         //dd($totalRow);
 
         ini_set('memory_limit', '512M');
 
-        $totalRowDivided = ceil(($totalRow / 2000));
+        //$totalRowDivided = ceil(($totalRow / 2000));
         //dd($totalRowDivided);
-        for($h = 0; $h < $totalRowDivided; $h++){
-            $offset = $h * 2000;
-            dispatch(new ItemIssuedCalibrationJob(2000, $offset, $issuedDocketDetails));
-        }
+//        for($h = 0; $h < $totalRowDivided; $h++){
+//            $offset = $h * 2000;
+//            dispatch(new ItemIssuedCalibrationJob(2000, $offset, $issuedDocketDetails));
+//        }
+
+        DB::table('item_stocks')->chunkById(2000, function($itemStocks) use($issuedDocketDetails){
+            dispatch(new ItemIssuedCalibrationJob($itemStocks, $issuedDocketDetails));
+        });
 
         dd('SUCCESS!!');
     }

@@ -14,21 +14,25 @@ class ItemIssuedCalibrationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $skip;
-    protected $offset;
+    //protected $skip;
+    //protected $offset;
+    protected $itemStocks;
     protected $issuedDocketDetails;
 
     /**
      * Create a new job instance.
      *
-     * @return void
+     * @param int $skip
+     * @param int $offset
+     * @param Collection $itemStocks
+     * @param Collection $issuedDocketDetails
      */
-    public function __construct(int $skip,
-                                int $offset,
+    public function __construct(Collection $itemStocks,
                                 Collection $issuedDocketDetails)
     {
-        $this->skip = $skip;
-        $this->offset = $offset;
+        //$this->skip = $skip;
+        //$this->offset = $offset;
+        $this->itemStocks = $itemStocks;
         $this->issuedDocketDetails = $issuedDocketDetails;
     }
 
@@ -40,12 +44,12 @@ class ItemIssuedCalibrationJob implements ShouldQueue
     public function handle()
     {
         try{
-            $itemStocks = DB::table('item_stocks')
-                ->offset($this->offset)
-                ->limit($this->skip)
-                ->get();
+//            $itemStocks = DB::table('item_stocks')
+//                ->offset($this->offset)
+//                ->limit($this->skip)
+//                ->get();
 
-            foreach ($itemStocks as $itemStock){
+            foreach ($this->itemStocks as $itemStock){
                 $itemIssuedDetails = $this->issuedDocketDetails->where('issued_docket_details.item_id', $itemStock->item_id);
                 $totalIssued = $itemIssuedDetails->sum('issued_docket_details.quantity');
 
