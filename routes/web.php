@@ -576,11 +576,13 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('cost_codes/excel', 'AccountController@downloadExcel')->name('accounts.excel');
 
     //Reorder
-    Route::get('reorder', 'ReorderController@index')->name('reorder.list');
+    Route::get('reorder/menu', 'ReorderController@menu')->name('reorder.menu');
+    Route::get('reorder/index', 'ReorderController@index')->name('reorder.list');
     Route::post('reorder', 'ReorderController@store')->name('reorder.store');
     Route::get('reorder/parts', 'ReorderController@part')->name('reorder.part');
     Route::get('reorder/fuel', 'ReorderController@fuel')->name('reorder.fuel');
     Route::get('reorder/oil', 'ReorderController@oil')->name('reorder.oil');
+    Route::get('reorder/calibrate', 'ReorderController@calibrate')->name('reorder.calibrate');
 });
 
 

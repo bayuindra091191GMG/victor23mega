@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 
+use App\Jobs\ItemIssuedCalibrationJob;
 use App\Libs\Utilities;
 use App\Models\Department;
 use App\Models\Item;
@@ -17,12 +18,17 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\Facades\DataTables;
 use Yajra\DataTables\Html\Editor\Fields\Number;
 
 class ReorderController extends Controller
 {
+    public function menu (Request $request){
+        return View('admin.reorder.menu');
+    }
+
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -182,5 +188,31 @@ class ReorderController extends Controller
             'dateToday'     => $dateToday
         ];
         return view('admin.reorder.oil')->with($data);
+    }
+
+    /**
+     * Calibrate issued docket qty, minimum stock & maximum stock
+     * @param Request $request
+     */
+    public function calibrate(Request $request){
+        try{
+            $dateBefore1Year = Carbon::now()->subMonths(12);
+            $dateBefore1YearStr = $dateBefore1Year->toDateTimeString();
+
+            $issuedDocketDetails = DB::table('issued_docket_details')
+                ->join('issued_docket_headers', 'issued_docket_details.header_id', '=', 'issued_docket_headers.id')
+                ->select('issued_docket_details.*', 'issued_docket_headers.*')
+                ->where('issued_docket_headers.date', '>=', $dateBefore1YearStr)
+                ->get();
+
+            //ini_set('memory_limit', '-1');
+
+            DB::table('item_stocks')->chunkById(2000, function($itemStocks) use($issuedDocketDetails){
+                dispatch(new ItemIssuedCalibrationJob($itemStocks, $issuedDocketDetails));
+            });
+        }
+        catch (\Exception $ex){
+            Log::error($ex->getMessage());
+        }
     }
 }

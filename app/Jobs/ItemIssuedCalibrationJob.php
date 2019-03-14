@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -48,21 +49,35 @@ class ItemIssuedCalibrationJob implements ShouldQueue
     public function handle()
     {
         try{
+            $firstDocketDate = Carbon::createFromFormat('Y-m-d', '2018-08-01');
+            $dateToday = Carbon::today();
+            $diffInDays = $dateToday->diffInDays($firstDocketDate);
 
             foreach ($this->itemStocks as $itemStock){
-                $itemIssuedDetails = $this->issuedDocketDetails->where('item_id', $itemStock->item_id);
+                $itemIssuedDetails = $this->issuedDocketDetails
+                    ->where('warehouse_id', $itemStock->warehouse_id)
+                    ->where('item_id', $itemStock->item_id);
                 $totalIssued = $itemIssuedDetails->sum('quantity');
 
                 //error_log("total count: ". $this->itemStocks->count());
                 //error_log("total count: ". $this->issuedDocketDetails->count());
                 //error_log("total issued: ". $totalIssued);
 
+                if($diffInDays < 365){
+                    $totalIssued = floor($totalIssued / $diffInDays * 365);
+                }
+
+                $newMinStock = floor($totalIssued / 360 * 60);
+                $newMaxStock = floor($totalIssued / 360 * 90);
+
                 DB::table('item_stocks')
+                    ->where('warehouse_id', $itemStock->warehouse_id)
                     ->where('item_id', $itemStock->item_id)
-                    ->update(['qty_issued_12_months' => $totalIssued]);
+                    ->update(['qty_issued_12_months' => $totalIssued, 'stock_min' => $newMinStock, 'stock_max' => $newMaxStock]);
             }
         }
         catch( \Exception $ex){
+            error_log($ex);
             Log::error($ex->getMessage());
         }
     }
