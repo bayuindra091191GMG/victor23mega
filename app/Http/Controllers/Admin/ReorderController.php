@@ -207,7 +207,7 @@ class ReorderController extends Controller
 
             //ini_set('memory_limit', '-1');
 
-            DB::table('item_stocks')->chunkById(2000, function($itemStocks) use($issuedDocketDetails){
+            DB::table('item_stocks')->chunkById(1500, function($itemStocks) use($issuedDocketDetails){
                 dispatch(new ItemIssuedCalibrationJob($itemStocks, $issuedDocketDetails));
             });
         }

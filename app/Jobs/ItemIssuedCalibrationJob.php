@@ -70,10 +70,12 @@ class ItemIssuedCalibrationJob implements ShouldQueue
                 $newMinStock = floor($totalIssued / 360 * 60);
                 $newMaxStock = floor($totalIssued / 360 * 90);
 
-                DB::table('item_stocks')
-                    ->where('warehouse_id', $itemStock->warehouse_id)
-                    ->where('item_id', $itemStock->item_id)
-                    ->update(['qty_issued_12_months' => $totalIssued, 'stock_min' => $newMinStock, 'stock_max' => $newMaxStock]);
+                DB::transaction(function () use($itemStock, $totalIssued, $newMinStock, $newMaxStock) {
+                    DB::table('item_stocks')
+                        ->where('warehouse_id', $itemStock->warehouse_id)
+                        ->where('item_id', $itemStock->item_id)
+                        ->update(['qty_issued_12_months' => $totalIssued, 'stock_min' => $newMinStock, 'stock_max' => $newMaxStock]);
+                }, 3);
             }
         }
         catch( \Exception $ex){
