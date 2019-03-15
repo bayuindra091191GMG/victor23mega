@@ -87,10 +87,13 @@ class MaterialRequestHeaderController extends Controller
         $autoNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
         $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
 
+        $userWarehouseId = $user->employee->site->warehouses->first()->id;
+
         $data = [
-            'departments'   => $departments,
-            'autoNumber'    => $autoNumber,
-            'warehouses'    => $warehouses
+            'departments'           => $departments,
+            'autoNumber'            => $autoNumber,
+            'warehouses'            => $warehouses,
+            'userWarehouseId'       => $userWarehouseId
         ];
 
         return View('admin.inventory.material_requests.other.create')->with($data);

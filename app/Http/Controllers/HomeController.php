@@ -536,7 +536,7 @@ class HomeController extends Controller
 
         //dd($totalRow);
 
-        ini_set('memory_limit', '2048M');
+        //ini_set('memory_limit', '2048M');
 
         //$totalRowDivided = ceil(($totalRow / 2000));
         //dd($totalRowDivided);

@@ -28,24 +28,27 @@
     <hr style="border-color: #000000; width: 100%;"/>
     <div class="row" style="margin-bottom: 15px;">
         <div class="col-md-12">
-            <table class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
-                   width="100%" id="reorder_table">
-                <thead>
-                <tr>
-                    <th class="text-center" style="width: 10%;">Tambah</th>
-                    <th class="text-center" style="width: 10%;">Kode Item</th>
-                    <th class="text-center" style="width: 10%;">Part Number</th>
-                    <th class="text-center" style="width: 10%;">Keterangan</th>
-                    <th class="text-center" style="width: 15%;">Gudang</th>
-                    <th class="text-center" style="width: 15%;">Lokasi</th>
-                    <th class="text-center" style="width: 10%;">Minimum Stock</th>
-                    <th class="text-center" style="width: 10%;">Stock on Hand</th>
-                    <th class="text-center" style="width: 10%;">Stock on Order</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+            <div class="table-responsive" id="table_container">
+                <table class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
+                       width="100%" id="reorder_table">
+                    <thead>
+                    <tr>
+                        <th class="text-center" style="width: 10%;">Tambah</th>
+                        <th class="text-center" style="width: 10%;">Kode Item</th>
+                        <th class="text-center" style="width: 10%;">Part Number</th>
+                        <th class="text-center" style="width: 10%;">Keterangan</th>
+                        <th class="text-center" style="width: 10%;">Gudang</th>
+                        <th class="text-center" style="width: 10%;">Lokasi</th>
+                        <th class="text-center" style="width: 10%;">Stock on Hand</th>
+                        <th class="text-center" style="width: 10%;">Stock on Order</th>
+                        <th class="text-center" style="width: 10%;">Minimum Stok</th>
+                        <th class="text-center" style="width: 10%;">Maksimum Stok</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <hr style="border-color: #000000; width: 100%;"/>
@@ -86,10 +89,10 @@
                     <th class="text-center" style="width: 10%;">Keterangan</th>
                     <th class="text-center" style="width: 10%;">Gudang</th>
                     <th class="text-center" style="width: 10%;">Lokasi</th>
-                    <th class="text-center" style="width: 10%;">Minimum Stock</th>
                     <th class="text-center" style="width: 10%;">Stock on Hand</th>
                     <th class="text-center" style="width: 10%;">Stock on Order</th>
-                    <th class="text-center" style="width: 10%;">Reorder Qty</th>
+                    <th class="text-center" style="width: 10%;">Minimum Stok</th>
+                    <th class="text-center" style="width: 10%;">Maksimum Stok</th>
                     <th class="text-center" style="width: 10%;">Tindakan</th>
                 </tr>
                 </thead>
@@ -120,6 +123,7 @@
             $('#reorder_table').DataTable({
                 processing: true,
                 serverSide: true,
+                responsive: false,
                 pageLength: 10,
                 ajax: {
                     url: '{!! route('datatables.reorders') !!}',
@@ -136,9 +140,10 @@
                     { data: 'name', name: 'item.name' },
                     { data: 'warehouse_id', name: 'warehouse_id', class: 'text-center'},
                     { data: 'location', name: 'location', class: 'text-center'},
-                    { data: 'stock_min', name: 'stock_min', class: 'text-right'},
                     { data: 'stock', name: 'stock', class: 'text-right'},
-                    { data: 'stock_on_order', name: 'stock_on_order', class: 'text-right'}
+                    { data: 'stock_on_order', name: 'stock_on_order', class: 'text-right'},
+                    { data: 'stock_min', name: 'stock_min', class: 'text-right'},
+                    { data: 'stock_max', name: 'stock_max', class: 'text-right'},
                 ],
                 language: {
                     url: "{{ URL::asset('indonesian.json') }}"
@@ -160,10 +165,10 @@
                 }
             }
 
-            var stockMin = parseFloat($(this).data('stockmin'));
-            var stockOnHand = parseFloat($(this).data('stock'));
-            var stockOnOrder = parseFloat($(this).data('stockonorder'));
-            var reorderQty = stockMin - (stockOnHand + stockOnOrder);
+            // var stockMin = parseFloat($(this).data('stockmin'));
+            // var stockOnHand = parseFloat($(this).data('stock'));
+            // var stockOnOrder = parseFloat($(this).data('stockonorder'));
+            // var reorderQty = stockMin - (stockOnHand + stockOnOrder);
 
             $('#reorder_table_submit tr:last')
                 .after("<tr id='" + idx + "'>" +
@@ -172,10 +177,10 @@
                     '<td>'+ $(this).data('itemname') + '</td>' +
                     '<td class="text-center">'+ $(this).data('warehousename') + '</td>' +
                     '<td class="text-center">'+ $(this).data('location') + '</td>' +
-                    '<td class="text-right">'+ $(this).data('stockmin') + '</td>' +
                     '<td class="text-right">'+ $(this).data('stock') + '</td>' +
                     '<td class="text-right">'+ $(this).data('stockonorder') + '</td>' +
-                    '<td class="text-right">'+ reorderQty + '<input type="hidden" name="reorderQtys[]" value="' + reorderQty + '"/></td>' +
+                    '<td class="text-right">'+ $(this).data('stockmin') + '</td>' +
+                    '<td class="text-right">'+ $(this).data('stockmax') + '<input type="hidden" name="stock_max[]" value="' + $(this).data('stockmax') + '" /></td>' +
                     '<td class="text-center"><a class="delete-row btn btn-xs btn-danger" data-id="' + idx + '">' +
                     '<i class="fa fa-minus"></i>' +
                     '</a></td>' +

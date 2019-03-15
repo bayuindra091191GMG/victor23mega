@@ -11,10 +11,11 @@ use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
-class InventoryStockExport implements FromQuery, WithMapping, WithHeadings, ShouldAutoSize, WithColumnFormatting, WithEvents
+class InventoryStockExport implements FromQuery, WithMapping, WithHeadings, ShouldAutoSize, WithColumnFormatting, WithEvents, WithStrictNullComparison
 {
     use Exportable;
     private $warehouseId;
@@ -33,10 +34,14 @@ class InventoryStockExport implements FromQuery, WithMapping, WithHeadings, Shou
             'PART NUMBER',
             'GUDANG',
             'LOKASI/RAK',
-            'STOCK',
             'SATUAN UNIT',
             'KATEGORI',
-            'TIPE ALAT BERAT'
+            'TIPE ALAT BERAT',
+            'STOCK ON HAND',
+            'STOCK ON ORDER',
+            'STOCK MIN',
+            'STOCK MAX',
+            'QTY ISSUED 12 MONTHS',
         ];
     }
 
@@ -53,10 +58,14 @@ class InventoryStockExport implements FromQuery, WithMapping, WithHeadings, Shou
             $itemStock->item->part_number ?? '-',
             $itemStock->warehouse->name,
             $itemStock->location,
-            $itemStock->stock ?? '0',
             $itemStock->item->uom,
             $itemStock->item->group->name ?? '-',
-            $itemStock->item->machinery_type ?? '-'
+            $itemStock->item->machinery_type ?? '-',
+            $itemStock->stock,
+            $itemStock->stock_on_order,
+            $itemStock->stock_min,
+            $itemStock->stock_max,
+            $itemStock->qty_issued_12_months
         ];
     }
 
@@ -67,13 +76,13 @@ class InventoryStockExport implements FromQuery, WithMapping, WithHeadings, Shou
     {
         // TODO: Implement query() method.
         if($this->warehouseId === '-1'){
-            $itemStock = ItemStock::query();
+            $itemStock = ItemStock::with(['warehouse', 'item', 'item.group']);
             $this->counter = $itemStock->count();
 
             return $itemStock;
         }
 
-        $itemStock = ItemStock::query()->where('warehouse_id', $this->warehouseId);
+        $itemStock = ItemStock::with(['warehouse', 'item', 'item.group'])->where('warehouse_id', $this->warehouseId);
         $this->counter = $itemStock->count();
 
         return $itemStock;

@@ -37,29 +37,32 @@
         <div class="clearfix"></div>
     </div>
     <div class="row">
-        <table class="table table-striped table-bordered dt-responsive" cellspacing="0"
-               width="100%" id="items-table">
-            <thead>
-            <tr>
-                <th class="text-center">Kode</th>
-                <th class="text-center">Nama</th>
-                <th class="text-center">Part Number</th>
-                <th class="text-center">Gudang</th>
-                <th class="text-center">Lokasi/Rak</th>
-                <th class="text-center">Stock</th>
-                <th class="text-center">Satuan Unit</th>
-                <th class="text-center">Minimum Stok</th>
-                <th class="text-center">Maksimum Stok</th>
-                <th class="text-center">Stock on Order</th>
-                <th class="text-center">Notifikasi Stok</th>
-                <th class="text-center">Kategori Inventory</th>
-                <th class="text-center">Tipe Alat Berat</th>
-                <th class="text-center">Tindakan</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+        <div class="table-responsive" id="table_container">
+            <table class="table table-striped table-bordered dt-responsive" cellspacing="0"
+                   width="100%" id="items-table">
+                <thead>
+                <tr>
+                    <th class="text-center">Kode</th>
+                    <th class="text-center">Nama</th>
+                    <th class="text-center">Part Number</th>
+                    <th class="text-center">Gudang</th>
+                    <th class="text-center">Lokasi/Rak</th>
+                    <th class="text-center">Satuan Unit</th>
+                    <th class="text-center">Stock on Hand</th>
+                    <th class="text-center">Stock on Order</th>
+                    <th class="text-center">Minimum Stok</th>
+                    <th class="text-center">Maksimum Stok</th>
+                    <th class="text-center">Qty Issued 12 Bulan</th>
+                    <th class="text-center">Notifikasi Stok</th>
+                    <th class="text-center">Kategori Inventory</th>
+                    <th class="text-center">Tipe Alat Berat</th>
+                    <th class="text-center">Tindakan</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     @include('partials._delete')
@@ -80,6 +83,7 @@
             $('#items-table').DataTable({
                 processing: true,
                 serverSide: true,
+                responsive: false,
                 pageLength: 50,
                 ajax: {
                     url: '{!! route('datatables.item_stocks') !!}',
@@ -95,11 +99,12 @@
                     { data: 'part_number', name: 'item.part_number' },
                     { data: 'warehouse', name: 'warehouse', class: 'text-center', searchable: false, sortable: false },
                     { data: 'location', name: 'item_stocks.location' },
-                    { data: 'stock', name: 'stock', class: 'text-right' },
                     { data: 'uom', name: 'item.uom', class: 'text-center' },
+                    { data: 'stock', name: 'stock', class: 'text-right' },
+                    { data: 'stock_on_order', name: 'stock_on_order', class: 'text-right' },
                     { data: 'stock_min', name: 'stock_min', class: 'text-right' },
                     { data: 'stock_max', name: 'stock_max', class: 'text-right' },
-                    { data: 'stock_on_order', name: 'stock_on_order', class: 'text-right' },
+                    { data: 'qty_issued_12_months', name: 'qty_issued_12_months', class: 'text-right' },
                     { data: 'is_stock_warning', name: 'is_stock_warning', class: 'text-center' },
                     { data: 'group', name: 'group', class: 'text-center', searchable: false, sortable: false },
                     { data: 'machinery_type', name: 'item.machinery_type', class: 'text-center' },

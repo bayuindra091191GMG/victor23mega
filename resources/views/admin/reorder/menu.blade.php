@@ -37,7 +37,7 @@
                 <hr style="border-top: 1px solid black;"/>
                 <div class="form-group">
                     <div class="col-md-3 col-sm-3 col-xs-12">
-                        <a href="#" class="btn btn-success w-100"><i class="fas fa-list">&nbsp;&nbsp;DAFTAR INVENTORY REORDER</i></a>
+                        <a href="{{ route('admin.reorder.list') }}" class="btn btn-success w-100"><i class="fas fa-list">&nbsp;&nbsp;DAFTAR INVENTORY REORDER</i></a>
                     </div>
                     <div class="col-md-4 col-sm-4 col-xs-12">
                         <span>Memuat daftar Inventory yang sudah dibawah atau sama dengan minimum stok.</span>

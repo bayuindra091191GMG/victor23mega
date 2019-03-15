@@ -27,8 +27,9 @@ class ReorderTransformer extends TransformerAbstract
                     data-warehouseName='". $itemStock->warehouse->name."'
                     data-location='". $location ."'
                     data-stock='". $itemStock->stock ."'
+                    data-stockOnOrder='". $stockOnOrder ."'
                     data-stockMin='". $itemStock->stock_min ."'
-                    data-stockOnOrder='". $stockOnOrder ."'><i class='fa fa-plus'></i></a>";
+                    data-stockMax='". $itemStock->stock_max ."'><i class='fa fa-plus'></i></a>";
 
         return[
             'item_id'            => $itemStock->item->code,
@@ -37,8 +38,9 @@ class ReorderTransformer extends TransformerAbstract
             'warehouse_id'  => $itemStock->warehouse->name,
             'location'      => $itemStock->location ?? '-',
             'stock'         => $itemStock->stock,
-            'stock_min'     => $itemStock->stock_min,
             'stock_on_order'=> $stockOnOrder,
+            'stock_min'     => $itemStock->stock_min,
+            'stock_max'     => $itemStock->stock_max,
             'action'        => $action
         ];
     }

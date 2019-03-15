@@ -92,7 +92,7 @@ class ReorderController extends Controller
         // Add the Itemcode and warehouseId to Session
         Session::put('reorderItem', $request->input('itemcode'));
         Session::put('warehouseId', $request->input('warehouseId'));
-        Session::put('reorderQtys', $request->input('reorderQtys'));
+        Session::put('reorderQtys', $request->input('stock_max'));
 
         $type = $request->input('type');
         if($type == 1){
