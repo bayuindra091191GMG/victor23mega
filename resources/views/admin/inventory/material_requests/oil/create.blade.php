@@ -62,7 +62,7 @@
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <select id="department" name="department" class="form-control col-md-7 col-xs-12 @if($errors->has('department')) parsley-error @endif">
-                        <option value="-1" @if(empty(old('uom'))) selected @endif> - Pilih Departemen - </option>
+                        <option value="-1" @if(empty(old('department'))) selected @endif> - Pilih Departemen - </option>
                         @foreach($departments as $department)
                             <option value="{{ $department->id }}" {{ old('department') == $department->id ? "selected":"" }}>{{ $department->name }}</option>
                         @endforeach
@@ -95,9 +95,8 @@
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <select id="warehouse" name="warehouse" class="form-control col-md-7 col-xs-12 @if($errors->has('warehouse')) parsley-error @endif">
-                        <option value="-1"> - Pilih Gudang - </option>
                         @foreach($warehouses as $warehouse)
-                            <option value="{{ $warehouse->id }}" {{ old('warehouse') == $warehouse->id ? "selected":"" }}>{{ $warehouse->name }}</option>
+                            <option value="{{ $warehouse->id }}" {{ $userWarehouseId == $warehouse->id ? "selected":"" }}>{{ $warehouse->name }}</option>
                         @endforeach
                     </select>
                 </div>

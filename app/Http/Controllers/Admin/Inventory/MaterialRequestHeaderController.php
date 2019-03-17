@@ -109,10 +109,13 @@ class MaterialRequestHeaderController extends Controller
         $autoNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
         $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
 
+        $userWarehouseId = $user->employee->site->warehouses->first()->id;
+
         $data = [
-            'departments'   => $departments,
-            'autoNumber'    => $autoNumber,
-            'warehouses'    => $warehouses
+            'departments'           => $departments,
+            'autoNumber'            => $autoNumber,
+            'warehouses'            => $warehouses,
+            'userWarehouseId'       => $userWarehouseId
         ];
 
         return View('admin.inventory.material_requests.fuel.create')->with($data);
@@ -128,10 +131,13 @@ class MaterialRequestHeaderController extends Controller
         $autoNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
         $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
 
+        $userWarehouseId = $user->employee->site->warehouses->first()->id;
+
         $data = [
-            'departments'   => $departments,
-            'autoNumber'    => $autoNumber,
-            'warehouses'    => $warehouses
+            'departments'           => $departments,
+            'autoNumber'            => $autoNumber,
+            'warehouses'            => $warehouses,
+            'userWarehouseId'       => $userWarehouseId
         ];
 
         return View('admin.inventory.material_requests.oil.create')->with($data);
@@ -1454,6 +1460,7 @@ class MaterialRequestHeaderController extends Controller
             'type'              => $type,
             'site_id'           => $siteId,
             'department_id'     => $departmentId,
+            'warehouse_id'      => 1,
             'priority'          => $request->input('priority'),
             'km'                => $request->input('km'),
             'hm'                => $request->input('hm'),
