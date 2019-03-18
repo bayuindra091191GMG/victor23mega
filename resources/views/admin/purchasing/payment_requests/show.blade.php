@@ -11,6 +11,7 @@
             <div class="navbar-right">
                 <a class="btn btn-default" href="{{ route('admin.payment_requests.print',[ 'payment_request' => $header->id]) }}" target="_blank">CETAK</a>
                 <a class="btn btn-default" href="{{ route('admin.payment_requests.edit',[ 'payment_request' => $header->id]) }}">UBAH</a>
+                <a class="btn btn-danger" onclick="deleteRfp();" style="cursor: pointer;">HAPUS</a>
             </div>
         </div>
     </div>
@@ -248,6 +249,37 @@
             </form>
         </div>
     </div>
+
+    <!-- Modal form to delete a form -->
+    <div id="deleteModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+
+                    {{ Form::open(['route'=>['admin.payment_requests.destroy'],'method' => 'post','id' => 'form-delete-rfp' ]) }}
+
+                    <h3 class="text-center">Apakah anda yakin ingin menghapus Payment Request {{ $header->code }}?</h3>
+                    <br />
+                    <input type="hidden" name="deleted_id" value="{{ $header->id }}"/>
+                    <div class="modal-footer">
+                        <a class="btn btn-warning" style="cursor: pointer;" data-dismiss="modal">
+                            <span class='glyphicon glyphicon-remove'></span> Tidak
+                        </a>
+                        <a class="btn btn-danger delete" style="cursor: pointer;" data-dismiss="modal">
+                            <span id="" class='glyphicon glyphicon-trash'></span> Ya
+                        </a>
+                    </div>
+
+                    {{ Form::close() }}
+
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('styles')
@@ -267,6 +299,12 @@
     @parent
     {{ Html::script(mix('assets/admin/js/datatables.js')) }}
     <script type="text/javascript">
+        function deleteRfp(){
+            $('#deleteModal').modal('show');
+        }
+        $(document).on('click', '.delete', function() {
+            $('#form-delete-rfp').submit();
+        });
 
     </script>
 @endsection

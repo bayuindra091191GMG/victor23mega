@@ -49,7 +49,7 @@
                         <button id="btn-calibrate" class="btn btn-success w-100"><i id="icon-calibrate" class="fas fa-sync-alt">&nbsp;&nbsp;KALIBRASI INVENTORY REORDER</i></button>
                     </div>
                     <div class="col-md-4 col-sm-4 col-xs-12">
-                        <span>Melakukan kalibrasi kuantitas issued semua gudang, nilai minimum stok dan maksimum stok.</span>
+                        <span>Melakukan kalibrasi kuantitas issued inventory semua gudang, nilai minimum stok dan maksimum stok.</span>
                         <br/>
                         <span style="color: red; font-weight: bold;">Proses kalibrasi membutuhkan waktu rata-rata 15 sampai 20 menit. Disarankan melakukan kalibrasi pada malam hari atau kondisi server sedang idle.</span>
                     </div>
@@ -130,7 +130,7 @@
                         }, 500);
                     }
                     else{
-                        toastr.success('Berhasil melakukan kalibrasi mohon tunggu 15-20 menit!', 'Sukses', {timeOut: 5000});
+                        toastr.success('Berhasil membuat antrian proses kalibrasi. Mohon menunggu 15-20 menit dan kondisi server tidak sibuk! ', 'Sukses', {timeOut: 5000});
                     }
                 }
             });

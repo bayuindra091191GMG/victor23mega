@@ -460,6 +460,29 @@ class PaymentRequestController extends Controller
         return redirect()->route('admin.payment_requests.edit', ['payment_request' => $payment_request->id]);
     }
 
+    public function destroy(Request $request){
+        $paymentRequest = PaymentRequest::find($request->input('deleted_id'));
+        $tmpCode = $paymentRequest->code;
+
+        if($paymentRequest->payment_requests_pi_details()->count() > 0){
+            foreach ($paymentRequest->payment_requests_pi_details as $piDetail){
+                $piDetail->delete();
+            }
+        }
+
+        if($paymentRequest->payment_requests_po_details()->count() > 0){
+            foreach ($paymentRequest->payment_requests_po_details as $poDetail){
+                $poDetail->delete();
+            }
+        }
+
+        $paymentRequest->delete();
+
+        Session::flash('message', 'Berhasil menghapus Payment Request '. $tmpCode);
+
+        return redirect()->route('admin.payment_requests');
+    }
+
     public function report(){
         return View('admin.purchasing.payment_requests.report');
     }
@@ -540,10 +563,9 @@ class PaymentRequestController extends Controller
 
     public function getIndex(){
         try{
-            $paymentRequests = PaymentRequest::dateDescending()->get();
+            $paymentRequests = PaymentRequest::with('supplier');
             return DataTables::of($paymentRequests)
                 ->setTransformer(new PaymentRequestTransformer())
-                ->addIndexColumn()
                 ->make(true);
         }
         catch(\Exception $ex){

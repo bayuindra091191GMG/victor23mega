@@ -18,7 +18,6 @@
                width="100%" id="rfp_table">
             <thead>
             <tr>
-                <th class="text-center" style="width: 10%;">No</th>
                 <th class="text-center" style="width: 20%;">Nomor Payment Request</th>
                 <th class="text-center" style="width: 10%;">Tanggal</th>
                 <th class="text-center" style="width: 10%;">Tipe Payment</th>
@@ -48,9 +47,10 @@
             $('#rfp_table').DataTable({
                 processing: true,
                 serverSide: true,
+                pageLength: 25,
                 ajax: '{!! route('datatables.payment_requests') !!}',
+                order: [ [1, 'desc'] ],
                 columns: [
-                    { data: 'DT_Row_Index', orderable: false, searchable: false, class: 'text-center' },
                     { data: 'code', name: 'code', class: 'text-center' },
                     { data: 'date', name: 'date', class: 'text-center',
                         render: function ( data, type, row ){
@@ -60,7 +60,7 @@
                             return data;
                         }
                     },
-                    { data: 'type', name: 'type', class: 'text-center' },
+                    { data: 'type', name: 'type', class: 'text-center', orderable: false, searchable: false },
                     { data: 'amount', name: 'amount', class: 'text-right',
                         render: function ( data, type, row ){
                             if ( type === 'display' || type === 'filter' ){
@@ -72,8 +72,8 @@
                             return data;
                         }
                     },
-                    { data: 'supplier', name: 'supplier', class: 'text-center' },
-                    { data: 'request_by', name: 'request_by', class: 'text-center' },
+                    { data: 'supplier', name: 'supplier.name', class: 'text-center' },
+                    { data: 'request_by', name: 'request_by', class: 'text-center', orderable: false, searchable: false },
                     { data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' }
                 ],
                 language: {

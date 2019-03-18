@@ -435,6 +435,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('payment_requests/detil/{payment_request}', 'Purchasing\PaymentRequestController@show')->name('payment_requests.show');
     Route::get('payment_requests/{payment_request}/ubah', 'Purchasing\PaymentRequestController@edit')->name('payment_requests.edit');
     Route::put('payment_requests/ubah/{payment_request}', 'Purchasing\PaymentRequestController@update')->name('payment_requests.update');
+    Route::post('payment_requests/hapus', 'Purchasing\PaymentRequestController@destroy')->name('payment_requests.destroy');
     Route::get('payment_requests/print/{payment_request}', 'Purchasing\PaymentRequestController@printDocument')->name('payment_requests.print');
 
     Route::get('payment_requests/pilihvendor', 'Purchasing\PaymentRequestController@chooseVendor')->name('payment_requests.choose_vendor');
