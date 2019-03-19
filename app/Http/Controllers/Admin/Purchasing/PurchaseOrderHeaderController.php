@@ -56,7 +56,35 @@ class PurchaseOrderHeaderController extends Controller
             $filterStatus = $request->status;
         }
 
-        return View('admin.purchasing.purchase_orders.index', compact('filterStatus'));
+        $filterApproved = '-1';
+        if($request->approved != null){
+            $filterApproved = $request->approved;
+        }
+
+        $user = \Auth::user();
+
+        // Check menu permission
+        $roleId = $user->roles->pluck('id')[0];
+        if(!PermissionMenu::where('role_id', $roleId)->where('menu_id', 25)->first()){
+            Session::flash('error', 'Level Akses anda tidak mencukupi!');
+            return redirect()->back();
+        }
+
+        // Custom view permission for Mr Chris
+        if($user->id === 39){
+            $isPriceViewPermission = false;
+        }
+        else{
+            $isPriceViewPermission = true;
+        }
+
+        $data = [
+            'filterStatus'          => $filterStatus,
+            'filterApproved'        => $filterApproved,
+            'isPriceViewPermission' => $isPriceViewPermission
+        ];
+
+        return View('admin.purchasing.purchase_orders.index')->with($data);
     }
 
     public function beforeCreate(){
@@ -75,6 +103,14 @@ class PurchaseOrderHeaderController extends Controller
         if(!PermissionMenu::where('role_id', $roleId)->where('menu_id', 25)->first()){
             Session::flash('error', 'Level Akses anda tidak mencukupi!');
             return redirect()->back();
+        }
+
+        // Custom view permission for Mr Chris
+        if($user->id === 39){
+            $isPriceViewPermission = false;
+        }
+        else{
+            $isPriceViewPermission = true;
         }
 
         $permission = true;
@@ -182,7 +218,6 @@ class PurchaseOrderHeaderController extends Controller
         $extraDiscount = $purchase_order->extra_discount ?? 0;
         $totalDiscount = $individualDiscount + $extraDiscount;
 
-
         $totalDiscountStr = number_format($totalDiscount, 2, ",", ".");
 
         // Get MR URL
@@ -242,7 +277,8 @@ class PurchaseOrderHeaderController extends Controller
             'trackedSjHeaders'          => $trackedSjHeaders,
             'trackedRFPHeaders'         => $trackedRFPHeaders,
             'isApproved'                => $isApproved,
-            'isAtLeastOneApproved'      => $isAtLeastOneApproved
+            'isAtLeastOneApproved'      => $isAtLeastOneApproved,
+            'isPriceViewPermission'     => $isPriceViewPermission
         ];
 
         return View('admin.purchasing.purchase_orders.show')->with($data);
@@ -1301,6 +1337,14 @@ class PurchaseOrderHeaderController extends Controller
                     $purchaseOrders = $purchaseOrders->where('status_id', 3)
                         ->where('is_approved', 1)
                         ->whereIn('is_all_received', [1,2]);
+                }
+            }
+
+            if($mode === 'default'){
+                // Filter approval status
+                $approved = $request->approved;
+                if($approved !== '-1'){
+                    $purchaseOrders = $purchaseOrders->where('is_approved', $approved);
                 }
             }
 

@@ -32,6 +32,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
@@ -66,11 +67,17 @@ class ItemStockController extends Controller
             $filterStock = $request->stock;
         }
 
+        $filterMovement = 'ALL';
+        if($request->movement != null){
+            $filterMovement = $request->movement;
+        }
+
         $data = [
             'warehouses'        => $warehouses,
             'site'              => $site->id,
             'filterWarehouse'   => $filterWarehouse,
-            'filterStock'       => $filterStock
+            'filterStock'       => $filterStock,
+            'filterMovement'    => $filterMovement
         ];
 
         return View('admin.inventory.item_stocks.index')->with($data);
@@ -295,8 +302,8 @@ class ItemStockController extends Controller
                 $item_stock->location = null;
             }
 
-            $item_stock->stock_min = $request->input('stock_min');
-            $item_stock->stock_max = $request->input('stock_max');
+            //$item_stock->stock_min = $request->input('stock_min');
+            //$item_stock->stock_max = $request->input('stock_max');
 
             if(!$request->filled('stock_warning')) {
                 $item_stock->is_stock_warning = false;
@@ -328,7 +335,8 @@ class ItemStockController extends Controller
             return redirect()->route('admin.item_stocks.option.edit', ['item_stock' => $item_stock->id]);
         }
         catch (\Exception $ex){
-            error_log($ex);
+            //error_log($ex);
+            Log::error("ItemStockController - update: ". $ex);
         }
     }
 
@@ -630,6 +638,22 @@ class ItemStockController extends Controller
         }
         else{
             $itemStocks = $itemStocks->where('item_stocks.stock', '>', 0);
+        }
+
+        if($request->filled('movement')){
+            $movement = $request->input('movement');
+            if($movement === 'DEAD'){
+                $itemStocks = $itemStocks->where('item_stocks.movement_status', 'DEAD');
+            }
+            else if($movement === 'SLOW'){
+                $itemStocks = $itemStocks->where('item_stocks.movement_status', 'SLOW');
+            }
+            else if($movement === 'MEDIUM'){
+                $itemStocks = $itemStocks->where('item_stocks.movement_status', 'MEDIUM');
+            }
+            else if($movement === 'FAST'){
+                $itemStocks = $itemStocks->where('item_stocks.movement_status', 'FAST');
+            }
         }
 
         return DataTables::of($itemStocks)

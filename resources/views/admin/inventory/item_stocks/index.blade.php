@@ -27,6 +27,19 @@
                         <option value="2" @if($filterStock == '2') selected @endif>Kosong</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="filter_movement">Status Movement:</label>
+                    <select id="filter_movement" class="form-control" onchange="filterMovement(this)">
+                        <option value="ALL" @if($filterMovement == 'ALL') selected @endif>SEMUA</option>
+                        <option value="DEAD" @if($filterMovement == 'DEAD') selected @endif>DEAD</option>
+                        <option value="SLOW" @if($filterMovement == 'SLOW') selected @endif>SLOW</option>
+                        <option value="MEDIUM" @if($filterMovement == 'MEDIUM') selected @endif>MEDIUM</option>
+                        <option value="FAST" @if($filterMovement == 'FAST') selected @endif>FAST</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <a href="{{ route('admin.item_stocks') }}" class="btn btn-primary" style="margin: 0 !important;">RESET</a>
+                </div>
             </form>
         </div>
         <div class="nav navbar-right">
@@ -53,6 +66,7 @@
                     <th class="text-center">Minimum Stok</th>
                     <th class="text-center">Maksimum Stok</th>
                     <th class="text-center">Qty Issued 12 Bulan</th>
+                    <th class="text-center">Movement Status</th>
                     <th class="text-center">Notifikasi Stok</th>
                     <th class="text-center">Kategori Inventory</th>
                     <th class="text-center">Tipe Alat Berat</th>
@@ -90,7 +104,8 @@
                     data: {
                         'site': '{{ $site }}',
                         'warehouse': '{{ $filterWarehouse }}',
-                        'stock': '{{ $filterStock }}'
+                        'stock': '{{ $filterStock }}',
+                        'movement': '{{ $filterMovement }}'
                     }
                 },
                 columns: [
@@ -105,6 +120,7 @@
                     { data: 'stock_min', name: 'stock_min', class: 'text-right' },
                     { data: 'stock_max', name: 'stock_max', class: 'text-right' },
                     { data: 'qty_issued_12_months', name: 'qty_issued_12_months', class: 'text-right' },
+                    { data: 'movement_status', name: 'movement_status', class: 'text-center' },
                     { data: 'is_stock_warning', name: 'is_stock_warning', class: 'text-center' },
                     { data: 'group', name: 'group', class: 'text-center', searchable: false, sortable: false },
                     { data: 'machinery_type', name: 'item.machinery_type', class: 'text-center' },
@@ -126,23 +142,36 @@
         });
 
         function filterWarehouse(e){
-            // Get stock filter value
+
             var warehouse = e.value;
+            var stockStatus = $('#filter_stock').val();
+            var movement = $('#filter_movement').val();
+
+            var url = '{{ route('admin.item_stocks') }}';
+
+            window.location = url + '?warehouse=' + warehouse + '&stock=' + stockStatus + '&movement=' + movement;
+        }
+
+        function filterStock(e){
+
+            var stockStatus = e.value;
+            var warehouse = $('#filter_warehouse').val();
+            var movement = $('#filter_movement').val();
+
+            var url = '{{ route('admin.item_stocks') }}';
+
+            window.location = url + '?warehouse=' + warehouse + '&stock=' + stockStatus + '&movement=' + movement;
+        }
+
+        function filterMovement(e){
+
+            var movement = e.value;
+            var warehouse = $('#filter_warehouse').val();
             var stockStatus = $('#filter_stock').val();
 
             var url = '{{ route('admin.item_stocks') }}';
 
-            window.location = url + '?warehouse=' + warehouse + '&stock=' + stockStatus;
-        }
-
-        function filterStock(e){
-            // Get stock filter value
-            var stockStatus = e.value;
-            var warehouse = $('#filter_warehouse').val();
-
-            var url = '{{ route('admin.item_stocks') }}';
-
-            window.location = url + '?warehouse=' + warehouse + '&stock=' + stockStatus;
+            window.location = url + '?movement=' + movement + '&stock=' + stockStatus + '&warehouse=' + warehouse;
         }
     </script>
     @include('partials._deleteJs', ['routeUrl' => 'admin.items.destroy', 'redirectUrl' => 'admin.items'])

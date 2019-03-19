@@ -36,6 +36,7 @@ class ItemStockTransformer extends TransformerAbstract
             'is_stock_warning'      => $itemStock->is_stock_warning ? 'AKTIF' : 'NON-AKTIF',
             'group'                 => $itemStock->item->group->name ?? '-',
             'machinery_type'        => $itemStock->item->machinery_type ?? '-',
+            'movement_status'       => $itemStock->movement_status,
             'action'                => $action
         ];
     }

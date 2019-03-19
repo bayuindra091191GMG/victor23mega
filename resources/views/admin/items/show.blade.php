@@ -126,14 +126,20 @@
                             <thead>
                             <tr >
                             <tr >
-                                <th class="text-center" style="width: 20%">
+                                <th class="text-center" style="width: 10%">
                                     Gudang
                                 </th>
-                                <th class="text-center" style="width: 20%">
+                                <th class="text-center" style="width: 10%">
                                     Lokasi/Rak
                                 </th>
-                                <th class="text-center" style="width: 15%">
+                                <th class="text-center" style="width: 10%">
+                                    Qty Issued 12 Bulan
+                                </th>
+                                <th class="text-center" style="width: 10%">
                                     Stok On Hand
+                                </th>
+                                <th class="text-center" style="width: 10%">
+                                    Stok On Order
                                 </th>
                                 <th class="text-center" style="width: 10%">
                                     Minimum Stok
@@ -141,7 +147,10 @@
                                 <th class="text-center" style="width: 10%">
                                     Maksimum Stok
                                 </th>
-                                <th class="text-center" style="width: 15%">
+                                <th class="text-center" style="width: 10%">
+                                    Movement Status
+                                </th>
+                                <th class="text-center" style="width: 10%">
                                     Notifikasi Stok
                                 </th>
                                 <th class="text-center" style="width: 10%">
@@ -161,13 +170,22 @@
                                         {{ $stock->location }}
                                     </td>
                                     <td class="text-right">
+                                        {{ $stock->qty_issued_12_months }}
+                                    </td>
+                                    <td class="text-right">
                                         {{ $stock->stock }}
+                                    </td>
+                                    <td class="text-right">
+                                        {{ $stock->stock_on_order }}
                                     </td>
                                     <td class="text-right">
                                         {{ $stock->stock_min }}
                                     </td>
                                     <td class="text-right">
                                         {{ $stock->stock_max }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $stock->movement_status }}
                                     </td>
                                     <td class="text-center">
                                         {{ $stock->is_stock_warning ? 'AKTIF' : 'NON-AKTIF' }}

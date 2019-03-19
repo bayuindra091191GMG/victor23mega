@@ -47,6 +47,7 @@
         "niklasravnsborg/laravel-pdf": "^2.0",
         "php-http/guzzle6-adapter": "1.1.1",
         "phpoffice/phpexcel": "^1.8",
+        "predis/predis": "^1.1",
         "pusher/pusher-php-server": "^3.0",
         "reliese/laravel": "^0.0.13",
         "spatie/laravel-backup": "^5.10",

@@ -9,13 +9,21 @@
         <div class="nav navbar-left">
             <form class="form-inline" style="margin-bottom: 10px;">
                 <div class="form-group">
-                    <label for="filter-status">Status:</label>
-                    <select id="filter-status" class="form-control" onchange="filterStatus(this)">
+                    <label for="filter_status">Status:</label>
+                    <select id="filter_status" class="form-control" onchange="filterStatus(this)">
                         <option value="0" @if($filterStatus == '0') selected @endif>Semua</option>
                         <option value="3" @if($filterStatus == '3') selected @endif>Open</option>
                         <option value="4" @if($filterStatus == '4') selected @endif>Close</option>
                         <option value="11" @if($filterStatus == '11') selected @endif>Close Manual</option>
                         <option value="13" @if($filterStatus == '13') selected @endif>Reject</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-left: 20px;">
+                    <label for="filter_approved">Status Approval:</label>
+                    <select id="filter_approved" class="form-control" onchange="filterApprove(this)">
+                        <option value="-1" @if($filterApproved === '-1') selected @endif>Semua</option>
+                        <option value="0" @if($filterApproved === '0') selected @endif>Belum Approve</option>
+                        <option value="1" @if($filterApproved === '1') selected @endif>Sudah Approve</option>
                     </select>
                 </div>
             </form>
@@ -37,7 +45,11 @@
                 <th class="text-center">Tanggal</th>
                 <th class="text-center">Prioritas</th>
                 <th class="text-center">Nama Vendor</th>
-                <th class="text-center">Total PO</th>
+
+                @if($isPriceViewPermission)
+                    <th class="text-center">Total PO</th>
+                @endif
+
                 <th class="text-center">Status Approval</th>
                 <th class="text-center">Status Dokumen</th>
                 <th class="text-center">Tindakan</th>
@@ -67,7 +79,8 @@
                 ajax: {
                     url: '{!! route('datatables.purchase_orders') !!}',
                     data: {
-                        'status': '{{ $filterStatus }}'
+                        'status': '{{ $filterStatus }}',
+                        'approved': '{{ $filterApproved }}'
                     }
                 },
                 order: [ [2, 'desc'] ],
@@ -84,6 +97,8 @@
                     },
                     { data: 'priority', name: 'priority', class: 'text-center', orderable: false, searchable: false },
                     { data: 'supplier', name: 'supplier', class: 'text-center', orderable: false, searchable: false },
+
+                    @if($isPriceViewPermission)
                     { data: 'total_payment', name: 'total_payment', class: 'text-right',
                         render: function ( data, type, row ){
                             if ( type === 'display' || type === 'filter' ){
@@ -95,6 +110,8 @@
                             return data;
                         }
                     },
+                    @endif
+
                     { data: 'is_approved', name: 'is_approved', class: 'text-center' },
                     { data: 'status', name: 'status', class: 'text-center', orderable: false, searchable: false },
                     { data: 'action', name: 'action', orderable: false, searchable: false, class: 'text-center' }
@@ -110,10 +127,20 @@
         function filterStatus(e){
             // Get status filter value
             var status = e.value;
+            var approved = $('#filter_approved').val();
 
             var url = '{{ route('admin.purchase_orders') }}';
 
-            window.location = url + '?status=' +status;
+            window.location = url + '?status=' + status + '&approved=' + approved;
+        }
+
+        function filterApprove(e){
+            var approved = e.value;
+            var status = $('#filter_status').val();
+
+            var url = '{{ route('admin.purchase_orders') }}';
+
+            window.location = url + '?status=' + status + '&approved=' + approved;
         }
     </script>
 @endsection

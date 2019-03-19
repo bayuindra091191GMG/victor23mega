@@ -58,10 +58,25 @@ class ItemIssuedCalibrationJob implements ShouldQueue
                     ->where('warehouse_id', $itemStock->warehouse_id)
                     ->where('item_id', $itemStock->item_id);
                 $totalIssued = $itemIssuedDetails->sum('quantity');
+                $totalCount = $itemIssuedDetails->count();
 
                 //error_log("total count: ". $this->itemStocks->count());
                 //error_log("total count: ". $this->issuedDocketDetails->count());
                 //error_log("total issued: ". $totalIssued);
+
+                // Get movement status
+                if($totalCount === 0){
+                    $movement = "DEAD";
+                }
+                elseif ($totalCount < 4){
+                    $movement = "SLOW";
+                }
+                elseif ($totalCount < 9){
+                    $movement = "MEDIUM";
+                }
+                else{
+                    $movement = "FAST";
+                }
 
                 if($diffInDays < 365){
                     $totalIssued = floor($totalIssued / $diffInDays * 365);
@@ -70,11 +85,11 @@ class ItemIssuedCalibrationJob implements ShouldQueue
                 $newMinStock = floor($totalIssued / 360 * 60);
                 $newMaxStock = floor($totalIssued / 360 * 90);
 
-                DB::transaction(function () use($itemStock, $totalIssued, $newMinStock, $newMaxStock) {
+                DB::transaction(function () use($itemStock, $totalIssued, $newMinStock, $newMaxStock, $movement) {
                     DB::table('item_stocks')
                         ->where('warehouse_id', $itemStock->warehouse_id)
                         ->where('item_id', $itemStock->item_id)
-                        ->update(['qty_issued_12_months' => $totalIssued, 'stock_min' => $newMinStock, 'stock_max' => $newMaxStock]);
+                        ->update(['qty_issued_12_months' => $totalIssued, 'stock_min' => $newMinStock, 'stock_max' => $newMaxStock, 'movement_status' => $movement]);
                 }, 3);
             }
         }

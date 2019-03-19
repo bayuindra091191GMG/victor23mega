@@ -23,6 +23,16 @@
                     <option value="3" @if($filterType == '3') selected @endif>Oli</option>
                 </select>
             </div>
+            <div class="form-group">
+                <label for="filter_movement">Status Movement:</label>
+                <select id="filter_movement" class="form-control" onchange="filterMovement(this)">
+                    <option value="ALL" @if($filterMovement == 'ALL') selected @endif>SEMUA</option>
+                    <option value="DEAD" @if($filterMovement == 'DEAD') selected @endif>DEAD</option>
+                    <option value="SLOW" @if($filterMovement == 'SLOW') selected @endif>SLOW</option>
+                    <option value="MEDIUM" @if($filterMovement == 'MEDIUM') selected @endif>MEDIUM</option>
+                    <option value="FAST" @if($filterMovement == 'FAST') selected @endif>FAST</option>
+                </select>
+            </div>
         </form>
     </div>
     <hr style="border-color: #000000; width: 100%;"/>
@@ -33,16 +43,18 @@
                        width="100%" id="reorder_table">
                     <thead>
                     <tr>
-                        <th class="text-center" style="width: 10%;">Tambah</th>
+                        <th class="text-center" style="width: 5%;">Tambah</th>
                         <th class="text-center" style="width: 10%;">Kode Item</th>
                         <th class="text-center" style="width: 10%;">Part Number</th>
                         <th class="text-center" style="width: 10%;">Keterangan</th>
-                        <th class="text-center" style="width: 10%;">Gudang</th>
-                        <th class="text-center" style="width: 10%;">Lokasi</th>
+                        <th class="text-center" style="width: 5%;">Gudang</th>
+                        <th class="text-center" style="width: 5%;">Lokasi</th>
+                        <th class="text-center" style="width: 10%;">Qty Issued 12 Bulan</th>
                         <th class="text-center" style="width: 10%;">Stock on Hand</th>
                         <th class="text-center" style="width: 10%;">Stock on Order</th>
                         <th class="text-center" style="width: 10%;">Minimum Stok</th>
                         <th class="text-center" style="width: 10%;">Maksimum Stok</th>
+                        <th class="text-center" style="width: 5%;">Movement Status</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -87,13 +99,14 @@
                     <th class="text-center" style="width: 10%;">Kode Item</th>
                     <th class="text-center" style="width: 10%;">Part Number</th>
                     <th class="text-center" style="width: 10%;">Keterangan</th>
-                    <th class="text-center" style="width: 10%;">Gudang</th>
+                    <th class="text-center" style="width: 5%;">Gudang</th>
                     <th class="text-center" style="width: 10%;">Lokasi</th>
+                    <th class="text-center" style="width: 10%;">Qty Issued 12 Bulan</th>
                     <th class="text-center" style="width: 10%;">Stock on Hand</th>
                     <th class="text-center" style="width: 10%;">Stock on Order</th>
                     <th class="text-center" style="width: 10%;">Minimum Stok</th>
                     <th class="text-center" style="width: 10%;">Maksimum Stok</th>
-                    <th class="text-center" style="width: 10%;">Tindakan</th>
+                    <th class="text-center" style="width: 5%;">Tindakan</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -129,7 +142,8 @@
                     url: '{!! route('datatables.reorders') !!}',
                     data: {
                         'warehouse': '{{ $filterWarehouse }}',
-                        'type': '{{ $filterType }}'
+                        'type': '{{ $filterType }}',
+                        'movement': '{{ $filterMovement }}'
                     }
                 },
                 order: [ [0, 'asc'] ],
@@ -140,10 +154,12 @@
                     { data: 'name', name: 'item.name' },
                     { data: 'warehouse_id', name: 'warehouse_id', class: 'text-center'},
                     { data: 'location', name: 'location', class: 'text-center'},
+                    { data: 'qty_issued_12_months', name: 'qty_issued_12_months', class: 'text-right'},
                     { data: 'stock', name: 'stock', class: 'text-right'},
                     { data: 'stock_on_order', name: 'stock_on_order', class: 'text-right'},
                     { data: 'stock_min', name: 'stock_min', class: 'text-right'},
                     { data: 'stock_max', name: 'stock_max', class: 'text-right'},
+                    { data: 'movement_status', name: 'movement_status', class: 'text-center'},
                 ],
                 language: {
                     url: "{{ URL::asset('indonesian.json') }}"
@@ -177,6 +193,7 @@
                     '<td>'+ $(this).data('itemname') + '</td>' +
                     '<td class="text-center">'+ $(this).data('warehousename') + '</td>' +
                     '<td class="text-center">'+ $(this).data('location') + '</td>' +
+                    '<td class="text-center">'+ $(this).data('qty_issued_12_months') + '</td>' +
                     '<td class="text-right">'+ $(this).data('stock') + '</td>' +
                     '<td class="text-right">'+ $(this).data('stockonorder') + '</td>' +
                     '<td class="text-right">'+ $(this).data('stockmin') + '</td>' +
@@ -215,20 +232,33 @@
             // Get stock filter value
             var warehouse = e.value;
             var type = $('#filter_type').val();
+            var movement = $('#filter_movement').val();
 
             var url = '{{ route('admin.reorder.list') }}';
 
-            window.location = url + '?warehouse=' + warehouse + '&type=' + type;
+            window.location = url + '?warehouse=' + warehouse + '&type=' + type + '&movement=' + movement;
         }
 
         function filterType(e){
             // Get stock filter value
             var type = e.value;
             var warehouse = $('#filter_warehouse').val();
+            var movement = $('#filter_movement').val();
 
             var url = '{{ route('admin.reorder.list') }}';
 
-            window.location = url + '?warehouse=' + warehouse + '&type=' + type;
+            window.location = url + '?warehouse=' + warehouse + '&type=' + type + '&movement=' + movement;
+        }
+
+        function filterMovement(e){
+            // Get stock filter value
+            var movement = e.value;
+            var warehouse = $('#filter_warehouse').val();
+            var type = $('#filter_type').val();
+
+            var url = '{{ route('admin.reorder.list') }}';
+
+            window.location = url + '?movement=' + movement + '&type=' + type + '&warehouse=' + warehouse;
         }
     </script>
 @endsection

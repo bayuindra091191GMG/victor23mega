@@ -74,7 +74,7 @@
                     Minimum Stok
                 </label>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <input id="stock_min" name="stock_min" type="text" class="form-control col-md-7 col-xs-12">
+                    <input id="stock_min" name="stock_min" type="text" value="{{ $itemStock->stock_min }}" class="form-control col-md-7 col-xs-12" readonly>
                 </div>
             </div>
 
@@ -83,7 +83,7 @@
                     Maksimum Stok
                 </label>
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                    <input id="stock_max" name="stock_max" type="text" class="form-control col-md-7 col-xs-12">
+                    <input id="stock_max" name="stock_max" type="text" value="{{ $itemStock->stock_max }}" class="form-control col-md-7 col-xs-12" readonly>
                 </div>
             </div>
 
@@ -117,20 +117,20 @@
     {{ Html::script(mix('assets/admin/js/bootstrap-datetimepicker.js')) }}
     {{ Html::script(mix('assets/admin/js/autonumeric.js')) }}
     <script>
-        minStockFormat = new AutoNumeric('#stock_min', '{{ $itemStock->stock_min }}', {
-            minimumValue: '0',
-            digitGroupSeparator: '',
-            decimalPlaces: 0,
-            emptyInputBehavior: "zero",
-            modifyValueOnWheel: false
-        });
+        {{--minStockFormat = new AutoNumeric('#stock_min', '{{ $itemStock->stock_min }}', {--}}
+            {{--minimumValue: '0',--}}
+            {{--digitGroupSeparator: '',--}}
+            {{--decimalPlaces: 0,--}}
+            {{--emptyInputBehavior: "zero",--}}
+            {{--modifyValueOnWheel: false--}}
+        {{--});--}}
 
-        maxStockFormat = new AutoNumeric('#stock_max', '{{ $itemStock->stock_max }}', {
-            minimumValue: '0',
-            digitGroupSeparator: '',
-            decimalPlaces: 0,
-            emptyInputBehavior: "zero",
-            modifyValueOnWheel: false
-        });
+        {{--maxStockFormat = new AutoNumeric('#stock_max', '{{ $itemStock->stock_max }}', {--}}
+            {{--minimumValue: '0',--}}
+            {{--digitGroupSeparator: '',--}}
+            {{--decimalPlaces: 0,--}}
+            {{--emptyInputBehavior: "zero",--}}
+            {{--modifyValueOnWheel: false--}}
+        {{--});--}}
     </script>
 @endsection

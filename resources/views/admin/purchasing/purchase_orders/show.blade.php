@@ -240,7 +240,7 @@
                                 {{ $mrType === 4 ? 'Total Harga Servis' : 'Total Harga'  }}
                             </label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                : Rp {{ $header->total_price_string }}
+                                : Rp {{ $isPriceViewPermission ? $header->total_price_string : '-' }}
                             </div>
                         </div>
 
@@ -249,7 +249,13 @@
                                 Total Diskon
                             </label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                : {{ $totalDiscountStr !== '0' ? 'Rp '. $totalDiscountStr : '-' }}
+
+                                @if($isPriceViewPermission)
+                                    : {{ $totalDiscountStr !== '0' ? 'Rp '. $totalDiscountStr : '-' }}
+                                @else
+                                    : -
+                                @endif
+
                             </div>
                         </div>
 
@@ -258,7 +264,13 @@
                                 Ongkos Kirim
                             </label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                : {{ !empty($header->delivery_fee) && $header->delivery_fee > 0 ? 'Rp '. $header->delivery_fee_string : '-' }}
+
+                                @if($isPriceViewPermission)
+                                    : {{ !empty($header->delivery_fee) && $header->delivery_fee > 0 ? 'Rp '. $header->delivery_fee_string : '-' }}
+                                @else
+                                    : -
+                                @endif
+
                             </div>
                         </div>
 
@@ -267,7 +279,13 @@
                                 PPN {{ !empty($header->ppn_percent) && $header->ppn_percent > 0 ? $header->ppn_percent. '%' : '' }}
                             </label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                : {{ !empty($header->ppn_percent) && $header->ppn_percent > 0 ? 'Rp '. $header->ppn_string : '-' }}
+
+                                @if($isPriceViewPermission)
+                                    : {{ !empty($header->ppn_percent) && $header->ppn_percent > 0 ? 'Rp '. $header->ppn_string : '-' }}
+                                @else
+                                    : -
+                                @endif
+
                             </div>
                         </div>
 
@@ -276,7 +294,13 @@
                                 PPh
                             </label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                : {{ !empty($header->pph_amount) && $header->pph_amount > 0 ? 'Rp '. $header->pph_string : '-' }}
+
+                                @if($isPriceViewPermission)
+                                    : {{ !empty($header->pph_amount) && $header->pph_amount > 0 ? 'Rp '. $header->pph_string : '-' }}
+                                @else
+                                    : -
+                                @endif
+
                             </div>
                         </div>
 
@@ -285,7 +309,7 @@
                                 Total PO
                             </label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                : Rp {{ $header->total_payment_string }}
+                                : Rp {{ $isPriceViewPermission ? $header->total_payment_string : "-" }}
                             </div>
                         </div>
 
@@ -320,23 +344,27 @@
 
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                        @if(!empty($header->quotation_pdf_path_1))
-                            <a href="{{ route('admin.purchase_orders.pdf1.download', ['purchase_order' => $header->id]) }}" class="btn btn-primary" style="float: right;">
-                                <i class="fa fa-download"></i>&nbsp;UNDUH QUOTATION UTAMA
-                            </a>
+
+                        @if($isPriceViewPermission)
+                            @if(!empty($header->quotation_pdf_path_1))
+                                <a href="{{ route('admin.purchase_orders.pdf1.download', ['purchase_order' => $header->id]) }}" class="btn btn-primary" style="float: right;">
+                                    <i class="fa fa-download"></i>&nbsp;UNDUH QUOTATION UTAMA
+                                </a>
+                            @endif
+
+                            @if(!empty($header->quotation_pdf_path_2))
+                                <a href="{{ route('admin.purchase_orders.pdf2.download', ['purchase_order' => $header->id]) }}" class="btn btn-primary" style="float: right;">
+                                    <i class="fa fa-download"></i>&nbsp;UNDUH QUOTATION TAMBAHAN 1
+                                </a>
+                            @endif
+
+                            @if(!empty($header->quotation_pdf_path_3))
+                                <a href="{{ route('admin.purchase_orders.pdf3.download', ['purchase_order' => $header->id]) }}" class="btn btn-primary" style="float: right;">
+                                    <i class="fa fa-download"></i>&nbsp;UNDUH QUOTATION TAMBAHAN 2
+                                </a>
+                            @endif
                         @endif
 
-                        @if(!empty($header->quotation_pdf_path_2))
-                            <a href="{{ route('admin.purchase_orders.pdf2.download', ['purchase_order' => $header->id]) }}" class="btn btn-primary" style="float: right;">
-                                <i class="fa fa-download"></i>&nbsp;UNDUH QUOTATION TAMBAHAN 1
-                            </a>
-                        @endif
-
-                        @if(!empty($header->quotation_pdf_path_3))
-                            <a href="{{ route('admin.purchase_orders.pdf3.download', ['purchase_order' => $header->id]) }}" class="btn btn-primary" style="float: right;">
-                                <i class="fa fa-download"></i>&nbsp;UNDUH QUOTATION TAMBAHAN 2
-                            </a>
-                        @endif
                     </div>
                 </div>
 
@@ -469,13 +497,13 @@
                                                         {{ $detail->quantity_invoiced }}
                                                     </td>
                                                     <td class="text-right">
-                                                        {{ $detail->price_string }}
+                                                        {{ $isPriceViewPermission ? $detail->price_string : "-" }}
                                                     </td>
                                                     <td class="text-right">
-                                                        {{ $detail->discount_string }}
+                                                        {{ $isPriceViewPermission ? $detail->discount_string : "-" }}
                                                     </td>
                                                     <td class="text-right">
-                                                        {{ $detail->subtotal_string }}
+                                                        {{ $isPriceViewPermission ? $detail->subtotal_string : "-" }}
                                                     </td>
                                                     <td>
                                                         {{ $detail->remark }}
@@ -484,7 +512,7 @@
                                             @endforeach
                                                 <tr>
                                                     <td colspan="9" class="text-right">TOTAL :</td>
-                                                    <td class="text-right">{{ $header->total_payment_before_tax_string }}</td>
+                                                    <td class="text-right">{{ $isPriceViewPermission ? $header->total_payment_before_tax_string : "-" }}</td>
                                                     <td></td>
                                                 </tr>
                                             </tbody>

@@ -50,10 +50,16 @@ class ReorderController extends Controller
             $filterType = '1';
         }
 
+        $filterMovement = 'ALL';
+        if($request->movement != null){
+            $filterMovement = $request->movement;
+        }
+
         $data = [
             'warehouses'        => $warehouses,
             'filterWarehouse'   => $filterWarehouse,
-            'filterType'        => $filterType
+            'filterType'        => $filterType,
+            'filterMovement'    => $filterMovement
         ];
 
         return View('admin.reorder.index')->with($data);
@@ -70,12 +76,16 @@ class ReorderController extends Controller
                     ->whereRaw('(item_stocks.stock_on_order + item_stocks.stock) <= item_stocks.stock_min')
                     ->where('item_stocks.stock_min', '>', 0);
 
-        $warehouseId = $request->warehouse;
+        $warehouseId = $request->input('warehouse');
         $itemStocks = $itemStocks->where('item_stocks.warehouse_id', $warehouseId);
 
-        $typeId = $request->type;
+        $typeId = $request->input('type');
         $itemStocks = $itemStocks->where('groups.type', $typeId);
 
+        $movement = $request->input('movement');
+        if($movement != 'ALL'){
+            $itemStocks = $itemStocks->where('item_stocks.movement_status', $movement);
+        }
 
         return DataTables::of($itemStocks)
             ->setTransformer(new ReorderTransformer)

@@ -26,22 +26,25 @@ class ReorderTransformer extends TransformerAbstract
                     data-itemName='". $itemStock->item->name ."' 
                     data-warehouseName='". $itemStock->warehouse->name."'
                     data-location='". $location ."'
+                    data-qty_issued_12_months='". $itemStock->qty_issued_12_months ."'
                     data-stock='". $itemStock->stock ."'
                     data-stockOnOrder='". $stockOnOrder ."'
                     data-stockMin='". $itemStock->stock_min ."'
                     data-stockMax='". $itemStock->stock_max ."'><i class='fa fa-plus'></i></a>";
 
         return[
-            'item_id'            => $itemStock->item->code,
-            'part_number'  => $itemStock->item->part_number,
-            'name'         => $itemStock->item->name,
-            'warehouse_id'  => $itemStock->warehouse->name,
-            'location'      => $itemStock->location ?? '-',
-            'stock'         => $itemStock->stock,
-            'stock_on_order'=> $stockOnOrder,
-            'stock_min'     => $itemStock->stock_min,
-            'stock_max'     => $itemStock->stock_max,
-            'action'        => $action
+            'item_id'               => $itemStock->item->code,
+            'part_number'           => $itemStock->item->part_number,
+            'name'                  => $itemStock->item->name,
+            'warehouse_id'          => $itemStock->warehouse->name,
+            'location'              => $itemStock->location ?? '-',
+            'stock'                 => $itemStock->stock,
+            'stock_on_order'        => $stockOnOrder,
+            'stock_min'             => $itemStock->stock_min,
+            'stock_max'             => $itemStock->stock_max,
+            'qty_issued_12_months'  => $itemStock->qty_issued_12_months,
+            'movement_status'       => $itemStock->movement_status,
+            'action'                => $action
         ];
     }
 }
