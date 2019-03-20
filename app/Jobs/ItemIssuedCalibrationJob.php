@@ -58,20 +58,20 @@ class ItemIssuedCalibrationJob implements ShouldQueue
                     ->where('warehouse_id', $itemStock->warehouse_id)
                     ->where('item_id', $itemStock->item_id);
                 $totalIssued = $itemIssuedDetails->sum('quantity');
-                $totalCount = $itemIssuedDetails->count();
+                //$totalCount = $itemIssuedDetails->count();
 
                 //error_log("total count: ". $this->itemStocks->count());
                 //error_log("total count: ". $this->issuedDocketDetails->count());
                 //error_log("total issued: ". $totalIssued);
 
                 // Get movement status
-                if($totalCount === 0){
+                if($totalIssued === 0){
                     $movement = "DEAD";
                 }
-                elseif ($totalCount < 4){
+                elseif ($totalIssued < 4){
                     $movement = "SLOW";
                 }
-                elseif ($totalCount < 9){
+                elseif ($totalIssued < 9){
                     $movement = "MEDIUM";
                 }
                 else{

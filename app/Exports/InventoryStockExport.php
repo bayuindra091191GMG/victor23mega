@@ -42,6 +42,7 @@ class InventoryStockExport implements FromQuery, WithMapping, WithHeadings, Shou
             'STOCK MIN',
             'STOCK MAX',
             'QTY ISSUED 12 MONTHS',
+            'MOVEMENT STATUS'
         ];
     }
 
@@ -65,7 +66,8 @@ class InventoryStockExport implements FromQuery, WithMapping, WithHeadings, Shou
             $itemStock->stock_on_order,
             $itemStock->stock_min,
             $itemStock->stock_max,
-            $itemStock->qty_issued_12_months
+            $itemStock->qty_issued_12_months,
+            $itemStock->movement_status
         ];
     }
 
@@ -123,6 +125,9 @@ class InventoryStockExport implements FromQuery, WithMapping, WithHeadings, Shou
 
                 $columnCategory = 'H2:H'. $this->counter;
                 $event->sheet->getDelegate()->getStyle($columnCategory)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                $movementCategory = 'N2:N'. $this->counter;
+                $event->sheet->getDelegate()->getStyle($movementCategory)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             },
         ];
     }
