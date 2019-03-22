@@ -566,6 +566,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('controlling/monitor/mr', 'Controlling\MonitoringMRController@index')->name('controlling.monitor.mr.index');
     Route::get('controlling/monitor/mr/report', 'Controlling\MonitoringMRController@report')->name('controlling.monitor.mr.report');
     Route::post('controlling/monitor/mr/report/unduh', 'Controlling\MonitoringMRController@downloadReport')->name('controlling.monitor.mr.report.download');
+    Route::post('controlling/monitor/mr/report/excel/unduh', 'Controlling\MonitoringMRController@downloadExcel')->name('controlling.monitor.mr.report.excel.download');
 
     //Account
     Route::get('cost_codes', 'AccountController@index')->name('accounts');

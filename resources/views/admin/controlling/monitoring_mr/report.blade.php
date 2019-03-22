@@ -12,7 +12,7 @@
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
 
-            {{ Form::open(['route'=>['admin.controlling.monitor.mr.report.download'],'method' => 'post', 'id' => 'general-form', 'class'=>'form-horizontal form-label-left']) }}
+            {{ Form::open(['route'=>['admin.controlling.monitor.mr.report.excel.download'],'method' => 'post', 'id' => 'general-form', 'class'=>'form-horizontal form-label-left']) }}
 
             @if(count($errors))
                 <div class="form-group">
@@ -28,18 +28,38 @@
                 </div>
             @endif
 
+            {{--<div class="form-group">--}}
+                {{--<label class="control-label col-md-3 col-sm-3 col-xs-12" for="type" >--}}
+                    {{--Tipe MR--}}
+                {{--</label>--}}
+                {{--<div class="col-md-6 col-sm-6 col-xs-12">--}}
+                    {{--<select id="type" name="type" class="form-control col-md-7 col-xs-12">--}}
+                        {{--<option value="0" selected>Semua</option>--}}
+                        {{--<option value="1">Part & Non-Part</option>--}}
+                        {{--<option value="2">BBM</option>--}}
+                        {{--<option value="2">Oli</option>--}}
+                        {{--<option value="4">Servis</option>--}}
+                    {{--</select>--}}
+                {{--</div>--}}
+            {{--</div>--}}
+
             <div class="form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="type" >
-                    Tipe MR
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="start_date" >
+                    Dari Tanggal
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                    <select id="type" name="type" class="form-control col-md-7 col-xs-12">
-                        <option value="0" selected>Semua</option>
-                        <option value="1">Part & Non-Part</option>
-                        <option value="2">BBM</option>
-                        <option value="2">Oli</option>
-                        <option value="4">Servis</option>
-                    </select>
+                    <input id="start_date" type="text" class="form-control col-md-7 col-xs-12 @if($errors->has('start_date')) parsley-error @endif"
+                           name="start_date" value="{{ $dateStart }}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="end_date" >
+                    Sampai Tanggal
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <input id="end_date" type="text" class="form-control col-md-7 col-xs-12 @if($errors->has('end_date')) parsley-error @endif"
+                           name="end_date" value="{{ $dateEnd }}">
                 </div>
             </div>
 
@@ -58,43 +78,40 @@
             </div>
 
             <div class="form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="start_date" >
-                    Dari Tanggal
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="site" >
+                    Site
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                    <input id="start_date" type="text" class="form-control col-md-7 col-xs-12 @if($errors->has('start_date')) parsley-error @endif"
-                           name="start_date" value="{{ old('start_date') }}">
+                    <select id="site" name="site" class="form-control col-md-7 col-xs-12">
+                        <option value="0">Semua</option>
+                        @foreach($sites as $site)
+                            <option value="{{ $site->id }}">{{ $site->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="end_date" >
-                    Sampai Tanggal
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="priority" >
+                    Prioritas
                 </label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                    <input id="end_date" type="text" class="form-control col-md-7 col-xs-12 @if($errors->has('end_date')) parsley-error @endif"
-                           name="end_date" value="{{ old('end_date') }}">
+                    <select id="priority" name="priority" class="form-control col-md-7 col-xs-12">
+                        <option value="ALL">Semua</option>
+                        <option value="Part - P1">Part - P1</option>
+                        <option value="Part - P2">Part - P2</option>
+                        <option value="Part - P3">Part - P3</option>
+                        <option value="Non-Part - P1">Non-Part - P1</option>
+                        <option value="Non-Part - P2">Non-Part - P2</option>
+                        <option value="Non-Part - P3">Non-Part - P3</option>
+                    </select>
                 </div>
             </div>
-
-            {{--<div class="form-group">--}}
-                {{--<label class="control-label col-md-3 col-sm-3 col-xs-12" for="department" >--}}
-                    {{--Departemen--}}
-                {{--</label>--}}
-                {{--<div class="col-md-6 col-sm-6 col-xs-12">--}}
-                    {{--<select id="department" name="department" class="form-control col-md-7 col-xs-12 @if($errors->has('department')) parsley-error @endif">--}}
-                        {{--<option value="0" @if(empty(old('department'))) selected @endif>Semua</option>--}}
-                        {{--@foreach($departments as $dep)--}}
-                            {{--<option value="{{ $dep->id }}" {{ old('department') == $dep->id ? "selected":"" }}>{{ $dep->name }}</option>--}}
-                        {{--@endforeach--}}
-                    {{--</select>--}}
-                {{--</div>--}}
-            {{--</div>--}}
 
             <div class="form-group">
                 <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
                     {{--<a class="btn btn-primary" href="{{ route('admin.issued_dockets') }}"> Batal</a>--}}
-                    <a class="btn btn-success loading-animate" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Memproses Laporan Anda">Unduh Laporan</a>
+                    <a class="btn btn-success loading-animate" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Memproses Excel Anda">Unduh Excel</a>
                 </div>
             </div>
             {{ Form::close() }}
