@@ -2,6 +2,7 @@
 
 namespace App\Libs;
 
+use App\Models\AutoNumber;
 use Carbon\Carbon;
 
 class Utilities
@@ -26,6 +27,49 @@ class Utilities
 
         $number = $code."/".$now->year."/".$now->month."/".$modulus.$nextNumber;
         return $number;
+    }
+
+    //  Get next incremental number of transaction number
+    /**
+     * @param $prepend
+     * @return int
+     * @throws \Exception
+     */
+    public static function GetNextAutoNumber($prepend){
+        try{
+            $nextNo = 1;
+            $autoNumber = AutoNumber::find($prepend);
+            if(empty($autoNumber)){
+                AutoNumber::create([
+                    'id'        => $prepend,
+                    'next_no'   => 1
+                ]);
+            }
+            else{
+                $nextNo = $autoNumber->next_no;
+            }
+
+            return $nextNo;
+        }
+        catch (\Exception $ex){
+            throw $ex;
+        }
+    }
+
+    // Update incremental number of transaction number
+    /**
+     * @param $prepend
+     * @throws \Exception
+     */
+    public static function UpdateAutoNumber($prepend){
+        try{
+            $autoNumber = AutoNumber::find($prepend);
+            $autoNumber->next_no++;
+            $autoNumber->save();
+        }
+        catch (\Exception $ex){
+            throw $ex;
+        }
     }
 
     public static function GenerateNumberPurchaseOrder($code, $nextNumber)

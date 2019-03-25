@@ -15,7 +15,9 @@ use App\Mail\ApprovalMaterialRequestCreated;
 use App\Models\ApprovalMaterialRequest;
 use App\Models\ApprovalRule;
 use App\Models\Auth\Role\Role;
+use App\Models\AutoNumber;
 use App\Models\Department;
+use App\Models\Document;
 use App\Models\Item;
 use App\Models\ItemStock;
 use App\Models\Machinery;
@@ -73,8 +75,13 @@ class MaterialRequestHeaderController extends Controller
         return View('admin.inventory.material_requests.oil.index', compact('filterStatus'));
     }
 
-    public function indexService(){
-        return View('admin.inventory.material_requests.service.index');
+    public function indexService(Request $request){
+        $filterStatus = '3';
+        if($request->status != null){
+            $filterStatus = $request->status;
+        }
+
+        return View('admin.inventory.material_requests.service.index', compact('filterStatus'));
     }
 
     public function createOther(){
@@ -82,9 +89,13 @@ class MaterialRequestHeaderController extends Controller
 
         // Numbering System
         $user = Auth::user();
-        $sysNo = NumberingSystem::where('doc_id', '9')->first();
-        $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+        $now = Carbon::now('Asia/Jakarta');
+        //$sysNo = NumberingSystem::where('doc_id', '9')->first();
+        $mrPrepend = 'MR/'. $now->year. '/'. $now->month;
+        $sysNo = Utilities::GetNextAutoNumber($mrPrepend);
+
+        $docCode = 'MR-'. $user->employee->site->code;
+        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo);
         $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
 
         $userWarehouseId = $user->employee->site->warehouses->first()->id;
@@ -104,9 +115,13 @@ class MaterialRequestHeaderController extends Controller
 
         // Numbering System
         $user = Auth::user();
-        $sysNo = NumberingSystem::where('doc_id', '10')->first();
-        $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+        $now = Carbon::now('Asia/Jakarta');
+        //$sysNo = NumberingSystem::where('doc_id', '10')->first();
+        $mrPrepend = 'MR-F/'. $now->year. '/'. $now->month;
+        $sysNo = Utilities::GetNextAutoNumber($mrPrepend);
+
+        $docCode = 'MR-F-'. $user->employee->site->code;
+        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo);
         $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
 
         $userWarehouseId = $user->employee->site->warehouses->first()->id;
@@ -126,9 +141,13 @@ class MaterialRequestHeaderController extends Controller
 
         // Numbering System
         $user = Auth::user();
-        $sysNo = NumberingSystem::where('doc_id', '11')->first();
-        $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+        $now = Carbon::now('Asia/Jakarta');
+        //$sysNo = NumberingSystem::where('doc_id', '11')->first();
+        $mrPrepend = 'MR-O/'. $now->year. '/'. $now->month;
+        $sysNo = Utilities::GetNextAutoNumber($mrPrepend);
+
+        $docCode = 'MR-O-'. $user->employee->site->code;
+        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo);
         $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
 
         $userWarehouseId = $user->employee->site->warehouses->first()->id;
@@ -148,9 +167,13 @@ class MaterialRequestHeaderController extends Controller
 
         // Numbering System
         $user = Auth::user();
-        $sysNo = NumberingSystem::where('doc_id', '12')->first();
-        $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+        $now = Carbon::now('Asia/Jakarta');
+        //$sysNo = NumberingSystem::where('doc_id', '12')->first();
+        $mrPrepend = 'MR-S/'. $now->year. '/'. $now->month;
+        $sysNo = Utilities::GetNextAutoNumber($mrPrepend);
+
+        $docCode = 'MR-S-'. $user->employee->site->code;
+        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo);
 
         $data = [
             'departments'   => $departments,
@@ -1045,10 +1068,20 @@ class MaterialRequestHeaderController extends Controller
         }
 
         $user = Auth::user();
-        $sysNo = NumberingSystem::where('doc_id', $docId)->first();
+        $now = Carbon::now('Asia/Jakarta');
+
+        //$sysNo = NumberingSystem::where('doc_id', $docId)->first();
         if($request->filled('auto_number')){
-            $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-            $mrCode = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+            // = $sysNo->document->code. '-'. $user->employee->site->code;
+            //$mrCode = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+
+            //$sysNo = NumberingSystem::where('doc_id', '9')->first();
+            $doc = Document::find($docId);
+            $mrPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $sysNo = Utilities::GetNextAutoNumber($mrPrepend);
+
+            $docCode = $doc->code. '-'. $user->employee->site->code;
+            $mrCode = Utilities::GenerateNumber($docCode, $sysNo);
 
             // Check existing number
             if(MaterialRequestHeader::where('code', $mrCode)->exists()){
@@ -1126,7 +1159,6 @@ class MaterialRequestHeaderController extends Controller
         if(!$validUnique){
             return redirect()->back()->withErrors('Detail inventory tidak boleh kembar!', 'default')->withInput($request->all());
         }
-        $now = Carbon::now('Asia/Jakarta');
 
         $mrHeader = MaterialRequestHeader::create([
             'code'              => $mrCode,
@@ -1172,8 +1204,10 @@ class MaterialRequestHeaderController extends Controller
 
         // Increase autonumber
         if($request->filled('auto_number')){
-            $sysNo->next_no++;
-            $sysNo->save();
+            $mrPrepend = 'MR/'. $now->year. '/'. $now->month;
+            Utilities::UpdateAutoNumber($mrPrepend);
+//            $sysNo->next_no++;
+//            $sysNo->save();
         }
 
         // Create material request detail
@@ -1386,11 +1420,18 @@ class MaterialRequestHeaderController extends Controller
 
         $user = Auth::user();
 
-        $mrCode = 'default';
+        $now = Carbon::now('Asia/Jakarta');
         if($request->filled('auto_number')){
-            $sysNo = NumberingSystem::where('doc_id', $docId)->first();
-            $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-            $mrCode = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+//            $sysNo = NumberingSystem::where('doc_id', $docId)->first();
+//            $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
+//            $mrCode = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+
+            $doc = Document::find($docId);
+            $mrPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $sysNo = Utilities::GetNextAutoNumber($mrPrepend);
+
+            $docCode = $doc->code. '-'. $user->employee->site->code;
+            $mrCode = Utilities::GenerateNumber($docCode, $sysNo);
 
             // Check existing number
             if(MaterialRequestHeader::where('code', $mrCode)->exists()){
@@ -1452,8 +1493,6 @@ class MaterialRequestHeaderController extends Controller
                 }
             }
         }
-        // Validate details
-        $now = Carbon::now('Asia/Jakarta');
 
         $mrHeader = MaterialRequestHeader::create([
             'code'              => $mrCode,

@@ -99,13 +99,13 @@ class MonitoringMRExport implements FromQuery, WithMapping, WithHeadings, Should
             $isTrackingAvailable = false;
         }
 
-        $trackedPrHeaderStr = "-";
-        $trackedPoHeaderStr = "-";
-        $trackedGrHeaderStr = "-";
-        $trackedGrHeaderLeadTime = "-";
-        $trackedSjHeaderStr = "-";
-        $trackedSjStatus = "-";
-        $trackedSjHeaderLeadTime = "-";
+        $trackedPrHeaderStr = "";
+        $trackedPoHeaderStr = "";
+        $trackedGrHeaderStr = "";
+        $trackedGrHeaderLeadTime = "";
+        $trackedSjHeaderStr = "";
+        $trackedSjStatus = "";
+        $trackedSjHeaderLeadTime = "";
         $trackedInventoryIdStr = "";
         $trackedInventoryNameStr = "";
         $trackedInventoryPartStr = "";
@@ -286,33 +286,33 @@ class MonitoringMRExport implements FromQuery, WithMapping, WithHeadings, Should
             $header->site->name,
             $header->department->name,
             $header->priority,
-            $machineCode !== "" ? $machineCode : "-",
+            $machineCode,
             $trackedUnPoedItemCodes,
-            $trackedUnPoedItemPartNumbers !== "" ? $trackedUnPoedItemPartNumbers: "-",
-            $trackedUnPoedItemQty !== "" ? $trackedUnPoedItemQty: "-",
-            $trackedUnPoedItemUom !== "" ? $trackedUnPoedItemUom: "-",
-            $trackedInventoryIdStr !== "" ? $trackedInventoryIdStr : "-",
-            $trackedInventoryNameStr !== "" ? $trackedInventoryNameStr : "-",
-            $trackedInventoryPartStr !== "" ? $trackedInventoryPartStr : "-",
-            $trackedInventoryUnitStr !== "" ? $trackedInventoryUnitStr : "-",
-            $trackedInventoryQtyStr !== "" ? $trackedInventoryQtyStr : "-",
-            $trackedInventoryPricePerPieceStr !== "" ? $trackedInventoryPricePerPieceStr : "-",
-            $trackedInventoryTotalPriceStr !== "" ? $trackedInventoryTotalPriceStr : "-",
-            $trackedInventoryTotalPpnStr !== "" ? $trackedInventoryTotalPpnStr : "-",
-            $trackedInventoryTotalAllStr !== "" ? $trackedInventoryTotalAllStr : "-",
-            $trackedPoHandleBy !== "" ? $trackedPoHandleBy : "-",
-            $trackedPrHeaderStr !== "" ? $trackedPrHeaderStr : "-",
-            $trackedPoHeaderStr !== "" ? $trackedPoHeaderStr : "-",
-            $trackedPoDate !== "" ? $trackedPoDate : "-",
-            $trackedSupplierName !== "" ? $trackedSupplierName : "-",
-            $trackedSupplierLocation !== "" ? $trackedSupplierLocation : "-",
-            $trackedGrHeaderStr !== "" ? $trackedGrHeaderStr : "-",
-            $trackedGrHeaderLeadTime !== "" ? $trackedGrHeaderLeadTime : "-",
-            $trackedSjHeaderStr !== "" ? $trackedSjHeaderStr : "-",
-            $trackedSjStartDate !== "" ? $trackedPrHeaderStr : "-",
-            $trackedSjFinishDate !== "" ? $trackedPrHeaderStr : "-",
-            $trackedSjStatus !== "" ? $trackedSjStatus : "-",
-            $trackedSjHeaderLeadTime !== "" ? $trackedSjHeaderLeadTime : "-"
+            $trackedUnPoedItemPartNumbers,
+            $trackedUnPoedItemQty,
+            $trackedUnPoedItemUom,
+            $trackedInventoryIdStr,
+            //$trackedInventoryNameStr,
+            $trackedInventoryPartStr,
+            $trackedInventoryUnitStr,
+            $trackedInventoryQtyStr,
+            $trackedInventoryPricePerPieceStr,
+            $trackedInventoryTotalPriceStr,
+            $trackedInventoryTotalPpnStr,
+            $trackedInventoryTotalAllStr,
+            $trackedPoHandleBy,
+            $trackedPrHeaderStr,
+            $trackedPoHeaderStr,
+            $trackedPoDate,
+            $trackedSupplierName,
+            $trackedSupplierLocation,
+            $trackedGrHeaderStr,
+            $trackedGrHeaderLeadTime,
+            $trackedSjHeaderStr,
+            $trackedSjStartDate,
+            $trackedSjFinishDate,
+            $trackedSjStatus,
+            $trackedSjHeaderLeadTime
         ];
     }
 
@@ -376,20 +376,48 @@ class MonitoringMRExport implements FromQuery, WithMapping, WithHeadings, Should
         // TODO: Implement registerEvents() method.
         return [
             AfterSheet::class    => function(AfterSheet $event) {
-                $cellRange = 'A1:W1'; // All headers
+                $cellRange = 'A1:AF1';
                 $event->sheet->getDelegate()->getStyle($cellRange)->getFont()->setSize(14);
                 $event->sheet->getDelegate()->getStyle($cellRange)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
                 $this->counter += 10;
 
+                $columnVertical = 'A2:AF'. $this->counter;
+                $event->sheet->getDelegate()->getStyle($columnVertical)->getAlignment()->setVertical(Alignment::VERTICAL_TOP);
+
                 $columnMrDate = 'B2:B'. $this->counter;
                 $event->sheet->getDelegate()->getStyle($columnMrDate)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-//                $columnInventory = 'G2:G'. $this->counter;
-//                $event->sheet->getDelegate()->getStyle($columnInventory)->getAlignment()->setWrapText(true);
+                $columnUnPoedInventory = 'G2:G'. $this->counter;
+                $event->sheet->getDelegate()->getStyle($columnUnPoedInventory)->getAlignment()->setWrapText(true);
 
-                $columnUom1 = 'K2:K'. $this->counter;
-                $event->sheet->getDelegate()->getStyle($columnUom1)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $columnUnPoedPartNumber = 'H2:H'. $this->counter;
+                $event->sheet->getDelegate()->getStyle($columnUnPoedPartNumber)->getAlignment()->setWrapText(true);
+
+                $columnUnPoedQty = 'I2:I'. $this->counter;
+                $event->sheet->getDelegate()->getStyle($columnUnPoedQty)->getAlignment()->setWrapText(true);
+                $event->sheet->getDelegate()->getStyle($columnUnPoedQty)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+                $columnUnPoedUom = 'J2:J'. $this->counter;
+                $event->sheet->getDelegate()->getStyle($columnUnPoedUom)->getAlignment()->setWrapText(true);
+                $event->sheet->getDelegate()->getStyle($columnUnPoedUom)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                $columnPoedInventory = 'K2:K'. $this->counter;
+                $event->sheet->getDelegate()->getStyle($columnPoedInventory)->getAlignment()->setWrapText(true);
+
+                $columnPoedPartNumber = 'L2:L'. $this->counter;
+                $event->sheet->getDelegate()->getStyle($columnPoedPartNumber)->getAlignment()->setWrapText(true);
+
+                $columnPoedQty = 'M2:M'. $this->counter;
+                $event->sheet->getDelegate()->getStyle($columnPoedQty)->getAlignment()->setWrapText(true);
+                $event->sheet->getDelegate()->getStyle($columnPoedQty)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+                $columnPoedUom = 'N2:N'. $this->counter;
+                $event->sheet->getDelegate()->getStyle($columnPoedUom)->getAlignment()->setWrapText(true);
+                $event->sheet->getDelegate()->getStyle($columnPoedUom)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                $columnAfterX = 'Y2:AE'. $this->counter;
+                $event->sheet->getDelegate()->getStyle($columnAfterX)->getAlignment()->setWrapText(true);
 
                 $columnUom2 = 'O2:O'. $this->counter;
                 $event->sheet->getDelegate()->getStyle($columnUom2)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
