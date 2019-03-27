@@ -19,8 +19,9 @@
             <tr>
                 <th class="text-center" style="width: 10%;">No</th>
                 <th class="text-center" style="width: 20%;">Dokumen</th>
-                <th class="text-center" style="width: 45%;">Notifikasi</th>
-                <th class="text-center" style="width: 25%;">Pengirim</th>
+                <th class="text-center" style="width: 35%;">Notifikasi</th>
+                <th class="text-center" style="width: 20%;">Pengirim</th>
+                <th class="text-center" style="width: 15%;">Tanggal</th>
             </tr>
             </thead>
             <tbody>
@@ -48,7 +49,15 @@
                     { data: 'DT_Row_Index', orderable: false, searchable: false, class: 'text-center'},
                     { data: 'document', name: 'document', class: 'text-center'},
                     { data: 'notification', name: 'notification' },
-                    { data: 'sender', name: 'sender', class: 'text-center' }
+                    { data: 'sender', name: 'sender', class: 'text-center' },
+                    { data: 'created_at', name: 'created_at', class: 'text-center',
+                        render: function ( data, type, row ){
+                            if ( type === 'display' || type === 'filter' ){
+                                return moment(data).format('DD MMM YYYY');
+                            }
+                            return data;
+                        }
+                    },
                 ],
                 language: {
                     url: "//cdn.datatables.net/plug-ins/1.10.16/i18n/Indonesian-Alternative.json"

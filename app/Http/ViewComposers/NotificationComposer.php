@@ -18,7 +18,7 @@ class NotificationComposer
 
     public function __construct()
     {
-        $this->notifications = auth()->user()->notifications()->limit(5)->get();
+        $this->notifications = auth()->user()->notifications()->orderBy('created_at', 'desc')->limit(5)->get();
         $isRead = true;
         foreach($this->notifications as $notification){
             if($notification->unread()){

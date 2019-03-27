@@ -8,6 +8,7 @@
 
 namespace App\Transformer;
 
+use Carbon\Carbon;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Auth;
 use League\Fractal\TransformerAbstract;
@@ -16,6 +17,7 @@ class NotificationTransformer extends TransformerAbstract
 {
     public function transform(DatabaseNotification $notif){
         $user = Auth::user();
+        $dateCarbon = Carbon::parse($notif->created_at);
 
         $notification = "";
         if($notif->type === 'App\Notifications\MaterialRequestCreated'){
@@ -146,7 +148,8 @@ class NotificationTransformer extends TransformerAbstract
         return[
             'document'      => $notif->data['document_type'],
             'notification'  => $notification,
-            'sender'        => $notif->data['sender_name']
+            'sender'        => $notif->data['sender_name'],
+            'created_at'    => $dateCarbon->toIso8601String()
         ];
     }
 }
