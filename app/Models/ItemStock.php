@@ -47,7 +47,8 @@ class ItemStock extends Eloquent
 		'stock_max' => 'int',
 		'is_stock_warning' => 'bool',
         'stock_on_order' => 'float',
-        'qty_issued_12_months' => 'float'
+        'qty_issued_12_months' => 'float',
+        'stock_on_reorder' => 'float'
 	];
 
 	protected $appends = [
@@ -68,7 +69,8 @@ class ItemStock extends Eloquent
 		'is_stock_warning',
         'stock_on_order',
         'qty_issued_12_months',
-        'movement_status'
+        'movement_status',
+        'stock_on_reorder'
 	];
 
     public function getSiteNameAttribute(){

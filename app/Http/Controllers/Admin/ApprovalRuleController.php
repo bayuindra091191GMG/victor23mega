@@ -862,6 +862,17 @@ class ApprovalRuleController extends Controller
         $purchaseOrder->status_id = 13;
         $purchaseOrder->save();
 
+        // Undo reorder process
+        if($purchaseOrder->is_reorder === 1){
+            foreach ($purchaseOrder->purchase_order_details as $detail){
+                $itemStock = ItemStock::where('warehouse_id', $purchaseOrder->warehouse_id)
+                    ->where('item_id', $detail->item_id)
+                    ->first();
+                $itemStock->stock_on_reorder -= $detail->quantity;
+                $itemStock->save();
+            }
+        }
+
         Session::flash('message', 'Berhasil Tolak Dokumen ini!');
 
         return redirect()->route('admin.approval_rules.po_approval', ['approval_rule' => $id]);

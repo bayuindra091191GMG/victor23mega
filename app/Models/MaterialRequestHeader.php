@@ -71,7 +71,8 @@ class MaterialRequestHeader extends Eloquent
         'is_approved' => 'int',
 		'created_by' => 'int',
 		'updated_by' => 'int',
-        'is_pr_created' => 'int'
+        'is_pr_created' => 'int',
+        'is_reorder' => 'int'
 	];
 
 	protected $dates = [
@@ -111,7 +112,8 @@ class MaterialRequestHeader extends Eloquent
         'pdf_path',
         'is_pr_created',
         'feedback',
-        'warehouse_id'
+        'warehouse_id',
+        'is_reorder'
 	];
 
     public function scopeDateDescending(Builder $query){

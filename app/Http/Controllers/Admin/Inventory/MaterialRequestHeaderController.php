@@ -35,6 +35,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Response;
@@ -1160,6 +1161,7 @@ class MaterialRequestHeaderController extends Controller
             return redirect()->back()->withErrors('Detail inventory tidak boleh kembar!', 'default')->withInput($request->all());
         }
 
+        $warehouseId = $request->input('warehouse');
         $mrHeader = MaterialRequestHeader::create([
             'code'              => $mrCode,
             'site_id'           => $siteId,
@@ -1176,12 +1178,19 @@ class MaterialRequestHeaderController extends Controller
             'created_by'        => $user->id,
             'created_at'        => $now->toDateTimeString(),
             'updated_by'        => $user->id,
-            'warehouse_id'      => $request->input('warehouse')
+            'warehouse_id'      => $warehouseId
         ]);
 
         if($request->filled('machinery')){
             $arrMachinery = explode('#', $request->input('machinery'));
             $mrHeader->machinery_id = $arrMachinery[0];
+        }
+
+        // Check is reorder
+        $isReorder = false;
+        if(!empty($request->input('is_reorder'))){
+            $mrHeader->is_reorder = $request->input('is_reorder');
+            $isReorder = true;
         }
 
         $date = Carbon::createFromFormat('d M Y', $request->input('date'), 'Asia/Jakarta');
@@ -1230,6 +1239,24 @@ class MaterialRequestHeaderController extends Controller
                 $mrDetail->save();
             }
             $idx++;
+        }
+
+        // Reorder process
+        if($isReorder){
+            $idx = 0;
+            foreach($request->input('item') as $item){
+                if(!empty($item)){
+                    $splitted = explode('#', $item);
+                    $itemId = intval($splitted[0]);
+                    $qtyInt = intval($qty[$idx]);
+                    $itemStock = ItemStock::where('warehouse_id', $warehouseId)
+                        ->where('item_id', $itemId)
+                        ->first();
+                    $itemStock->stock_on_reorder += $qtyInt;
+                    $itemStock->save();
+                }
+                $idx++;
+            }
         }
 
         // Check Approval Feature
@@ -2054,6 +2081,17 @@ class MaterialRequestHeaderController extends Controller
             $materialRequest->close_reason = $request->input('reason');
             $materialRequest->status_id = 11;
             $materialRequest->save();
+
+            // Undo reorder process
+            if($materialRequest->is_reorder === 1){
+                foreach ($materialRequest->material_request_details as $detail){
+                    $itemStock = ItemStock::where('warehouse_id', $materialRequest->warehouse_id)
+                        ->where('item_id', $detail->item_id)
+                        ->first();
+                    $itemStock->stock_on_reorder -= $detail->quantity;
+                    $itemStock->save();
+                }
+            }
 
             Session::flash('message', 'Berhasil tutup MR!');
 

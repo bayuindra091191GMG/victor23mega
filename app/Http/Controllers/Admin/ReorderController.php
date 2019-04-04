@@ -73,7 +73,7 @@ class ReorderController extends Controller
         $itemStocks = ItemStock::join('items', 'items.id', '=', 'item_stocks.item_id')
                     ->join('groups', 'groups.id', '=', 'items.group_id')
                     ->select('item_stocks.*', 'items.code', 'items.part_number', 'items.name', 'groups.type')
-                    ->whereRaw('(item_stocks.stock_on_order + item_stocks.stock) <= item_stocks.stock_min')
+                    ->whereRaw('(item_stocks.stock_on_order + item_stocks.stock + item.stock_on_reorder) <= item_stocks.stock_min')
                     ->where('item_stocks.stock_min', '>', 0);
 
         $warehouseId = $request->input('warehouse');

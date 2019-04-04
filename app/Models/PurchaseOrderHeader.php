@@ -90,7 +90,8 @@ class PurchaseOrderHeader extends Eloquent
 		'closed_by' => 'int',
 		'created_by' => 'int',
 		'updated_by' => 'int',
-        'warehouse_id' => 'int'
+        'warehouse_id' => 'int',
+        'is_reorder' => 'int'
 	];
 
     protected $appends = [
@@ -148,7 +149,8 @@ class PurchaseOrderHeader extends Eloquent
         'quotation_pdf_path_1',
         'quotation_pdf_path_2',
         'quotation_pdf_path_3',
-        'warehouse_id'
+        'warehouse_id',
+        'is_reorder'
 	];
 
     public function getClosingDateStringAttribute(){

@@ -271,6 +271,7 @@
 
             <input type="hidden" name="type" id="type" value="1"/>
             <input type="hidden" name="index" id="index" value="{{ $idx }}"/>
+            <input type="hidden" name="is_reorder" id="type" value="1"/>
 
             <div class="form-group">
                 <div class="col-md-12 col-sm-12 col-xs-12 text-center">

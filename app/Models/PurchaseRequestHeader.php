@@ -67,7 +67,8 @@ class PurchaseRequestHeader extends Eloquent
 		'closed_by' => 'int',
 		'created_by' => 'int',
 		'updated_by' => 'int',
-        'warehouse_id' => 'int'
+        'warehouse_id' => 'int',
+        'is_reorder' => 'int'
 	];
 
     protected $appends = [
@@ -105,7 +106,8 @@ class PurchaseRequestHeader extends Eloquent
         'created_at',
 		'updated_by',
 		'updated_at',
-        'warehouse_id'
+        'warehouse_id',
+        'is_reorder'
 	];
 
     public function scopeDateDescending(Builder $query){

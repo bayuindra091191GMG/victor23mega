@@ -21,6 +21,7 @@ use App\Models\Auth\Role\Role;
 use App\Models\Auth\User\User;
 use App\Models\Department;
 use App\Models\Item;
+use App\Models\ItemStock;
 use App\Models\NumberingSystem;
 use App\Models\PaymentRequestsPoDetail;
 use App\Models\PermissionMenu;
@@ -399,7 +400,6 @@ class PurchaseOrderHeaderController extends Controller
 
         // Get PR id
         $prId = $request->input('pr_id');
-        $prData = PurchaseRequestHeader::find($prId);
 
         // Validate PR relationship
         $validItem = true;
@@ -473,7 +473,8 @@ class PurchaseOrderHeaderController extends Controller
             'status_id'             => 3,
             'created_by'            => $user->id,
             'created_at'            => $now->toDateTimeString(),
-            'warehouse_id'          => $prData->warehouse_id
+            'warehouse_id'          => $purchaseRequest->warehouse_id,
+            'is_reorder'            => $purchaseRequest->is_reorder
         ]);
 
         $extraDiscount = 0;
@@ -1267,7 +1268,7 @@ class PurchaseOrderHeaderController extends Controller
 
             // Recount stock on order
             $isPoCancel = false;
-            if($purchaseOrder->is_all_received !== 1){
+            if($purchaseOrder->is_all_received !== 1 && $purchaseOrder->is_approved === 1){
                 foreach ($purchaseOrder->purchase_order_details as $poDetail){
                     if($poDetail->received_quantity < $poDetail->quantity){
                         $qtyClosed = $poDetail->quantity - $poDetail->received_quantity;
@@ -1285,6 +1286,17 @@ class PurchaseOrderHeaderController extends Controller
 
 
                         $isPoCancel = true;
+                    }
+                }
+
+                // Undo reorder process
+                if($purchaseOrder->is_reorder === 1){
+                    foreach ($purchaseOrder->purchase_order_details as $detail){
+                        $itemStock = ItemStock::where('warehouse_id', $purchaseOrder->warehouse_id)
+                            ->where('item_id', $detail->item_id)
+                            ->first();
+                        $itemStock->stock_on_reorder -= $detail->quantity;
+                        $itemStock->save();
                     }
                 }
             }
