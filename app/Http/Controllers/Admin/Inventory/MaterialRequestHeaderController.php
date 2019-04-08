@@ -97,8 +97,8 @@ class MaterialRequestHeaderController extends Controller
 
         $docCode = 'MR-'. $user->employee->site->code;
         $autoNumber = Utilities::GenerateNumber($docCode, $sysNo);
-        $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
 
+        $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
         $userWarehouseId = $user->employee->site->warehouses->first()->id;
 
         $data = [
@@ -123,8 +123,8 @@ class MaterialRequestHeaderController extends Controller
 
         $docCode = 'MR-F-'. $user->employee->site->code;
         $autoNumber = Utilities::GenerateNumber($docCode, $sysNo);
-        $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
 
+        $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
         $userWarehouseId = $user->employee->site->warehouses->first()->id;
 
         $data = [
@@ -149,8 +149,8 @@ class MaterialRequestHeaderController extends Controller
 
         $docCode = 'MR-O-'. $user->employee->site->code;
         $autoNumber = Utilities::GenerateNumber($docCode, $sysNo);
-        $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
 
+        $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
         $userWarehouseId = $user->employee->site->warehouses->first()->id;
 
         $data = [
@@ -1030,18 +1030,21 @@ class MaterialRequestHeaderController extends Controller
             return redirect()->back()->withErrors('Pilih prioritas!', 'default')->withInput($request->all());
         }
 
-        // Validate priority and machinery
         $priority = $request->input('priority');
-        if($priority == 'Part - P1' || $priority == 'Part - P2' || $priority == 'Part - P3'){
-            if(!$request->filled('machinery') || !$request->filled('km') || !$request->filled('km')){
-                return redirect()->back()->withErrors('Unit Alat Berat, KM dan HM wajib diisi!', 'default')->withInput($request->all());
-            }
-        }
+        if(empty($request->input('is_reorder'))){
 
-        // Validate uploaded document based on priority
-        if($priority == 'Part - P1' || $priority == 'Part - P2'){
-            if($request->file('document') == null){
-                return redirect()->back()->withErrors('Wajib unggah berita acara untuk prioritas Part P1 dan Part P2!', 'default')->withInput($request->all());
+            // Validate priority and machinery if no reorder type
+            if($priority == 'Part - P1' || $priority == 'Part - P2' || $priority == 'Part - P3'){
+                if(!$request->filled('machinery') || !$request->filled('km') || !$request->filled('km')){
+                    return redirect()->back()->withErrors('Unit Alat Berat, KM dan HM wajib diisi!', 'default')->withInput($request->all());
+                }
+            }
+
+            // Validate uploaded document based on priority if no reorder type
+            if($priority == 'Part - P1' || $priority == 'Part - P2'){
+                if($request->file('document') == null){
+                    return redirect()->back()->withErrors('Wajib unggah berita acara untuk prioritas Part P1 dan Part P2!', 'default')->withInput($request->all());
+                }
             }
         }
 

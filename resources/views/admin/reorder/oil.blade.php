@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
 
-            {{ Form::open(['route'=>['admin.material_requests.store'],'method' => 'post','id' => 'general-form','class'=>'form-horizontal form-label-left', 'enctype' => 'multipart/form-data', 'novalidate']) }}
+            {{ Form::open(['route'=>['admin.material_requests.store'],'method' => 'post','id' => 'general-form', 'class'=>'form-horizontal form-label-left', 'enctype' => 'multipart/form-data', 'novalidate']) }}
 
             @if(count($errors))
                 <div class="form-group">
@@ -163,17 +163,6 @@
                 </div>
             </div>
 
-            {{--<div class="form-group">--}}
-                {{--<label class="control-label col-md-3 col-sm-3 col-xs-12" for="machinery" >--}}
-                    {{--Penggunaan MR--}}
-                    {{--<span class="required">*</span>--}}
-                {{--</label>--}}
-                {{--<div class="col-md-6 col-sm-6 col-xs-12">--}}
-                    {{--<label class="radio-inline"><input type="radio" name="purpose" value="stock" checked>Stock</label>--}}
-                    {{--<label class="radio-inline"><input type="radio" name="purpose" value="non-stock">Non-Stock</label>--}}
-                {{--</div>--}}
-            {{--</div>--}}
-
             <div class="form-group">
                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="document">
                     Lampiran Berita Acara
@@ -205,17 +194,39 @@
                             </thead>
                             <tbody>
                             @php($idx = 0)
-                            @if(!empty($reorderItems))
-                                @foreach($reorderItems as $item)
-                                    @php( $reorderItemCreatedDate = \Carbon\Carbon::parse($item->created_at)->format('d M Y') )
-                                    @php( $reorderItemPartNumber = $item->part_number ?? 'null' )
+                            @if(!empty(old('item')))
+                                @php($qty = old('qty'))
+                                @php($remark = old('remark'))
+                                @foreach(old('item') as $item)
                                     <tr id='addr{{ $idx }}'>
                                         <td>
-                                            <select id="item_tmp{{ $idx }}" class='form-control'></select>
-                                            <input type="hidden" id="item{{ $idx }}" name="item[]" value="{{ $item->id. '#'. $item->code. '#'. $item->name. '#'. $item->uom. '#'. $reorderItemCreatedDate. '#'. $reorderItemPartNumber }}" />
+                                            {{--<select id="item_tmp{{ $idx }}" class='form-control'></select>--}}
+                                            <input type="text" class='form-control' value="{{ $itemStock->item->code }}" readonly/>
+                                            <input type="hidden" id="item{{ $idx }}" name="item[]" value="{{ $item }}" />
                                         </td>
                                         <td>
-                                            <input id="qty{{ $idx }}" type='text' name='qty[]'  placeholder='QTY' class='form-control' value="0"/>
+                                            <input id="qty{{ $idx }}" type='text' name='qty[]'  placeholder='QTY' class='form-control text-right' @if(!empty($qty[$idx])) value="{{ $qty[$idx] }}" @endif />
+                                            <input id="stock_max{{ $idx }}" type='hidden'  value="{{ $qty[$idx] }}"/>
+                                        </td>
+                                        <td>
+                                            <input type='text' name='remark[]' placeholder='Keterangan' class='form-control' @if(!empty($remark[$idx])) value="{{ $remark[$idx] }}" @endif />
+                                        </td>
+                                    </tr>
+                                    @php($idx++)
+                                @endforeach
+                            @elseif(!empty($itemStocks))
+                                @foreach($itemStocks as $itemStock)
+                                    @php( $itemCreatedDate = \Carbon\Carbon::parse($itemStock->item->created_at)->format('d M Y') )
+                                    @php( $itemPartNumber = $itemStock->item->part_number ?? '-' )
+                                    <tr id='addr{{ $idx }}'>
+                                        <td>
+                                            {{--                                            <select id="item_tmp{{ $idx }}" class='form-control'></select>--}}
+                                            <input type="text" class='form-control' value="{{ $itemStock->item->code }}" readonly/>
+                                            <input type="hidden" id="item{{ $idx }}" name="item[]" value="{{ $itemStock->item->id. '#'. $itemStock->item->code. '#'. $itemStock->item->name. '#'. $itemStock->item->uom. '#'. $itemCreatedDate. '#'. $itemPartNumber }}" />
+                                        </td>
+                                        <td>
+                                            <input id="qty{{ $idx }}" type='text' name='qty[]'  placeholder='QTY' class='form-control text-right auto-blur' onfocusout="validateStockMax('{{ $idx }}');" value="{{ $itemStock->stock_max }}"/>
+                                            <input id="stock_max{{ $idx }}" type='hidden'  value="{{ $itemStock->stock_max }}"/>
                                         </td>
                                         <td>
                                             <input type='text' name='remark[]' placeholder='Keterangan' class='form-control' value=""/>
@@ -223,37 +234,24 @@
                                     </tr>
                                     @php($idx++)
                                 @endforeach
-                                <tr id='addr{{ $idx }}'></tr>
-                            @else
-                                @php($idx = 1)
-                                <tr id='addr0'>
-                                    <td>
-                                        <select id="select0" name="item[]" class='form-control'></select>
-                                        <input type="hidden" id="item_value0" name="item_value[]"/>
-                                    </td>
-                                    <td>
-                                        <input id="qty0" type='text' name='qty[]'  placeholder='QTY' class='form-control'/>
-                                    </td>
-                                    <td>
-                                        <input type='text' name='remark[]' placeholder='Keterangan' class='form-control'/>
-                                    </td>
-                                </tr>
-                                <tr id='addr1'></tr>
                             @endif
+
                             </tbody>
                         </table>
                     </div>
-                    <a id="add_row" class="btn btn-default pull-left">Tambah</a><a id='delete_row' class="pull-right btn btn-default">Hapus</a>
+{{--                    <a id="add_row" class="btn btn-default pull-left">Tambah</a><a id='delete_row' class="pull-right btn btn-default">Hapus</a>--}}
                 </div>
             </div>
 
             <hr/>
 
             <input type="hidden" name="type" id="type" value="3"/>
+            <input type="hidden" name="index" id="index" value="{{ $idx }}"/>
+            <input type="hidden" name="is_reorder" id="is_reorder" value="1"/>
 
             <div class="form-group">
                 <div class="col-md-12 col-sm-12 col-xs-12 text-center">
-                    <a class="btn btn-danger" href="{{ route('admin.material_requests.other') }}"> Batal</a>
+                    <a class="btn btn-danger" href="{{ route('admin.reorder.list') }}"> Batal</a>
                     <button type="submit" class="btn btn-success"> Simpan</button>
                 </div>
             </div>
@@ -309,11 +307,11 @@
         });
 
         // AutoNumeric
-        qtyAddFormat = new AutoNumeric('#qty0', {
-            minimumValue: '0',
-            digitGroupSeparator: '',
-            decimalPlaces: 0
-        });
+        // qtyAddFormat = new AutoNumeric('#qty0', {
+        //     minimumValue: '0',
+        //     digitGroupSeparator: '',
+        //     decimalPlaces: 0
+        // });
 
         var i=1;
 
@@ -348,115 +346,50 @@
             $('#sn_engine').val(splittedMachinery[3]);
         });
 
-        @if(!empty($reoderItems))
+        @if(!empty(old('item')))
         @php($selectIdx = 0)
-        @foreach($reoderItems as $item)
+        @foreach(old('item') as $item)
 
-            $('#item_tmp{{ $selectIdx }}').select2({
-                placeholder: {
-                    id: '{{ $item->id }}',
-                    text: '{{ $item->code. ' - '. $item->name. ' - '. \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}'
-                },
-                width: '100%',
-                minimumInputLength: 1,
-                ajax: {
-                    url: '{{ route('select.items') }}',
-                    dataType: 'json',
-                    data: function (params) {
-                        return {
-                            q: $.trim(params.term),
-                            type: 'oil'
-                        };
-                    },
-                    processResults: function (data) {
-                        return {
-                            results: data
-                        };
-                    }
-                }
-            });
-
-            $('#select{{ $selectIdx }}').on('select2:select', function (e) {
-                var data = e.params.data;
-                $('#item{{ $selectIdx }}').val(data.id);
-            });
-            @php($selectIdx++)
-        @endforeach
-        @else
-            $('#select0').select2({
-                placeholder: {
-                    id: '-1',
-                    text: ' - Pilih Inventory - '
-                },
-                width: '100%',
-                minimumInputLength: 1,
-                ajax: {
-                    url: '{{ route('select.items') }}',
-                    dataType: 'json',
-                    data: function (params) {
-                        return {
-                            q: $.trim(params.term),
-                            type: 'oil'
-                        };
-                    },
-                    processResults: function (data) {
-                        return {
-                            results: data
-                        };
-                    }
-                }
-            });
-
-            $('#select0').on('select2:select', function (e) {
-                var data = e.params.data;
-                $('#item_value0').val(data.id);
-            });
-        @endif
-
-        var i=1;
-        $("#add_row").click(function(){
-            $('#addr'+i).html("<td class='field-item'><select id='select" + i + "' name='item[]' class='form-control'></select></td><td><input type='text' id='qty" + i + "' name='qty[]'  placeholder='QTY' class='form-control'/></td><td><input type='text' name='remark[]' placeholder='Keterangan' class='form-control'/></td>");
-
-            $('#tab_logic').append('<tr id="addr'+(i+1)+'"></tr>');
-
-            $('#select' + i).select2({
-                placeholder: {
-                    id: '-1',
-                    text: ' - Pilih Inventory - '
-                },
-                width: '100%',
-                minimumInputLength: 1,
-                ajax: {
-                    url: '{{ route('select.items') }}',
-                    dataType: 'json',
-                    data: function (params) {
-                        return {
-                            q: $.trim(params.term),
-                            type: 'oil'
-                        };
-                    },
-                    processResults: function (data) {
-                        return {
-                            results: data
-                        };
-                    }
-                }
-            });
-
-            // AutoNumeric
-            new AutoNumeric('#qty' + i, {
-                minimumValue: '0',
-                digitGroupSeparator: '',
-                decimalPlaces: 0
-            });
-
-            i++;
+        // AutoNumeric
+        window['#qty' + '{{ $selectIdx }}'] = new AutoNumeric('#qty' + '{{ $selectIdx }}', {
+            minimumValue: 0,
+            digitGroupSeparator: '',
+            decimalPlaces: 0
         });
 
-        $("#delete_row").click(function(){
-            if(i>1){
-                $("#addr"+(i-1)).html('');
-                i--;
+        @php($selectIdx++)
+        @endforeach
+        @elseif(!empty($itemStocks))
+        @php( $selectIdx = 0 )
+        @foreach( $itemStocks as $itemStock )
+
+        // AutoNumeric
+        window['#qty' + '{{ $selectIdx }}'] = new AutoNumeric('#qty' + '{{ $selectIdx }}', {
+            minimumValue: 0,
+            digitGroupSeparator: '',
+            decimalPlaces: 0
+        });
+
+        @php( $selectIdx++ )
+        @endforeach
+        @endif
+
+        // Qty must not be below stock max
+        function validateStockMax(rowIdx){
+            let inputQtyClean = $('#qty' + rowIdx).val().replace(/\./g,'');
+            let inputQtyInt = parseInt(inputQtyClean);
+
+            let stockMax = parseInt($('#stock_max' + rowIdx).val());
+
+            if(inputQtyInt < stockMax){
+                window['#qty' + rowIdx].set(stockMax);
+            }
+        }
+
+        // Auto onfocusout when enter is pressed
+        $('.auto-blur').keypress(function (e) {
+            if (e.which == 13) {
+                $(this).blur();
             }
         });
     </script>

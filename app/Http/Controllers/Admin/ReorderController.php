@@ -15,6 +15,7 @@ use App\Models\Reorder;
 use App\Models\Warehouse;
 use App\Transformer\ReorderTransformer;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -55,11 +56,29 @@ class ReorderController extends Controller
             $filterMovement = $request->movement;
         }
 
+        $itemStocks = ItemStock::with(['item', 'item.group'])
+            ->where('stock_min', '>', 0)
+            ->whereRaw('(stock_on_order + stock + stock_on_reorder) <= stock_min');
+
+        $itemStocks = $itemStocks->where('warehouse_id', $filterWarehouse);
+        $itemStocks = $itemStocks->whereHas('item', function($query) use($filterType){
+            $query->whereHas('group', function($query) use($filterType){
+                $query->where('type', $filterType);
+            });
+        });
+
+        if($filterMovement != 'ALL'){
+            $itemStocks = $itemStocks->where('movement_status', $filterMovement);
+        }
+
+        $itemStocks = $itemStocks->get();
+
         $data = [
             'warehouses'        => $warehouses,
             'filterWarehouse'   => $filterWarehouse,
             'filterType'        => $filterType,
-            'filterMovement'    => $filterMovement
+            'filterMovement'    => $filterMovement,
+            'itemStocks'        => $itemStocks
         ];
 
         return View('admin.reorder.index')->with($data);
@@ -95,16 +114,21 @@ class ReorderController extends Controller
 
     public function store(Request $request)
     {
-        if(empty($request->input('itemcode'))){
-            return redirect()->back()->withErrors('Pilih Inventory Reorder!', 'default')->withInput($request->all());
-        }
+//        if(empty($request->input('item_stock_ids'))){
+//            return redirect()->back()->withErrors('Pilih Inventory Reorder!', 'default')->withInput($request->all());
+//        }
+
+        //dd($request->input('removed_stock_ids'));
 
         // Add the Itemcode and warehouseId to Session
-        Session::put('reorderItem', $request->input('itemcode'));
-        Session::put('warehouseId', $request->input('warehouseId'));
-        Session::put('reorderQtys', $request->input('stock_max'));
+        Session::put('removed_stock_ids', $request->input('removed_stock_ids'));
+        //Session::put('item_stock_maxs', $request->input('item_stock_maxs'));
+        Session::put('warehouse_id', $request->input('warehouse_id'));
+        Session::put('type_id', $request->input('type_id'));
+        Session::put('movement_status_id', $request->input('movement_status_id'));
+        //Session::put('reorderQtys', $request->input('stock_max'));
 
-        $type = $request->input('type');
+        $type = $request->input('type_id');
         if($type == 1){
             return redirect()->action('Admin\ReorderController@part');
         }
@@ -117,87 +141,175 @@ class ReorderController extends Controller
     }
 
     public function part(){
-        $warehouseId = Session::get('warehouseId');
-        $items = Session::get('reorderItem');
-        $qtys = Session::get('reorderQtys');
-        $departments = Department::all();
-        $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
-        $itemsData = Item::whereIn('code', $items)->get();
+        $warehouseId = Session::get('warehouse_id');
+        $typeId = Session::get('type_id');
+        $movementStatusId = Session::get('movement_status_id');
+
+        // Get list of removed stock id and convert to array
+        $removedStockIds = Session::get('removed_stock_ids');
+
+        // Get item stock data
+        $itemStocks = ItemStock::with(['item', 'item.group'])
+            ->where('stock_min', '>', 0)
+            ->whereRaw('(stock_on_order + stock + stock_on_reorder) <= stock_min');
+
+        if(!empty($removedStockIds)){
+            $removedStockIdArr = explode(',',$removedStockIds);
+            $itemStocks = $itemStocks->whereNotIn('id', $removedStockIdArr);
+        }
+
+        $itemStocks = $itemStocks->where('warehouse_id', $warehouseId);
+        $itemStocks = $itemStocks->whereHas('item', function($query) use($typeId){
+            $query->whereHas('group', function($query) use($typeId){
+                $query->where('type', $typeId);
+            });
+        });
+
+        if($movementStatusId != 'ALL'){
+            $itemStocks = $itemStocks->where('movement_status', $movementStatusId);
+        }
+
+        $itemStocks = $itemStocks->get();
 
         // Numbering System
         $user = Auth::user();
-        $sysNo = NumberingSystem::where('doc_id', '9')->first();
-        $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+        $now = Carbon::now('Asia/Jakarta');
+        //$sysNo = NumberingSystem::where('doc_id', '9')->first();
+        $mrPrepend = 'MR/'. $now->year. '/'. $now->month;
+        $sysNo = Utilities::GetNextAutoNumber($mrPrepend);
+
+        $docCode = 'MR-'. $user->employee->site->code;
+        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo);
 
         $dateToday = Carbon::today()->format('d M Y');
+
+        $departments = Department::all();
+        $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
 
         $data = [
             'departments'   => $departments,
             'autoNumber'    => $autoNumber,
             'warehouses'    => $warehouses,
             'warehouseId'   => $warehouseId,
-            'reorderItems'  => $itemsData,
-            'qtys'          => $qtys,
-            'dateToday'     => $dateToday
+            'dateToday'     => $dateToday,
+            'itemStocks'    => $itemStocks
         ];
         return view('admin.reorder.other')->with($data);
     }
 
     public function fuel(){
-        $warehouseId = Session::get('warehouseId');
-        $items = Session::get('reorderItem');
-        $qtys = Session::get('reorderQtys');
-        $departments = Department::all();
-        $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
-        $itemsData = Item::whereIn('code', $items)->get();
+        $warehouseId = Session::get('warehouse_id');
+        $typeId = Session::get('type_id');
+        $movementStatusId = Session::get('movement_status_id');
+
+        // Get list of removed stock id and convert to array
+        $removedStockIds = Session::get('removed_stock_ids');
+
+        // Get item stock data
+        $itemStocks = ItemStock::with(['item', 'item.group'])
+            ->where('stock_min', '>', 0)
+            ->whereRaw('(stock_on_order + stock + stock_on_reorder) <= stock_min');
+
+        if(!empty($removedStockIds)){
+            $removedStockIdArr = explode(',',$removedStockIds);
+            $itemStocks = $itemStocks->whereNotIn('id', $removedStockIdArr);
+        }
+
+        $itemStocks = $itemStocks->where('warehouse_id', $warehouseId);
+        $itemStocks = $itemStocks->whereHas('item', function($query) use($typeId){
+            $query->whereHas('group', function($query) use($typeId){
+                $query->where('type', $typeId);
+            });
+        });
+
+        if($movementStatusId != 'ALL'){
+            $itemStocks = $itemStocks->where('movement_status', $movementStatusId);
+        }
+
+        $itemStocks = $itemStocks->get();
 
         // Numbering System
         $user = Auth::user();
-        $sysNo = NumberingSystem::where('doc_id', '10')->first();
-        $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+        $now = Carbon::now('Asia/Jakarta');
+        //$sysNo = NumberingSystem::where('doc_id', '10')->first();
+        $mrPrepend = 'MR-F/'. $now->year. '/'. $now->month;
+        $sysNo = Utilities::GetNextAutoNumber($mrPrepend);
+
+        $docCode = 'MR-F-'. $user->employee->site->code;
+        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo);
 
         $dateToday = Carbon::today()->format('d M Y');
+
+        $departments = Department::all();
+        $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
 
         $data = [
             'departments'   => $departments,
             'autoNumber'    => $autoNumber,
             'warehouses'    => $warehouses,
             'warehouseId'   => $warehouseId,
-            'reorderItems'  => $itemsData,
-            'qtys'          => $qtys,
-            'dateToday'     => $dateToday
+            'dateToday'     => $dateToday,
+            'itemStocks'    => $itemStocks
         ];
-        return view('admin.reorder.fuel')->with($data);
+        return view('admin.reorder.other')->with($data);
     }
 
     public function oil(){
-        $warehouseId = Session::get('warehouseId');
-        $items = Session::get('reorderItem');
-        $qtys = Session::get('reorderQtys');
-        $departments = Department::all();
-        $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
-        $itemsData = Item::whereIn('code', $items)->get();
+        $warehouseId = Session::get('warehouse_id');
+        $typeId = Session::get('type_id');
+        $movementStatusId = Session::get('movement_status_id');
+
+        // Get list of removed stock id and convert to array
+        $removedStockIds = Session::get('removed_stock_ids');
+
+        // Get item stock data
+        $itemStocks = ItemStock::with(['item', 'item.group'])
+            ->where('stock_min', '>', 0)
+            ->whereRaw('(stock_on_order + stock + stock_on_reorder) <= stock_min');
+
+        if(!empty($removedStockIds)){
+            $removedStockIdArr = explode(',',$removedStockIds);
+            $itemStocks = $itemStocks->whereNotIn('id', $removedStockIdArr);
+        }
+
+        $itemStocks = $itemStocks->where('warehouse_id', $warehouseId);
+        $itemStocks = $itemStocks->whereHas('item', function($query) use($typeId){
+            $query->whereHas('group', function($query) use($typeId){
+                $query->where('type', $typeId);
+            });
+        });
+
+        if($movementStatusId != 'ALL'){
+            $itemStocks = $itemStocks->where('movement_status', $movementStatusId);
+        }
+
+        $itemStocks = $itemStocks->get();
 
         // Numbering System
         $user = Auth::user();
-        $sysNo = NumberingSystem::where('doc_id', '11')->first();
-        $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+        $now = Carbon::now('Asia/Jakarta');
+        //$sysNo = NumberingSystem::where('doc_id', '11')->first();
+        $mrPrepend = 'MR-O/'. $now->year. '/'. $now->month;
+        $sysNo = Utilities::GetNextAutoNumber($mrPrepend);
+
+        $docCode = 'MR-O-'. $user->employee->site->code;
+        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo);
 
         $dateToday = Carbon::today()->format('d M Y');
+
+        $departments = Department::all();
+        $warehouses = Warehouse::where('id', '!=', 0)->orderBy('name')->get();
 
         $data = [
             'departments'   => $departments,
             'autoNumber'    => $autoNumber,
             'warehouses'    => $warehouses,
             'warehouseId'   => $warehouseId,
-            'reorderItems'  => $itemsData,
-            'qtys'          => $qtys,
-            'dateToday'     => $dateToday
+            'dateToday'     => $dateToday,
+            'itemStocks'    => $itemStocks
         ];
-        return view('admin.reorder.oil')->with($data);
+
+        return view('admin.reorder.other')->with($data);
     }
 
     /**

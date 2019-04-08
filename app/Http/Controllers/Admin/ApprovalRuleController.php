@@ -745,7 +745,7 @@ class ApprovalRuleController extends Controller
                     $header->approved_date = $dateTimeNow->toDateTimeString();
                     $header->save();
 
-                    // Update Item_Stock
+                    // Update item stock
                     foreach ($header->purchase_order_details as $detail){
                         $itemDb = Item::find($detail->item_id);
                         $itemDb->stock_on_order += $detail->quantity;
@@ -753,6 +753,12 @@ class ApprovalRuleController extends Controller
 
                         $itemStock = ItemStock::where('item_id', $detail->item_id)->where('warehouse_id', $header->warehouse_id)->first();
                         $itemStock->stock_on_order += $detail->quantity;
+
+                        // Reset item on reorder
+                        if($header->is_reorder === 1){
+                            $itemStock->stock_on_reorder -= $detail->quantity;
+                        }
+
                         $itemStock->save();
                     }
                 }
