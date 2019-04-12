@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Admin\Purchasing;
 
 use App\Http\Controllers\Controller;
 use App\Libs\Utilities;
+use App\Models\ApprovalRule;
 use App\Models\NumberingSystem;
 use App\Models\PaymentRequest;
 use App\Models\PaymentRequestsPiDetail;
@@ -631,12 +632,19 @@ class PaymentRequestController extends Controller
             $terbilang = $this->terbilang(round($paymentRequest->total_amount));
         }
 
+        $approvals = ApprovalRule::where('document_id', 4)
+            ->orderBy('index')
+            ->get();
+
+        //dd($approvals);
+
         $data = [
             'paymentRequest'        => $paymentRequest,
             'poDetails'             => $poDetails,
             'piDetails'             => $piDetails,
             'terbilang'             => $terbilang,
-            'type'                  => $type
+            'type'                  => $type,
+            'approvals'             => $approvals
         ];
 
         return view('documents.payment_requests.payment_requests_doc')->with($data);

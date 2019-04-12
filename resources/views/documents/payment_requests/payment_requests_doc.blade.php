@@ -268,20 +268,37 @@
                 <img style="height: 70px; width: auto;" src="{{ URL::asset('/storage/img_sign/'. $paymentRequest->createdBy->img_path) }}" >
             @endif
         </td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td colspan="2">&nbsp;</td>
+        @php( $approvalIdx = 0 )
+        @foreach($approvals as $approval)
+            @if(!empty($approval->user->img_path))
+                <td @if($approvalIdx === $approval->count()) colspan="2" @endif>
+                    <img style="height: 70px; width: auto;" src="{{ URL::asset('/storage/img_sign/'. $approval->user->img_path) }}" >
+                </td>
+            @else
+                <td @if($approvalIdx === $approval->count()) colspan="2" @endif></td>
+            @endif
+            @php( $approvalIdx++ )
+        @endforeach
+{{--        <td>&nbsp;</td>--}}
+{{--        <td>&nbsp;</td>--}}
+{{--        <td>&nbsp;</td>--}}
+{{--        <td>&nbsp;</td>--}}
+{{--        <td colspan="2">&nbsp;</td>--}}
     </tr>
     <tr>
         <td colspan="2">&nbsp;{{ $paymentRequest->createdBy->name }}</td>
-        <td>&nbsp;Head Department</td>
-        <td>&nbsp;Manager Purchasing</td>
-        <td>&nbsp;General Manager</td>
-        <td>&nbsp;Director</td>
-        <td colspan="2">&nbsp;Director</td>
+        @php( $approvalIdx = 0 )
+        @foreach($approvals as $approval)
+            <td @if($approvalIdx === $approval->count()) colspan="2" @endif>
+                {{ $approval->user->roles->pluck('name')->implode(',') }}
+            </td>
+            @php( $approvalIdx++ )
+        @endforeach
+{{--        <td>&nbsp;Head Department</td>--}}
+{{--        <td>&nbsp;Manager Purchasing</td>--}}
+{{--        <td>&nbsp;General Manager</td>--}}
+{{--        <td>&nbsp;Director</td>--}}
+{{--        <td colspan="2">&nbsp;Director</td>--}}
     </tr>
 </table>
-</div>
 </body>
