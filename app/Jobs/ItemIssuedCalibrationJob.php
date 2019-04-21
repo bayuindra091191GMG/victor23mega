@@ -95,7 +95,7 @@ class ItemIssuedCalibrationJob implements ShouldQueue
         }
         catch( \Exception $ex){
             error_log($ex);
-            Log::error($ex->getMessage());
+            //Log::error($ex->getMessage());
         }
     }
 }

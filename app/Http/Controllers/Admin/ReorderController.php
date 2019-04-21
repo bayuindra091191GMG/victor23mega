@@ -328,12 +328,14 @@ class ReorderController extends Controller
                 ->get();
 
             //ini_set('memory_limit', '-1');
+            //ini_set('max_execution_time', '0');
 
-            DB::table('item_stocks')->chunkById(1500, function($itemStocks) use($issuedDocketDetails){
+            DB::table('item_stocks')->chunkById(2000, function($itemStocks) use($issuedDocketDetails){
                 dispatch(new ItemIssuedCalibrationJob($itemStocks, $issuedDocketDetails));
             });
         }
         catch (\Exception $ex){
+            error_log($ex->getMessage());
             Log::error($ex->getMessage());
         }
     }
