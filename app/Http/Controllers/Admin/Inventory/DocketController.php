@@ -203,12 +203,20 @@ class DocketController extends Controller
         }
 
         $user = Auth::user();
+        $now = Carbon::now('Asia/Jakarta');
+        $doc = Document::find(1);
 
         // Generate auto number
         if(Input::get('auto_number')) {
-            $sysNo = NumberingSystem::where('doc_id', '1')->first();
-            $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-            $docketNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+//            $sysNo = NumberingSystem::where('doc_id', '1')->first();
+//            $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
+//            $docketNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+
+            $docketPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $sysNo = Utilities::GetNextAutoNumber($docketPrepend);
+
+            $docCode = $doc->code. '-'. $user->employee->site->code;
+            $docketNumber = Utilities::GenerateNumber($docCode, $sysNo);
 
             // Check existing number
             $check = IssuedDocketHeader::where('code', $docketNumber)->first();
@@ -216,8 +224,8 @@ class DocketController extends Controller
                 return redirect()->back()->withErrors('Nomor Issued Docket sudah terdaftar!', 'default')->withInput($request->all());
             }
 
-            $sysNo->next_no++;
-            $sysNo->save();
+//            $sysNo->next_no++;
+//            $sysNo->save();
         }
         else{
             if(empty(Input::get('code'))){
@@ -337,6 +345,12 @@ class DocketController extends Controller
 //        }
 //        $materialRequest->save();
 
+        // Increase autonumber
+        if($request->filled('auto_number')){
+            $docketPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            Utilities::UpdateAutoNumber($docketPrepend);
+        }
+
         Session::flash('message', 'Berhasil membuat Issued Docket!');
 
         return redirect()->route('admin.issued_dockets.show', ['issued_docket' => $docketHeader]);
@@ -451,12 +465,20 @@ class DocketController extends Controller
 //        }
 
         $user = Auth::user();
+        $now = Carbon::now('Asia/Jakarta');
+        $doc = Document::find(1);
 
         // Generate auto number
         if(Input::get('auto_number')) {
-            $sysNo = NumberingSystem::where('doc_id', '1')->first();
-            $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-            $docketNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+//            $sysNo = NumberingSystem::where('doc_id', '1')->first();
+//            $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
+//            $docketNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+
+            $docketPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $sysNo = Utilities::GetNextAutoNumber($docketPrepend);
+
+            $docCode = $doc->code. '-'. $user->employee->site->code;
+            $docketNumber = Utilities::GenerateNumber($docCode, $sysNo);
 
             // Check existing number
             $check = IssuedDocketHeader::where('code', $docketNumber)->first();
@@ -464,8 +486,8 @@ class DocketController extends Controller
                 return redirect()->back()->withErrors('Nomor Issued Docket sudah terdaftar!', 'default')->withInput($request->all());
             }
 
-            $sysNo->next_no++;
-            $sysNo->save();
+//            $sysNo->next_no++;
+//            $sysNo->save();
         }
         else{
             if(empty(Input::get('code'))){
@@ -585,6 +607,12 @@ class DocketController extends Controller
 //            $materialRequest->is_issued = 1;
 //        }
 //        $materialRequest->save();
+
+        // Increase autonumber
+        if($request->filled('auto_number')){
+            $docketPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            Utilities::UpdateAutoNumber($docketPrepend);
+        }
 
         Session::flash('message', 'Berhasil membuat Issued Docket!');
 

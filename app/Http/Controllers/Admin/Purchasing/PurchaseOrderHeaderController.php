@@ -20,6 +20,7 @@ use App\Models\ApprovalRule;
 use App\Models\Auth\Role\Role;
 use App\Models\Auth\User\User;
 use App\Models\Department;
+use App\Models\Document;
 use App\Models\Item;
 use App\Models\ItemStock;
 use App\Models\NumberingSystem;
@@ -432,13 +433,20 @@ class PurchaseOrderHeaderController extends Controller
         }
 
         $user = Auth::user();
+        $now = Carbon::now('Asia/Jakarta');
+        $doc = Document::find(4);
 
         // Generate auto number
-        $poCode = 'default';
         if(Input::get('auto_number')){
-            $sysNo = NumberingSystem::where('doc_id', '4')->first();
-            $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-            $poCode = Utilities::GenerateNumberPurchaseOrder($docCode, $sysNo->next_no);
+//            $sysNo = NumberingSystem::where('doc_id', '4')->first();
+//            $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
+//            $poCode = Utilities::GenerateNumberPurchaseOrder($docCode, $sysNo->next_no);
+
+            $poPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $sysNo = Utilities::GetNextAutoNumber($poPrepend);
+
+            $docCode = $doc->code. '-'. $user->employee->site->code;
+            $poCode = Utilities::GenerateNumber($docCode, $sysNo);
 
             // Check existing number
             $temp = PurchaseOrderHeader::where('code', $poCode)->first();
@@ -446,8 +454,8 @@ class PurchaseOrderHeaderController extends Controller
                 return redirect()->back()->withErrors('Nomor PO sudah terdaftar!', 'default')->withInput($request->all());
             }
 
-            $sysNo->next_no++;
-            $sysNo->save();
+//            $sysNo->next_no++;
+//            $sysNo->save();
         }
         else{
             $poCode = $request->input('po_code');
@@ -634,6 +642,12 @@ class PurchaseOrderHeaderController extends Controller
         else{
             $purchaseRequest->is_all_poed = 2;
             $purchaseRequest->save();
+        }
+
+        // Increase autonumber
+        if($request->filled('auto_number')){
+            $poPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            Utilities::UpdateAutoNumber($poPrepend);
         }
 
         // Check Approval Feature

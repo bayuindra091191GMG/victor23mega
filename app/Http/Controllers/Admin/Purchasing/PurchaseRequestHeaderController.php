@@ -17,6 +17,7 @@ use App\Models\ApprovalRule;
 use App\Models\Auth\Role\Role;
 use App\Models\Auth\User\User;
 use App\Models\Department;
+use App\Models\Document;
 use App\Models\MaterialRequestHeader;
 use App\Models\NumberingSystem;
 use App\Models\PermissionMenu;
@@ -304,21 +305,28 @@ class PurchaseRequestHeaderController extends Controller
     }
 
     $user = Auth::user();
+    $now = Carbon::now('Asia/Jakarta');
+    $doc = Document::find(3);
 
     // Generate auto number
-    $prCode = 'default';
     if($request->filled('auto_number')){
-        $sysNo = NumberingSystem::where('doc_id', '3')->first();
-        $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-        $prCode = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+//        $sysNo = NumberingSystem::where('doc_id', '3')->first();
+//        $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
+//        $prCode = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+
+        $prPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+        $sysNo = Utilities::GetNextAutoNumber($prPrepend);
+
+        $docCode = $doc->code. '-'. $user->employee->site->code;
+        $prCode = Utilities::GenerateNumber($docCode, $sysNo);
 
         // Check existing number
         if(PurchaseOrderHeader::where('code', $prCode)->exists()){
             return redirect()->back()->withErrors('Nomor PR sudah terdaftar!', 'default')->withInput($request->all());
         }
 
-        $sysNo->next_no++;
-        $sysNo->save();
+        //$sysNo->next_no++;
+        //$sysNo->save();
     }
     else{
         $prCode = $request->input('pr_code');
@@ -397,6 +405,12 @@ class PurchaseRequestHeaderController extends Controller
             $prDetail->save();
         }
         $idx++;
+    }
+
+    // Increase autonumber
+    if($request->filled('auto_number')){
+        $prPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+        Utilities::UpdateAutoNumber($prPrepend);
     }
 
     // Check Approval Feature
