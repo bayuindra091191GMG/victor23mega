@@ -442,7 +442,7 @@ class PurchaseOrderHeaderController extends Controller
 //            $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
 //            $poCode = Utilities::GenerateNumberPurchaseOrder($docCode, $sysNo->next_no);
 
-            $poPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $poPrepend = $doc->code. '/'. $now->year;
             $sysNo = Utilities::GetNextAutoNumber($poPrepend);
 
             $docCode = $doc->code. '-'. $user->employee->site->code;
@@ -646,7 +646,7 @@ class PurchaseOrderHeaderController extends Controller
 
         // Increase autonumber
         if($request->filled('auto_number')){
-            $poPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $poPrepend = $doc->code. '/'. $now->year;
             Utilities::UpdateAutoNumber($poPrepend);
         }
 
@@ -724,19 +724,19 @@ class PurchaseOrderHeaderController extends Controller
                     Mail::to($logisticUser2->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
 
                     $purchasingUser1 = User::find(27);
-                    Mail::to($purchasingUser1->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
+                    Mail::to($purchasingUser1->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
 
                     $purchasingUser2 = User::find(25);
-                    Mail::to($purchasingUser2->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
+                    Mail::to($purchasingUser2->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
 
                     $purchasingUser3 = User::find(47);
-                    Mail::to($purchasingUser3->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
+                    Mail::to($purchasingUser3->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
 
                     $purchasingUser4 = User::find(16);
-                    Mail::to($purchasingUser4->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
+                    Mail::to($purchasingUser4->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
 
                     $purchasingUser5 = User::find(40);
-                    Mail::to($purchasingUser5->email_address)->send(new PurchaseOrderApprovedMailNotification($header, $header->createdBy));
+                    Mail::to($purchasingUser5->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
                 }
 
                 // Send notification
@@ -808,13 +808,20 @@ class PurchaseOrderHeaderController extends Controller
         $prId = $request->input('pr_id');
 
         $user = Auth::user();
+        $now = Carbon::now('Asia/Jakarta');
+        $doc = Document::find(4);
 
         // Generate auto number
-        $poCode = 'default';
         if(Input::get('auto_number')){
-            $sysNo = NumberingSystem::where('doc_id', '4')->first();
-            $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-            $poCode = Utilities::GenerateNumberPurchaseOrder($docCode, $sysNo->next_no);
+//            $sysNo = NumberingSystem::where('doc_id', '4')->first();
+//            $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
+//            $poCode = Utilities::GenerateNumberPurchaseOrder($docCode, $sysNo->next_no);
+
+            $poPrepend = $doc->code. '/'. $now->year;
+            $sysNo = Utilities::GetNextAutoNumber($poPrepend);
+
+            $docCode = $doc->code. '-'. $user->employee->site->code;
+            $poCode = Utilities::GenerateNumber($docCode, $sysNo);
 
             // Check existing number
             $temp = PurchaseOrderHeader::where('code', $poCode)->first();
@@ -822,8 +829,8 @@ class PurchaseOrderHeaderController extends Controller
                 return redirect()->back()->withErrors('Nomor PO sudah terdaftar!', 'default')->withInput($request->all());
             }
 
-            $sysNo->next_no++;
-            $sysNo->save();
+//            $sysNo->next_no++;
+//            $sysNo->save();
         }
         else{
             $poCode = $request->input('po_code');
@@ -966,6 +973,12 @@ class PurchaseOrderHeaderController extends Controller
         $poHeader->total_payment = $totalPayment + $delivery + $ppnAmount - $pphAmount;
         $poHeader->save();
 
+        // Increase autonumber
+        if($request->filled('auto_number')){
+            $poPrepend = $doc->code. '/'. $now->year;
+            Utilities::UpdateAutoNumber($poPrepend);
+        }
+
         // Check Approval Feature
         $environment = env('APP_ENV','local');
         $preference = PreferenceCompany::find(1);
@@ -1037,6 +1050,21 @@ class PurchaseOrderHeaderController extends Controller
                     $logisticUser2 = User::find(28);
                     Mail::to($logisticUser1->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
                     Mail::to($logisticUser2->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+
+                    $purchasingUser1 = User::find(27);
+                    Mail::to($purchasingUser1->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+
+                    $purchasingUser2 = User::find(25);
+                    Mail::to($purchasingUser2->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+
+                    $purchasingUser3 = User::find(47);
+                    Mail::to($purchasingUser3->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+
+                    $purchasingUser4 = User::find(16);
+                    Mail::to($purchasingUser4->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+
+                    $purchasingUser5 = User::find(40);
+                    Mail::to($purchasingUser5->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
                 }
 
                 // Send notification
@@ -1280,7 +1308,6 @@ class PurchaseOrderHeaderController extends Controller
 
             $prHeader = $purchaseOrder->purchase_request_header;
 
-            // Recount stock on order
             $isPoCancel = false;
             if($purchaseOrder->is_all_received !== 1 && $purchaseOrder->is_approved === 1){
                 foreach ($purchaseOrder->purchase_order_details as $poDetail){
@@ -1288,16 +1315,28 @@ class PurchaseOrderHeaderController extends Controller
                         $qtyClosed = $poDetail->quantity - $poDetail->received_quantity;
 
                         $item = Item::find($poDetail->item_id);
+                        // Recount stock on order
                         if($item->stock_on_order >= $qtyClosed){
                             $item->stock_on_order -= $qtyClosed;
                             $item->save();
+
+                            if(!empty($purchaseOrder->warehouse_id)){
+                                $itemStock = ItemStock::where('warehouse_id', $purchaseOrder->warehouse_id)
+                                    ->where('item_id', $poDetail->item_id)
+                                    ->first();
+
+                                if(!empty($itemStock)){
+                                    $itemStock->stock_on_order -= $qtyClosed;
+                                    $itemStock->save();
+                                }
+                            }
+
                         }
 
                         // Recount PR quantity poed
                         $prDetail = $prHeader->purchase_request_details->where('item_id', $item->id)->first();
                         $prDetail->quantity_poed -= $qtyClosed;
                         $prDetail->save();
-
 
                         $isPoCancel = true;
                     }
@@ -1311,6 +1350,22 @@ class PurchaseOrderHeaderController extends Controller
                             ->first();
                         $itemStock->stock_on_reorder -= $detail->quantity;
                         $itemStock->save();
+                    }
+                }
+            }
+
+            if($purchaseOrder->is_all_received !== 1 && $purchaseOrder->is_approved === 0){
+                foreach ($purchaseOrder->purchase_order_details as $poDetail){
+                    if($poDetail->received_quantity < $poDetail->quantity){
+                        $qtyClosed = $poDetail->quantity - $poDetail->received_quantity;
+                        $item = Item::find($poDetail->item_id);
+
+                        // Recount PR quantity poed
+                        $prDetail = $prHeader->purchase_request_details->where('item_id', $item->id)->first();
+                        $prDetail->quantity_poed -= $qtyClosed;
+                        $prDetail->save();
+
+                        $isPoCancel = true;
                     }
                 }
             }
