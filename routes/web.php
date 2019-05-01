@@ -697,3 +697,4 @@ Route::get('/excel', 'ExcelController@index')->name('excel-view');
 Route::post('/excel-post', 'ExcelController@readData')->name('excel-post');
 Route::get('/mail/test', 'Admin\setting\SettingController@emailTest')->name('mail_test');
 Route::get('/test', 'HomeController@test')->name('approval_test');
+Route::get('/testEmail', 'HomeController@testBulkEmail')->name('mail_test');

@@ -184,7 +184,7 @@
                         Gudang
                     </label>
                     <div class="col-md-6 col-sm-6 col-xs-12">
-                        : {{ $header->warehouse->name }}
+                        : {{ $header->warehouse->name ?? "-" }}
                     </div>
                 </div>
 

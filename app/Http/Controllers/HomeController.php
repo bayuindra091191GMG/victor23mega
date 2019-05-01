@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ItemIssuedCalibrationJob;
+use App\Mail\PurchaseOrderApprovedMailNotification;
 use App\Models\ApprovalMaterialRequest;
 use App\Models\ApprovalPurchaseOrder;
 use App\Models\Auth\User\User;
@@ -24,6 +25,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Mpdf\Tag\I;
 
 class HomeController extends Controller
@@ -48,7 +50,28 @@ class HomeController extends Controller
         return view('welcome');
     }
 
+    public function testBulkEmail(){
+        $poHeader = PurchaseOrderHeader::find(2560);
+
+        Mail::to("hellbardx2@gmail.com")->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+        Mail::to("hellbardx2@gmail.com")->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+
+        Mail::to("hellbardx2@gmail.com")->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+
+        Mail::to("bayuindra091191@gmail.com")->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+
+        Mail::to("bayuindra091191@gmail.com")->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+
+        Mail::to("bayuindra091191@gmail.com")->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+
+        Mail::to("hellbardx2@gmail.com")->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+
+        dd("SUCCESS!!");
+    }
+
     public function test(){
+        $environment = env('APP_ENV','local');
+        dd($environment);
         ini_set('max_execution_time', 0);
 
         $user = Auth::user();
