@@ -37,6 +37,7 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use PDF2;
+use PDF3;
 use Yajra\DataTables\DataTables;
 
 class ItemStockController extends Controller
@@ -564,15 +565,13 @@ class ItemStockController extends Controller
 //
 //        return $pdf->download($filename.'.pdf');
 
-        ini_set("pcre.backtrack_limit", "500000000");
-
-        $pdf = PDF2::loadView('documents.item_stocks.item_stock_status_report_pdf', $data, [], [
-            'format' => 'A4',
-            'orientation'  => 'P'
-        ]);
+        //ini_set("pcre.backtrack_limit", "500000000");
 
         $now = Carbon::now('Asia/Jakarta');
         $filename = 'STOCK_STATUS_REPORT_' . $now->toDateTimeString();
+
+        $pdf = PDF3::loadView('documents.item_stocks.item_stock_status_report_pdf', $data)
+            ->setOption('footer-right', '[page] of [toPage]');
 
         return $pdf->download($filename.'.pdf');
     }
