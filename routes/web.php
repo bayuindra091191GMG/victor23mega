@@ -477,6 +477,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('issued_dockets/detil/{issued_docket}', 'Inventory\DocketController@show')->name('issued_dockets.show');
     Route::get('issued_dockets/{issued_docket}/ubah', 'Inventory\DocketController@edit')->name('issued_dockets.edit');
     Route::put('issued_dockets/ubah/{issued_docket}', 'Inventory\DocketController@update')->name('issued_dockets.update');
+    Route::get('issued_dockets/hapus/{id}', 'Inventory\DocketController@destroy')->name('issued_dockets.destroy');
     Route::get('issued_dockets/pilih_mr', 'Inventory\DocketController@beforeCreate')->name('issued_dockets.before_create');
     Route::get('issued_dockets/tambah', 'Inventory\DocketController@create')->name('issued_dockets.create');
     Route::get('issued_dockets/tambah/bbm', 'Inventory\DocketController@createFuel')->name('issued_dockets.fuel.create');

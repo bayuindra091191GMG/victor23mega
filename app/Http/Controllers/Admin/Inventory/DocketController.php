@@ -23,8 +23,10 @@ use App\Transformer\Inventory\IssuedDocketTransformer;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades;
@@ -37,7 +39,7 @@ class DocketController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -51,7 +53,7 @@ class DocketController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -91,7 +93,7 @@ class DocketController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -623,7 +625,7 @@ class DocketController extends Controller
      * Display the specified resource.
      *
      * @param IssuedDocketHeader $issued_docket
-     * @return \Illuminate\Http\Response
+     * @return Response
      * @internal param int $id
      */
     public function show(IssuedDocketHeader $issued_docket)
@@ -653,7 +655,7 @@ class DocketController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      * @internal param IssuedDocketHeader $issuedDocketHeader
      * @internal param PurchaseRequestHeader $purchase_request
      * @internal param int $id
@@ -670,7 +672,7 @@ class DocketController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, $id)
     {
@@ -719,11 +721,53 @@ class DocketController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {
-        //
+        try{
+            $docketHeader = IssuedDocketHeader::find($id);
+
+            foreach ($docketHeader->issued_docket_details as $doDetail){
+                // Restore stock
+                $item = Item::find($doDetail->item_id);
+                if(!empty($item)){
+                    $item->stock += $doDetail->quantity;
+                    $item->save();
+                }
+
+                // Restore warehouse stock
+                $itemStock = ItemStock::where('item_id', $doDetail->item_id)
+                    ->where('warehouse_id', $docketHeader->warehouse_id)
+                    ->first();
+                if(!empty($itemStock)){
+                    $itemStock->stock += $doDetail->quantity;
+                    $itemStock->save();
+                }
+
+                // Delete Stock Card
+                $stockCard = StockCard::where('item_id', $doDetail->item_id)
+                    ->where('warehouse_id', $docketHeader->warehouse_id)
+                    ->where('reference', '=', 'Issued Docket '. $docketHeader->code)
+                    ->first();
+
+                if(!empty($stockCard)){
+                    $stockCard->delete();
+                }
+
+                // Delete detail
+                $doDetail->delete();
+            }
+
+            $docketHeader->delete();
+
+            Session::flash('message', 'Berhasil membatalkan Issued Docket!');
+
+            return redirect()->route('admin.issued_dockets');
+        }
+        catch(\Exception $ex){
+            Log::error('DocketController - destroy : '. $ex);
+        }
     }
 
     public function printDocument($id){
