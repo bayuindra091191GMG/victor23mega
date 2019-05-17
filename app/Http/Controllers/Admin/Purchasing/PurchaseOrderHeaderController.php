@@ -24,9 +24,11 @@ use App\Models\Document;
 use App\Models\Item;
 use App\Models\ItemStock;
 use App\Models\NumberingSystem;
+use App\Models\PaymentRequestsPiDetail;
 use App\Models\PaymentRequestsPoDetail;
 use App\Models\PermissionMenu;
 use App\Models\PreferenceCompany;
+use App\Models\PurchaseInvoiceHeader;
 use App\Models\PurchaseOrderDetail;
 use App\Models\PurchaseOrderHeader;
 use App\Models\PurchaseRequestHeader;
@@ -257,6 +259,18 @@ class PurchaseOrderHeaderController extends Controller
         if($paymentReqPoDetails->count() > 0){
             foreach ($paymentReqPoDetails as $paymentReqPoDetail){
                 $trackedRFPHeaders->add($paymentReqPoDetail->payment_request);
+            }
+        }
+
+        $purchaseInvoices = PurchaseInvoiceHeader::where('purchase_order_id', $purchase_order->id)->get();
+        if($purchaseInvoices->count() > 0){
+            foreach ($purchaseInvoices as $piHeader){
+                $paymentReqPiDetails = PaymentRequestsPiDetail::where('purchase_invoice_header_id', $piHeader->id)->get();
+                if($paymentReqPiDetails->count() > 0){
+                    foreach ($paymentReqPiDetails as $paymentReqPiDetail){
+                        $trackedRFPHeaders->add($paymentReqPiDetail->payment_request);
+                    }
+                }
             }
         }
 
