@@ -62,7 +62,7 @@
                     <td class="text-center">{{ $detailFuel->issued_docket_header->date_string }}</td>
                     <td class="text-center">{{ $detailFuel->item->code }}</td>
                     <td class="text-center">{{ $detailFuel->item->name }}</td>
-                    <td class="text-center">{{ $detailFuel->quantity }} {{ $detail->item->uom }}</td>
+                    <td class="text-center">{{ $detailFuel->quantity }} {{ $detailFuel->item->uom }}</td>
                     <td class="text-right">{{ $detailFuel->item_value_str }}</td>
                     <td class="text-right">{{ $detailFuel->subtotal_value_str }}</td>
                 </tr>
