@@ -86,7 +86,8 @@ class MaterialRequestHeader extends Eloquent
 	];
 
     protected $appends = [
-        'date_string'
+        'date_string',
+        'created_at_string'
     ];
 
 	protected $fillable = [
@@ -126,6 +127,10 @@ class MaterialRequestHeader extends Eloquent
 
     public function getDateStringAttribute(){
         return Carbon::parse($this->attributes['date'])->format('d M Y');
+    }
+
+    public function getCreatedAtStringAttribute(){
+        return Carbon::parse($this->attributes['created_at'])->format('d M Y');
     }
 
     public function site()

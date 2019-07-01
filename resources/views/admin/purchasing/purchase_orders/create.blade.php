@@ -954,6 +954,7 @@
                 var priceClean2 = priceClean.replace(',', '.');
                 price = parseFloat(priceClean2);
             }
+
             var discount = 0;
             if(discountEdit && discountEdit !== "" && discountEdit !== "0"){
                 var discountClean = discountEdit.replace(/\./g,'');

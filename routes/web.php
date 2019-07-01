@@ -622,6 +622,7 @@ Route::get('/select-delivery_orders', 'Admin\Inventory\DeliveryOrderHeaderContro
 Route::get('/select-purchase_invoices', 'Admin\Purchasing\PurchaseInvoiceHeaderController@getPurchaseInvoices')->name('select.purchase_invoices');
 Route::get('/select-item_receipts', 'Admin\Inventory\ItemReceiptController@getItemReceipts')->name('select.item_receipts');
 Route::get('/select-accounts', 'Admin\AccountController@getAccounts')->name('select.accounts');
+Route::get('/select-users', 'Admin\UserController@getUserForAssignment')->name('select.assignment.users');
 
 /**
  * Datatables

@@ -363,4 +363,39 @@ class UserController extends Controller
 
         return \Response::json($formatted_tags);
     }
+
+    public function getUserForAssignment(Request $request){
+        $term = trim($request->q);
+        $users = User::where('status_id', 1)
+            ->where(function ($q) use ($term) {
+                $q->where('email', 'LIKE', '%' . $term . '%')
+                    ->orWhere('name', 'LIKE', '%' . $term . '%');
+            })
+            ->orderBy('name')
+            ->get();
+
+        $userCollects = collect();
+
+        foreach ($users as $user){
+            $roleId = $user->roles->pluck('id')[0];
+            if($roleId === 5 || $roleId === 8 || $roleId === 10){
+                $newUserCollect = collect([
+                    'id'        => $user->id,
+                    'email'     => $user->email,
+                    'name'      => $user->name
+                ]);
+
+                $userCollects->push($newUserCollect);
+            }
+        }
+
+
+        $formatted_tags = [];
+
+        foreach ($userCollects as $user) {
+            $formatted_tags[] = ['id' => $user->id, 'text' => $user->email. ' - '. $user->name];
+        }
+
+        return \Response::json($formatted_tags);
+    }
 }
