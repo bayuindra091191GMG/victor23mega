@@ -688,6 +688,9 @@ Route::get('/datatables-material_requests_index_chart', 'Admin\DashboardControll
 Route::get('/datatables-purchase_request_index_chart', 'Admin\DashboardController@getIndexPR')->name('datatables.purchase_request_index_chart');
 Route::get('/datatables-purchase_order_index_chart', 'Admin\DashboardController@getIndexPO')->name('datatables.purchase_order_index_chart');
 
+// CONTROLLING
+Route::get('/datatables-history_assigment_mr', 'Admin\Controlling\Assigment1Controller@getIndexMr')->name('datatables.history_assigment_mr');
+Route::get('/datatables-history_assigment_pr', 'Admin\Controlling\Assigment1Controller@getIndexPr')->name('datatables.history_assigment_pr');
 
 // DOCUMENTS
 Route::get('/documents/purchase-request', function (){
