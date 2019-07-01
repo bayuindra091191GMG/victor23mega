@@ -43,16 +43,18 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $is_pr_created
  * @property string $feedback
  * @property string $warehouse_id
+ * @property int $processed_by
  *
  * @property \App\Models\Site $site
  * @property \App\Models\Department $department
  * @property \App\Models\Warehouse $warehouse
  * @property \App\Models\Machinery $machinery
  * @property \App\Models\Status $status
- * @property \App\Models\Auth\User\User $user
  * @property \Illuminate\Database\Eloquent\Collection $issued_docket_headers
  * @property \Illuminate\Database\Eloquent\Collection $material_request_details
  * @property \Illuminate\Database\Eloquent\Collection $purchase_request_headers
+ * @property \Illuminate\Database\Eloquent\Collection $assignment_material_requests
+ * @property \App\Models\Auth\User\User $processedBy
  *
  * @package App\Models
  */
@@ -72,7 +74,8 @@ class MaterialRequestHeader extends Eloquent
 		'created_by' => 'int',
 		'updated_by' => 'int',
         'is_pr_created' => 'int',
-        'is_reorder' => 'int'
+        'is_reorder' => 'int',
+        'processed_by' => 'int'
 	];
 
 	protected $dates = [
@@ -113,7 +116,8 @@ class MaterialRequestHeader extends Eloquent
         'is_pr_created',
         'feedback',
         'warehouse_id',
-        'is_reorder'
+        'is_reorder',
+        'processed_by'
 	];
 
     public function scopeDateDescending(Builder $query){
@@ -178,4 +182,14 @@ class MaterialRequestHeader extends Eloquent
 	{
 		return $this->hasMany(\App\Models\PurchaseRequestHeader::class, 'material_request_id');
 	}
+
+    public function assignment_material_requests()
+    {
+        return $this->hasMany(\App\Models\AssignmentMaterialRequest::class, 'material_request_id');
+    }
+
+    public function processedBy()
+    {
+        return $this->belongsTo(\App\Models\Auth\User\User::class, 'processed_by');
+    }
 }

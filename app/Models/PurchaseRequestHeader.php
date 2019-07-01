@@ -44,12 +44,13 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \App\Models\Machinery $machinery
  * @property \App\Models\MaterialRequestHeader $material_request_header
  * @property \App\Models\Status $status
- * @property \App\Models\Auth\User\User $user
  * @property \Illuminate\Database\Eloquent\Collection $approval_purchase_requests
  * @property \Illuminate\Database\Eloquent\Collection $delivery_order_headers
  * @property \Illuminate\Database\Eloquent\Collection $purchase_order_headers
  * @property \Illuminate\Database\Eloquent\Collection $purchase_request_details
  * @property \Illuminate\Database\Eloquent\Collection $quotation_headers
+ * @property \Illuminate\Database\Eloquent\Collection $assignment_purchase_requests
+ * @property \App\Models\Auth\User\User $processedBy
  *
  * @package App\Models
  */
@@ -107,7 +108,8 @@ class PurchaseRequestHeader extends Eloquent
 		'updated_by',
 		'updated_at',
         'warehouse_id',
-        'is_reorder'
+        'is_reorder',
+        'processed_by'
 	];
 
     public function scopeDateDescending(Builder $query){
@@ -198,4 +200,14 @@ class PurchaseRequestHeader extends Eloquent
 	{
 		return $this->hasMany(\App\Models\QuotationHeader::class, 'purchase_request_id');
 	}
+
+    public function assignment_purchase_requests()
+    {
+        return $this->hasMany(\App\Models\AssignmentPurchaseRequest::class, 'purchase_request_id');
+    }
+
+    public function processedBy()
+    {
+        return $this->belongsTo(\App\Models\Auth\User\User::class, 'processed_by');
+    }
 }
