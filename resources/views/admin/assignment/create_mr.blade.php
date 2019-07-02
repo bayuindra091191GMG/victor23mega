@@ -1,11 +1,11 @@
 @extends('admin.layouts.admin')
 
-@section('title', 'Assign MR ke Staff')
+@section('title', 'Assign MR ke Staff Purchasing')
 
 @section('content')
 
+    <hr/>
     <div class="row">
-        @include('partials._error')
         <div class="nav navbar-left">
 {{--            <form class="form-inline" style="margin-bottom: 10px;">--}}
 {{--                <div class="form-group">--}}
@@ -19,11 +19,11 @@
 {{--                </div>--}}
 {{--            </form>--}}
         </div>
-        <div class="nav navbar-right">
-            <a href="{{ route('admin.purchase_requests.before_create') }}" class="btn btn-app">
-                <i class="fa fa-plus"></i> Tambah
-            </a>
-        </div>
+{{--        <div class="nav navbar-right">--}}
+{{--            <a href="{{ route('admin.purchase_requests.before_create') }}" class="btn btn-app">--}}
+{{--                <i class="fa fa-plus"></i> Tambah--}}
+{{--            </a>--}}
+{{--        </div>--}}
         <div class="clearfix"></div>
     </div>
     <div class="row">
@@ -43,8 +43,17 @@
             <tbody>
                 @foreach($mrHeaders as $header)
                     <tr>
-                        <td id="row_{{ $header->id }}"><button class="btn btn-primary assign" data-id="{{ $header->id }}" data-mr-code="{{ $header->code }}" >Assign</button></td>
-                        <td>{{ $header->code }}</td>
+                        <td id="row_{{ $header->id }}" class="text-center"><button class="btn btn-primary assign" data-id="{{ $header->id }}" data-mr-code="{{ $header->code }}" >Assign</button></td>
+                        @if($header->type === 1)
+                            <td><a href="{{ route('admin.material_requests.other.show', ['material_request' => $header]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $header->code }}</a></td>
+                        @elseif($header->type === 2)
+                            <td><a href="{{ route('admin.material_requests.fuel.show', ['material_request' => $header]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $header->code }}</a></td>
+                        @elseif($header->type === 3)
+                            <td><a href="{{ route('admin.material_requests.oil.show', ['material_request' => $header]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $header->code }}</a></td>
+                        @else
+                            <td><a href="{{ route('admin.material_requests.service.show', ['material_request' => $header]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $header->code }}</a></td>
+                        @endif
+
                         <td class="text-center">{{ $header->date_string }}</td>
                         <td class="text-center">{{ $header->department->name }}</td>
                         <td class="text-center">{{ $header->priority }}</td>
@@ -84,7 +93,9 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">Batal</button>
+                    <button id="btn_assign_store" type="button" class="btn btn-success" onclick="storeAssignment();" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>">Assign</button>
+                    <button id="btn_assign_loading" type="button" class="btn btn-success" style="display: none;"><i class='fa fa-circle-o-notch fa-spin'></i></button>
                 </div>
             </div>
 
@@ -97,11 +108,13 @@
     @parent
     {{ Html::style(mix('assets/admin/css/select2.css')) }}
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.18/datatables.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
 @endsection
 
 @section('scripts')
     @parent
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.18/datatables.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     {{ Html::script(mix('assets/admin/js/select2.js')) }}
     <script>
         $(function() {
@@ -113,10 +126,10 @@
         // Add new detail
         $(document).on('click', '.assign', function(e) {
             let id = $(this).data('id');
-            let code = $(this).data('code');
+            let code = $(this).data('mr-code');
 
-            $('#mr_code'.val(code));
-            $('#mr_id'.val(id));
+            $('#mr_code').val(code);
+            $('#mr_id').val(id);
 
             $('#assigned_user').val(null).trigger('change');
             $('#assigned_user').select2({
@@ -125,9 +138,9 @@
                     text: ' - Pilih Staff Purchasing - '
                 },
                 width: '100%',
-                minimumInputLength: 1,
+                minimumInputLength: 0,
                 ajax: {
-                    url: '{{ route('select.assignment.items') }}',
+                    url: '{{ route('select.assignment.users') }}',
                     dataType: 'json',
                     data: function (params) {
                         return {
@@ -142,11 +155,48 @@
                 }
             });
 
+            $('#btn_assign_store').show();
+            $('#btn_assign_loading').hide();
+
             $('#modal_assign').modal({
                 backdrop: 'static',
                 keyboard: false
             });
         });
+
+        function storeAssignment(){
+
+            if(!$('#assigned_user').val()){
+                alert('Pilih staff purchasing!');
+                return false;
+            }
+
+            $('#btn_assign_store').hide();
+            $('#btn_assign_loading').show();
+
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('admin.assignment.mr.assign.store') }}',
+                data: {
+                    '_token': '{{ csrf_token() }}',
+                    'assigned_user': $('#assigned_user').val(),
+                    'mr_id': $('#mr_id').val()
+                },
+                success: function(data) {
+                    //alert(data.mr_id);
+                    if ((data.errors)){
+                        setTimeout(function () {
+                            toastr.error('Gagal assign!', 'Peringatan', {timeOut: 6000, positionClass: "toast-top-center"});
+                        }, 500);
+                    }
+                    else{
+                        $('#modal_assign').modal('hide');
+                        toastr.success('Berhasil assign!', 'Sukses', {timeOut: 5000});
+                        $('#row_' + data['mr_id']).html(data['assigned_name']);
+                    }
+                }
+            });
+        }
 
         function filterStatus(e){
             // Get status filter value

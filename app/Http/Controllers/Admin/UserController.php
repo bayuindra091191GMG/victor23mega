@@ -392,8 +392,10 @@ class UserController extends Controller
 
         $formatted_tags = [];
 
-        foreach ($userCollects as $user) {
-            $formatted_tags[] = ['id' => $user->id, 'text' => $user->email. ' - '. $user->name];
+
+        foreach ($userCollects as $userCollect) {
+//            dd($userCollect['id']);
+            $formatted_tags[] = ['id' => $userCollect['id'], 'text' => $userCollect['email']. ' - '. $userCollect['name']];
         }
 
         return \Response::json($formatted_tags);

@@ -44,6 +44,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $feedback
  * @property string $warehouse_id
  * @property int $processed_by
+ * @property int $assigned_to
  *
  * @property \App\Models\Site $site
  * @property \App\Models\Department $department
@@ -55,6 +56,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Illuminate\Database\Eloquent\Collection $purchase_request_headers
  * @property \Illuminate\Database\Eloquent\Collection $assignment_material_requests
  * @property \App\Models\Auth\User\User $processedBy
+ * @property \App\Models\Auth\User\User $assignedTo
  *
  * @package App\Models
  */
@@ -75,7 +77,8 @@ class MaterialRequestHeader extends Eloquent
 		'updated_by' => 'int',
         'is_pr_created' => 'int',
         'is_reorder' => 'int',
-        'processed_by' => 'int'
+        'processed_by' => 'int',
+        'assigned_to' => 'int'
 	];
 
 	protected $dates = [
@@ -118,7 +121,8 @@ class MaterialRequestHeader extends Eloquent
         'feedback',
         'warehouse_id',
         'is_reorder',
-        'processed_by'
+        'processed_by',
+        'assigned_to'
 	];
 
     public function scopeDateDescending(Builder $query){
@@ -196,5 +200,10 @@ class MaterialRequestHeader extends Eloquent
     public function processedBy()
     {
         return $this->belongsTo(\App\Models\Auth\User\User::class, 'processed_by');
+    }
+
+    public function assignedTo()
+    {
+        return $this->belongsTo(\App\Models\Auth\User\User::class, 'assigned_to');
     }
 }

@@ -51,6 +51,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Illuminate\Database\Eloquent\Collection $quotation_headers
  * @property \Illuminate\Database\Eloquent\Collection $assignment_purchase_requests
  * @property \App\Models\Auth\User\User $processedBy
+ * @property \App\Models\Auth\User\User $assignedTo
  *
  * @package App\Models
  */
@@ -69,13 +70,16 @@ class PurchaseRequestHeader extends Eloquent
 		'created_by' => 'int',
 		'updated_by' => 'int',
         'warehouse_id' => 'int',
-        'is_reorder' => 'int'
+        'is_reorder' => 'int',
+        'assigned_to' => 'int'
 	];
 
     protected $appends = [
         'date_string',
+        'created_at_string',
         'priority_expired',
-        'day_left'];
+        'day_left'
+    ];
 
 	protected $dates = [
 		'date',
@@ -109,7 +113,8 @@ class PurchaseRequestHeader extends Eloquent
 		'updated_at',
         'warehouse_id',
         'is_reorder',
-        'processed_by'
+        'processed_by',
+        'assigned_to'
 	];
 
     public function scopeDateDescending(Builder $query){
@@ -117,6 +122,10 @@ class PurchaseRequestHeader extends Eloquent
     }
 
     public function getDateStringAttribute(){
+        return Carbon::parse($this->attributes['date'])->format('d M Y');
+    }
+
+    public function getCreatedAtStringAttribute(){
         return Carbon::parse($this->attributes['created_at'])->format('d M Y');
     }
 
@@ -209,5 +218,10 @@ class PurchaseRequestHeader extends Eloquent
     public function processedBy()
     {
         return $this->belongsTo(\App\Models\Auth\User\User::class, 'processed_by');
+    }
+
+    public function assignedTo()
+    {
+        return $this->belongsTo(\App\Models\Auth\User\User::class, 'assigned_to');
     }
 }

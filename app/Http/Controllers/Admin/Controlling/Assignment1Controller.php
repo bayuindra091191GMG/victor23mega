@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Admin\Controlling;
 use App\Http\Controllers\Controller;
 use App\Models\AssignmentMaterialRequest;
 use App\Models\MaterialRequestHeader;
-use App\Transformer\MasterData\AssigmentMrTransformer;
+use App\Transformer\Controlling\AssignmentMrTransformer;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
@@ -28,7 +28,7 @@ class Assignment1Controller extends Controller
         try{
             $histories = AssignmentMaterialRequest::query();
             return DataTables::of($histories)
-                ->setTransformer(new AssigmentMrTransformer)
+                ->setTransformer(new AssignmentMrTransformer)
                 ->addIndexColumn()
                 ->make(true);
         }

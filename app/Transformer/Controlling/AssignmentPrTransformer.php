@@ -21,15 +21,15 @@ class AssignmentPrTransformer extends TransformerAbstract
         try{
             $createdDate = "-";
             if(!empty($history->created_at)){
-                $createdDate = Carbon::parse($history->created_at)->format('d M Y');
+                $createdDate = Carbon::parse($history->created_at)->toIso8601String();
             }
             $docCreatedDate = "-";
             if(!empty($history->purchase_request_header->created_at)){
-                $docCreatedDate = Carbon::parse($history->purchase_request_header->created_at)->format('d M Y');
+                $docCreatedDate = Carbon::parse($history->purchase_request_header->created_at)->toIso8601String();
             }
             $processedDate = "-";
             if(!empty($history->processed_date)){
-                $processedDate = Carbon::parse($history->processed_date)->format('d M Y');
+                $processedDate = Carbon::parse($history->processed_date)->toIso8601String();
             }
 
 //        $action = "<a class='btn btn-xs btn-info' href='users/".$user->id."/ubah' data-toggle='tooltip' data-placement='top'><i class='fa fa-pencil'></i></a>";
@@ -40,8 +40,8 @@ class AssignmentPrTransformer extends TransformerAbstract
                 'pr_code'       => $history->purchase_request_header->code,
                 'doc_created_at'=> $docCreatedDate,
                 'assigned_user' => $history->assignedUser->name,
-                'assigner_user' => $history->assignerUser->name,
-                'processed_by'  => $history->processedBy->name,
+                'assigner_user' => $history->assignerUser->name ?? '-',
+                'processed_by'  => $history->processedBy->name ?? 'Belum Diproses',
                 'processed_date'=> $processedDate,
                 'status'        => $history->status->description,
             ];

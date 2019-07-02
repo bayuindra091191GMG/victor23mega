@@ -24,8 +24,10 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $created_at
  * @property int $updated_by
  * @property \Carbon\Carbon $updated_at
- * 
- * @property \App\Models\Auth\User\User $user
+ *
+ * @property \App\Models\Auth\User\User $assignedUser
+ * @property \App\Models\Auth\User\User $assignerUser
+ * @property \App\Models\Auth\User\User $processedBy
  * @property \App\Models\PurchaseRequestHeader $purchase_request_header
  * @property \App\Models\Status $status
  *

@@ -587,8 +587,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reorder/oil', 'ReorderController@oil')->name('reorder.oil');
     Route::get('reorder/calibrate', 'ReorderController@calibrate')->name('reorder.calibrate');
 
-
-    //Controlling
+    //Assignment
+    Route::get('assignment/mr/assign', 'Controlling\AssignmentController@createAssignmentMr')->name('assignment.mr.assign');
+    Route::get('assignment/pr/assign', 'Controlling\AssignmentController@createAssignmentPr')->name('assignment.pr.assign');
+    Route::post('assignment/mr/assign/store', 'Controlling\AssignmentController@storeAssignmentMr')->name('assignment.mr.assign.store');
+    Route::post('assignment/pr/assign/store', 'Controlling\AssignmentController@storeAssignmentPr')->name('assignment.pr.assign.store');
     Route::get('assignment/tugas_material', 'Controlling\Assignment2Controller@assigmentMRIndex')->name('assignment.mr');
     Route::get('assignment/tugas_purchase', 'Controlling\Assignment2Controller@assigmentPRIndex')->name('assignment.pr');
 });
@@ -627,7 +630,7 @@ Route::get('/select-delivery_orders', 'Admin\Inventory\DeliveryOrderHeaderContro
 Route::get('/select-purchase_invoices', 'Admin\Purchasing\PurchaseInvoiceHeaderController@getPurchaseInvoices')->name('select.purchase_invoices');
 Route::get('/select-item_receipts', 'Admin\Inventory\ItemReceiptController@getItemReceipts')->name('select.item_receipts');
 Route::get('/select-accounts', 'Admin\AccountController@getAccounts')->name('select.accounts');
-Route::get('/select-users', 'Admin\UserController@getUserForAssignment')->name('select.assignment.users');
+Route::get('/select-assignment-users', 'Admin\UserController@getUserForAssignment')->name('select.assignment.users');
 
 /**
  * Datatables
@@ -694,8 +697,8 @@ Route::get('/datatables-purchase_request_index_chart', 'Admin\DashboardControlle
 Route::get('/datatables-purchase_order_index_chart', 'Admin\DashboardController@getIndexPO')->name('datatables.purchase_order_index_chart');
 
 // CONTROLLING
-Route::get('/datatables-history_assigment_mr', 'Admin\Controlling\Assigment1Controller@getIndexMr')->name('datatables.history_assigment_mr');
-Route::get('/datatables-history_assigment_pr', 'Admin\Controlling\Assigment2Controller@getIndexPr')->name('datatables.history_assigment_pr');
+Route::get('/datatables-history_assigment_mr', 'Admin\Controlling\Assignment1Controller@getIndexMr')->name('datatables.history_assigment_mr');
+Route::get('/datatables-history_assigment_pr', 'Admin\Controlling\Assignment2Controller@getIndexPr')->name('datatables.history_assigment_pr');
 
 // DOCUMENTS
 Route::get('/documents/purchase-request', function (){
