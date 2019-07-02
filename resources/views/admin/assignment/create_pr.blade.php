@@ -25,7 +25,7 @@
             <tbody>
             @foreach($prHeaders as $header)
                 <tr>
-                    <td id="row_{{ $header->id }}" class="text-center"><button class="btn btn-primary assign" data-id="{{ $header->id }}" data-mr-code="{{ $header->code }}" >Assign</button></td>
+                    <td id="row_{{ $header->id }}" class="text-center"><button class="btn btn-primary assign" data-id="{{ $header->id }}" data-pr-code="{{ $header->code }}" >Assign</button></td>
                     <td><a href="{{ route('admin.purchase_requests.show', ['purchase_request' => $header]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $header->code }}</a></td>
                     <td class="text-center">{{ $header->date_string }}</td>
                     <td class="text-center">{{ $header->department->name }}</td>
@@ -51,9 +51,9 @@
                 <div class="modal-body">
                     <form class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label class="control-label col-sm-2" for="mr_code">Nomor MR:</label>
+                            <label class="control-label col-sm-2" for="pr_code">Nomor MR:</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="mr_code" readonly>
+                                <input type="text" class="form-control" id="pr_code" readonly>
                             </div>
                         </div>
                         <div class="form-group">
@@ -62,7 +62,7 @@
                                 <select type="text" class="form-control" id="assigned_user"></select>
                             </div>
                         </div>
-                        <input type="hidden" id="mr_id" name="mr_id"/>
+                        <input type="hidden" id="pr_id" name="pr_id"/>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -86,23 +86,31 @@
 
 @section('scripts')
     @parent
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.18/datatables.min.js"></script>
+    <script type="text/javascript" src="//cdn.datatables.net/plug-ins/1.10.12/sorting/datetime-moment.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     {{ Html::script(mix('assets/admin/js/select2.js')) }}
     <script>
         $(function() {
+            $.fn.dataTable.moment('DD MMM YYYY');
             $('#assignment_table').DataTable({
-                pageLength: 25
+                pageLength: 25,
+                ordering: true,
+                order: [[ 2, "desc" ]],
+                columnDefs: [
+                    { "orderable": false, "targets": 0 }
+                ]
             });
         });
 
         // Add new detail
         $(document).on('click', '.assign', function(e) {
             let id = $(this).data('id');
-            let code = $(this).data('mr-code');
+            let code = $(this).data('pr-code');
 
-            $('#mr_code').val(code);
-            $('#mr_id').val(id);
+            $('#pr_code').val(code);
+            $('#pr_id').val(id);
 
             $('#assigned_user').val(null).trigger('change');
             $('#assigned_user').select2({
@@ -149,14 +157,13 @@
 
             $.ajax({
                 type: 'POST',
-                url: '{{ route('admin.assignment.mr.assign.store') }}',
+                url: '{{ route('admin.assignment.pr.assign.store') }}',
                 data: {
                     '_token': '{{ csrf_token() }}',
                     'assigned_user': $('#assigned_user').val(),
-                    'mr_id': $('#mr_id').val()
+                    'pr_id': $('#pr_id').val()
                 },
                 success: function(data) {
-                    //alert(data.mr_id);
                     if ((data.errors)){
                         setTimeout(function () {
                             toastr.error('Gagal assign!', 'Peringatan', {timeOut: 6000, positionClass: "toast-top-center"});
@@ -165,21 +172,10 @@
                     else{
                         $('#modal_assign').modal('hide');
                         toastr.success('Berhasil assign!', 'Sukses', {timeOut: 5000});
-                        $('#row_' + data['mr_id']).html(data['assigned_name']);
+                        $('#row_' + data['pr_id']).html(data['assigned_name']);
                     }
                 }
             });
-        }
-
-        function filterStatus(e){
-            // Get status filter value
-            var status = e.value;
-
-            var url = '{{ route('admin.purchase_requests') }}';
-
-            // alert(status);
-
-            window.location = url + '?status=' +status;
         }
     </script>
 @endsection

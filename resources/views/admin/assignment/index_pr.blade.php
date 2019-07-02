@@ -1,6 +1,6 @@
 @extends('admin.layouts.admin')
 
-@section('title', 'Histori Assignment Dokumen MR')
+@section('title', 'Histori Assignment Dokumen PR')
 
 @section('content')
     <div class="row">
@@ -39,14 +39,14 @@
             <tr>
                 <th class="text-center">No</th>
                 <th class="text-center">Tanggal Assignment</th>
-                <th class="text-center">No MR</th>
+                <th class="text-center">No PR</th>
                 <th class="text-center">Tanggal buat Dokumen</th>
                 <th class="text-center">Di-assign ke</th>
                 <th class="text-center">Di-assign oleh</th>
                 <th class="text-center">Diproses oleh</th>
                 <th class="text-center">Tanggal diproses</th>
                 <th class="text-center">Status</th>
-{{--                <th class="text-center">Tindakan</th>--}}
+                {{--                <th class="text-center">Tindakan</th>--}}
             </tr>
             </thead>
             <tbody>
@@ -83,7 +83,7 @@
                 serverSide: true,
                 pageLength: 50,
                 ajax: {
-                    url: '{!! route('datatables.history_assigment_mr') !!}',
+                    url: '{!! route('datatables.history_assigment_pr') !!}',
                     data: {
                         'date_start': '{{ $filterDateStart }}',
                         'date_end': '{{ $filterDateEnd }}'
@@ -99,7 +99,7 @@
                             return data;
                         }
                     },
-                    { data: 'mr_code', name: 'mr_code', class: 'text-center' },
+                    { data: 'pr_code', name: 'mr_code', class: 'text-center' },
                     { data: 'doc_created_at', name: 'doc_created_at', class: 'text-center',
                         render: function ( data, type, row ){
                             if ( type === 'display' || type === 'filter' ){
@@ -132,12 +132,12 @@
             let dateStart = $('#date_start').val();
             let dateEnd = $('#date_end').val();
 
-            let url = '{{ route('admin.assignment.mr.history') }}';
+            let url = '{{ route('admin.assignment.pr.history') }}';
             window.location = url + '?date_start=' + dateStart + "&date_end=" + dateEnd;
         });
 
         $(document).on("click", "#btn_reset", function(){
-            let url = '{{ route('admin.assignment.mr.history') }}';
+            let url = '{{ route('admin.assignment.pr.history') }}';
             window.location = url;
         });
     </script>

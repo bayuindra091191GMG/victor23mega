@@ -7,6 +7,8 @@ use App\Models\ApprovalMaterialRequest;
 use App\Models\ApprovalPurchaseOrder;
 use App\Models\ApprovalPurchaseRequest;
 use App\Models\ApprovalRule;
+use App\Models\AssignmentMaterialRequest;
+use App\Models\AssignmentPurchaseRequest;
 use App\Models\Auth\Role\Role;
 use App\Models\Auth\User\User;
 use App\Models\DeliveryOrderHeader;
@@ -474,6 +476,31 @@ class DashboardController extends Controller
 //            dd($warning->item_stock->stock);
 //        }
 
+        // Get assignment notifications fot purchasing
+        $assignmentMrList = null;
+        $assignmentMrCount = 0;
+        $assignmentPrList = null;
+        $assignmentPrCount = 0;
+        $isAssignedRole = false;
+        if($currentRole === 5 || $currentRole === 8 || $currentRole === 10){
+            $isAssignedRole = true;
+
+            $assignmentMrList = AssignmentMaterialRequest::where('status_id', 17)
+                ->where('assigned_user_id', $user->id)
+                ->orderBy('created_at')
+                ->take(10)
+                ->get();
+
+            $assignmentMrCount = $assignmentMrList->count();
+
+            $assignmentPrList = AssignmentPurchaseRequest::where('status_id', 17)
+                ->where('assigned_user_id', $user->id)
+                ->orderBy('created_at')
+                ->take(10)
+                ->get();
+
+            $assignmentPrCount = $assignmentPrList->count();
+        }
 
         $data = [
             'counts'                    => $counts,
@@ -491,7 +518,12 @@ class DashboardController extends Controller
             'approvalPurchaseOrders'    => $approvalPurchaseOrders,
             'approvalPoCount'           => $approvalPoCount,
             'warningCount'              => $warningCount,
-            'stockWarnings'             => $stockWarnings
+            'stockWarnings'             => $stockWarnings,
+            'isAssignedRole'            => $isAssignedRole,
+            'assignmentMrList'          => $assignmentMrList,
+            'assignmentPrList'          => $assignmentPrList,
+            'assignmentMrCount'         => $assignmentMrCount,
+            'assignmentPrCount'         => $assignmentPrCount
         ];
 
         return view('admin.dashboard')->with($data);

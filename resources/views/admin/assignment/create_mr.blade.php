@@ -113,13 +113,18 @@
 
 @section('scripts')
     @parent
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.18/datatables.min.js"></script>
+    <script type="text/javascript" src="//cdn.datatables.net/plug-ins/1.10.12/sorting/datetime-moment.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     {{ Html::script(mix('assets/admin/js/select2.js')) }}
     <script>
         $(function() {
+            $.fn.dataTable.moment('DD MMM YYYY');
             $('#assignment_table').DataTable({
-                pageLength: 25
+                pageLength: 25,
+                ordering: true,
+                order: [[ 2, "desc" ]],
             });
         });
 

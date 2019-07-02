@@ -226,14 +226,14 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="col-md-3 col-sm-3 col-xs-12">
-                                Gudang
-                            </label>
-                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                : {{ $header->warehouse->name }}
-                            </div>
-                        </div>
+{{--                        <div class="form-group">--}}
+{{--                            <label class="col-md-3 col-sm-3 col-xs-12">--}}
+{{--                                Gudang--}}
+{{--                            </label>--}}
+{{--                            <div class="col-md-6 col-sm-6 col-xs-12">--}}
+{{--                                : {{ $header->warehouse->name }}--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
 
                         <div class="form-group">
                             <label class="col-md-3 col-sm-3 col-xs-12">

@@ -35,9 +35,12 @@ class AssignmentPrTransformer extends TransformerAbstract
 //        $action = "<a class='btn btn-xs btn-info' href='users/".$user->id."/ubah' data-toggle='tooltip' data-placement='top'><i class='fa fa-pencil'></i></a>";
 //        $action .= "<a class='delete-modal btn btn-xs btn-danger' data-id='". $user->id ."' ><i class='fa fa-trash'></i></a>";
 
+            $prShowRoute = route('admin.purchase_requests.show', ['purchase_request' => $history->purchase_request_header]);
+            $prCode = "<a name='". $history->purchase_request_header->code. "' style='text-decoration: underline; font-weight: bold;' href='" . $prShowRoute. "' target='_blank'>". $history->purchase_request_header->code. "</a>";
+
             return[
                 'created_at'    => $createdDate,
-                'pr_code'       => $history->purchase_request_header->code,
+                'pr_code'       => $prCode,
                 'doc_created_at'=> $docCreatedDate,
                 'assigned_user' => $history->assignedUser->name,
                 'assigner_user' => $history->assignerUser->name ?? '-',

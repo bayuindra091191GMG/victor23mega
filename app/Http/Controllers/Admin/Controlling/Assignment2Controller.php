@@ -33,8 +33,10 @@ class Assignment2Controller extends Controller
     {
         try{
             $user = Auth::user();
-            $histories = AssignmentMaterialRequest::where('assigned_user_id', $user->id)->get();
-            return DataTables::of($histories)
+            $assignments = AssignmentMaterialRequest::where('assigned_user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+            return DataTables::of($assignments)
                 ->setTransformer(new AssignmentMrTransformer)
                 ->addIndexColumn()
                 ->make(true);
@@ -48,8 +50,10 @@ class Assignment2Controller extends Controller
     {
         try{
             $user = Auth::user();
-            $histories = AssignmentPurchaseRequest::where('assigned_user_id', $user->id)->get();
-            return DataTables::of($histories)
+            $assignments = AssignmentPurchaseRequest::where('assigned_user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+            return DataTables::of($assignments)
                 ->setTransformer(new AssignmentPrTransformer())
                 ->addIndexColumn()
                 ->make(true);

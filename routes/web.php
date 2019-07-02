@@ -594,6 +594,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('assignment/pr/assign/store', 'Controlling\AssignmentController@storeAssignmentPr')->name('assignment.pr.assign.store');
     Route::get('assignment/tugas_material', 'Controlling\Assignment2Controller@assigmentMRIndex')->name('assignment.mr');
     Route::get('assignment/tugas_purchase', 'Controlling\Assignment2Controller@assigmentPRIndex')->name('assignment.pr');
+    Route::get('assignment/histori/mr', 'Controlling\AssignmentController@indexHistoryAssignmentMr')->name('assignment.mr.history');
+    Route::get('assignment/histori/pr', 'Controlling\AssignmentController@indexHistoryAssignmentPr')->name('assignment.pr.history');
 });
 
 
@@ -696,8 +698,8 @@ Route::get('/datatables-material_requests_index_chart', 'Admin\DashboardControll
 Route::get('/datatables-purchase_request_index_chart', 'Admin\DashboardController@getIndexPR')->name('datatables.purchase_request_index_chart');
 Route::get('/datatables-purchase_order_index_chart', 'Admin\DashboardController@getIndexPO')->name('datatables.purchase_order_index_chart');
 
-// CONTROLLING
-Route::get('/datatables-history_assigment_mr', 'Admin\Controlling\Assignment1Controller@getIndexMr')->name('datatables.history_assigment_mr');
+// Assignment
+Route::get('/datatables-history_assigment_mr', 'Admin\Controlling\AssignmentController@getIndexMr')->name('datatables.history_assigment_mr');
 Route::get('/datatables-history_assigment_pr', 'Admin\Controlling\AssignmentController@getIndexPr')->name('datatables.history_assigment_pr');
 Route::get('/datatables-staff_assigment_mr', 'Admin\Controlling\Assignment2Controller@getIndexMr')->name('datatables.staff_assigment_mr');
 Route::get('/datatables-staff_assigment_pr', 'Admin\Controlling\Assignment2Controller@getIndexPr')->name('datatables.staff_assigment_pr');

@@ -1164,7 +1164,7 @@ class MaterialRequestHeaderController extends Controller
             return redirect()->back()->withErrors('Detail inventory tidak boleh kembar!', 'default')->withInput($request->all());
         }
 
-        $warehouseId = $request->input('warehouse');
+//        $warehouseId = $request->input('warehouse');
         $mrHeader = MaterialRequestHeader::create([
             'code'              => $mrCode,
             'site_id'           => $siteId,
@@ -1181,7 +1181,7 @@ class MaterialRequestHeaderController extends Controller
             'created_by'        => $user->id,
             'created_at'        => $now->toDateTimeString(),
             'updated_by'        => $user->id,
-            'warehouse_id'      => $warehouseId
+//            'warehouse_id'      => $warehouseId
         ]);
 
         if($request->filled('machinery')){

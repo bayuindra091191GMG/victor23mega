@@ -377,7 +377,7 @@ class PurchaseRequestHeaderController extends Controller
         'created_at'            => $now->toDateTimeString(),
         'updated_by'            => $user->id,
         'updated_at'            => $now->toDateTimeString(),
-        'warehouse_id'          => $materialRequest->warehouse_id,
+//        'warehouse_id'          => $materialRequest->warehouse_id,
         'is_reorder'            => $materialRequest->is_reorder
     ]);
 

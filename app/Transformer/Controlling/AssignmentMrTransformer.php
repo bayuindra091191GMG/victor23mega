@@ -19,27 +19,42 @@ class AssignmentMrTransformer extends TransformerAbstract
     public function transform(AssignmentMaterialRequest $history){
 
         try{
-        $createdDate = Carbon::parse($history->created_at)->toIso8601String();
-        $docCreatedDate = Carbon::parse($history->material_request_header->created_at)->toIso8601String();
+            $createdDate = Carbon::parse($history->created_at)->toIso8601String();
+            $docCreatedDate = Carbon::parse($history->material_request_header->created_at)->toIso8601String();
 
-        $processedDate = "-";
-        if(!empty($history->processed_date)){
-            $processedDate = Carbon::parse($history->processed_date)->toIso8601String();
-        }
+            $processedDate = "-";
+            if(!empty($history->processed_date)){
+                $processedDate = Carbon::parse($history->processed_date)->toIso8601String();
+            }
 
-//        $action = "<a class='btn btn-xs btn-info' href='users/".$user->id."/ubah' data-toggle='tooltip' data-placement='top'><i class='fa fa-pencil'></i></a>";
-//        $action .= "<a class='delete-modal btn btn-xs btn-danger' data-id='". $user->id ."' ><i class='fa fa-trash'></i></a>";
+    //        $action = "<a class='btn btn-xs btn-info' href='users/".$user->id."/ubah' data-toggle='tooltip' data-placement='top'><i class='fa fa-pencil'></i></a>";
+    //        $action .= "<a class='delete-modal btn btn-xs btn-danger' data-id='". $user->id ."' ><i class='fa fa-trash'></i></a>";
 
-        return[
-            'created_at'    => $createdDate,
-            'mr_code'       => $history->material_request_header->code,
-            'doc_created_at'=> $docCreatedDate,
-            'assigned_user' => $history->assignedUser->name ?? '-',
-            'assigner_user' => $history->assignerUser->name ?? '-',
-            'processed_by'  => $history->processedBy->name ?? 'Belum Diproses',
-            'processed_date'=> $processedDate ?? '-',
-            'status'        => $history->status->description,
-        ];
+            if($history->material_request_header->type === 1){
+                $mrShowRoute = route('admin.material_requests.other.show', ['material_request' => $history->material_request_header]);
+            }
+            elseif($history->material_request_header->type === 2){
+                $mrShowRoute = route('admin.material_requests.fuel.show', ['material_request' => $history->material_request_header]);
+            }
+            elseif($history->material_request_header->type === 3){
+                $mrShowRoute = route('admin.material_requests.oil.show', ['material_request' => $history->material_request_header]);
+            }
+            else{
+                $mrShowRoute = route('admin.material_requests.service.show', ['material_request' => $history->material_request_header]);
+            }
+
+            $mrCode = "<a name='". $history->material_request_header->code. "' style='text-decoration: underline; font-weight: bold;' href='" . $mrShowRoute. "' target='_blank'>". $history->material_request_header->code. "</a>";
+
+            return[
+                'created_at'    => $createdDate,
+                'mr_code'       => $mrCode,
+                'doc_created_at'=> $docCreatedDate,
+                'assigned_user' => $history->assignedUser->name ?? '-',
+                'assigner_user' => $history->assignerUser->name ?? '-',
+                'processed_by'  => $history->processedBy->name ?? 'Belum Diproses',
+                'processed_date'=> $processedDate ?? '-',
+                'status'        => $history->status->description,
+            ];
         }
         catch (\Exception $exception){
             error_log($exception);
