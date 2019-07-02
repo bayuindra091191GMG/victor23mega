@@ -698,7 +698,9 @@ Route::get('/datatables-purchase_order_index_chart', 'Admin\DashboardController@
 
 // CONTROLLING
 Route::get('/datatables-history_assigment_mr', 'Admin\Controlling\Assignment1Controller@getIndexMr')->name('datatables.history_assigment_mr');
-Route::get('/datatables-history_assigment_pr', 'Admin\Controlling\Assignment2Controller@getIndexPr')->name('datatables.history_assigment_pr');
+Route::get('/datatables-history_assigment_pr', 'Admin\Controlling\AssignmentController@getIndexPr')->name('datatables.history_assigment_pr');
+Route::get('/datatables-staff_assigment_mr', 'Admin\Controlling\Assignment2Controller@getIndexMr')->name('datatables.staff_assigment_mr');
+Route::get('/datatables-staff_assigment_pr', 'Admin\Controlling\Assignment2Controller@getIndexPr')->name('datatables.staff_assigment_pr');
 
 // DOCUMENTS
 Route::get('/documents/purchase-request', function (){

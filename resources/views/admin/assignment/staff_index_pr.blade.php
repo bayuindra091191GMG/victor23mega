@@ -73,14 +73,28 @@
                 serverSide: true,
                 pageLength: 50,
                 ajax: {
-                    url: '{!! route('datatables.history_assigment_pr') !!}'
+                    url: '{!! route('datatables.staff_assigment_pr') !!}'
                 },
                 columns: [
                     { data: 'DT_Row_Index', orderable: false, searchable: false, class: 'text-center'},
-                    { data: 'created_at', name: 'created_at' },
-                    { data: 'pr_code', name: 'mr_code', class: 'text-center'},
-                    { data: 'doc_created_at', name: 'doc_created_at' },
-                    { data: 'assigned_user', name: 'assigned_user' },
+                    { data: 'created_at', name: 'created_at', class: 'text-center',
+                        render: function ( data, type, row ){
+                            if ( type === 'display' || type === 'filter' ){
+                                return moment(data).format('DD MMM YYYY');
+                            }
+                            return data;
+                        }
+                    },
+                    { data: 'pr_code', name: 'pr_code', class: 'text-center'},
+                    { data: 'doc_created_at', name: 'doc_created_at', class: 'text-center',
+                        render: function ( data, type, row ){
+                            if ( type === 'display' || type === 'filter' ){
+                                return moment(data).format('DD MMM YYYY');
+                            }
+                            return data;
+                        }
+                    },
+                    { data: 'assigner_user', name: 'assigner_user' },
                 ],
                 language: {
                     url: "//cdn.datatables.net/plug-ins/1.10.16/i18n/Indonesian-Alternative.json"
