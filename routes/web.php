@@ -586,6 +586,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('reorder/fuel', 'ReorderController@fuel')->name('reorder.fuel');
     Route::get('reorder/oil', 'ReorderController@oil')->name('reorder.oil');
     Route::get('reorder/calibrate', 'ReorderController@calibrate')->name('reorder.calibrate');
+
+
+    //Controlling
+    Route::get('assignment/tugas_material', 'Controlling\Assignment2Controller@assigmentMRIndex')->name('assignment.mr');
+    Route::get('assignment/tugas_purchase', 'Controlling\Assignment2Controller@assigmentPRIndex')->name('assignment.pr');
 });
 
 
@@ -690,7 +695,7 @@ Route::get('/datatables-purchase_order_index_chart', 'Admin\DashboardController@
 
 // CONTROLLING
 Route::get('/datatables-history_assigment_mr', 'Admin\Controlling\Assigment1Controller@getIndexMr')->name('datatables.history_assigment_mr');
-Route::get('/datatables-history_assigment_pr', 'Admin\Controlling\Assigment1Controller@getIndexPr')->name('datatables.history_assigment_pr');
+Route::get('/datatables-history_assigment_pr', 'Admin\Controlling\Assigment2Controller@getIndexPr')->name('datatables.history_assigment_pr');
 
 // DOCUMENTS
 Route::get('/documents/purchase-request', function (){
