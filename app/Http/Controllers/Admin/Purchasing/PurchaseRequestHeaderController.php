@@ -14,6 +14,8 @@ use App\Http\Controllers\Controller;
 use App\Libs\Utilities;
 use App\Mail\ApprovalPurchaseRequestCreated;
 use App\Models\ApprovalRule;
+use App\Models\AssignmentMaterialRequest;
+use App\Models\AssignmentPurchaseRequest;
 use App\Models\Auth\Role\Role;
 use App\Models\Auth\User\User;
 use App\Models\Department;
@@ -218,17 +220,30 @@ class PurchaseRequestHeaderController extends Controller
             }
         }
 
+        // Check assigner role id
+        $preference = PreferenceCompany::find(1);
+        $assignerRoleId = intval($preference->assigner_role_id);
+        $isAssignerRole = false;
+        if($roleId === $assignerRoleId || $roleId === 1){
+            $isAssignerRole = true;
+        }
+
+        // Check document assigned
+        $assignmentPr = AssignmentPurchaseRequest::where('purchase_request_id', $header->id)
+            ->first();
 
         $data = [
-            'header'            => $header,
-            'date'              => $date,
-            'priorityLimitDate' => $priorityLimitDate,
-            'isPoCreated'       => $isPoCreated,
-            'mrType'            => $mrType,
+            'header'                    => $header,
+            'date'                      => $date,
+            'priorityLimitDate'         => $priorityLimitDate,
+            'isPoCreated'               => $isPoCreated,
+            'mrType'                    => $mrType,
             'trackedPoHeaders'          => $trackedPoHeaders,
             'trackedGrHeaders'          => $trackedGrHeaders,
             'trackedSjHeaders'          => $trackedSjHeaders,
-            'trackedPiHeaders'          => $trackedPiHeaders
+            'trackedPiHeaders'          => $trackedPiHeaders,
+            'isAssignerRole'            => $isAssignerRole,
+            'assignmentPr'              => $assignmentPr
         ];
 
         return View('admin.purchasing.purchase_requests.show')->with($data);

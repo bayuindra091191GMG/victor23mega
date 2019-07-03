@@ -5,6 +5,7 @@
     <!-- top tiles -->
     <div id="testNotif" class="row tile_count">
         <h2>DASHBOARD</h2>
+
     </div>
     <div class="row tile_count">
         <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
@@ -145,14 +146,120 @@
     {{--</div>--}}
     {{--<br />--}}
 
+    @if($isAssignerRole)
+        <div class="row">
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="x_panel tile overflow_hidden">
+                    <div class="x_title">
+                        <span style="font-size: 24px; color: #000;">Dokumen MR terbaru untuk di-assign ({{ $newMrToAssignCount }})</span>&nbsp;
+                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Kondisi MR sudah di-approve, status Open, belum diproses ke PR dan belum di-assign"><i class="fa fa-question"></i></button>
+                        <div class="nav navbar-right">
+                            <a href="{{ route('admin.assignment.mr.assign') }}" class="btn btn-primary">
+                                Lihat Semua
+                            </a>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="warning-notice">
+                            @if($newMrToAssignList->count() > 0)
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>No MR</th>
+                                        <th>Tanggal MR</th>
+                                        <th>Prioritas</th>
+                                        <th>Departemen</th>
+                                        <th>Dibuat oleh</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($newMrToAssignList as $mrHeader)
+                                        <tr>
+                                            @if($mrHeader->type === 1)
+                                                <td><a href="{{ route('admin.material_requests.other.show', ['material_request' => $mrHeader]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $mrHeader->code }}</a></td>
+                                            @elseif($mrHeader->type === 2)
+                                                <td><a href="{{ route('admin.material_requests.fuel.show', ['material_request' => $mrHeader]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $mrHeader->code }}</a></td>
+                                            @elseif($mrHeader->type === 3)
+                                                <td><a href="{{ route('admin.material_requests.oil.show', ['material_request' => $mrHeader]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $mrHeader->code }}</a></td>
+                                            @else
+                                                <td><a href="{{ route('admin.material_requests.service.show', ['material_request' => $mrHeader]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $mrHeader->code }}</a></td>
+                                            @endif
+                                            <td>{{ $mrHeader->date_string }}</td>
+                                            <td>{{ $mrHeader->priority }}</td>
+                                            <td>{{ $mrHeader->department->name }}</td>
+                                            <td>{{ $mrHeader->createdBy->name }}</td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                            @else
+                                <div class="oaerror success">
+                                    <strong>Tidak MR baru yang butuh di-assign</strong>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="x_panel tile overflow_hidden">
+                    <div class="x_title">
+                        <span style="font-size: 24px; color: #000;">Dokumen PR terbaru untuk di-assign ({{ $newPrToAssignCount }})</span> &nbsp;
+                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Kondisi PR yang belum diproses, status Open dan belum di-assign"><i class="fa fa-question"></i></button>
+                        <div class="nav navbar-right">
+                            <a href="{{ route('admin.assignment.pr.assign') }}" class="btn btn-primary">
+                                Lihat Semua
+                            </a>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="warning-notice">
+                            @if($newPrToAssignList->count() > 0)
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>No PR</th>
+                                        <th>Tanggal PR</th>
+                                        <th>Prioritas</th>
+                                        <th>Departemen</th>
+                                        <th>Dibuat oleh</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($newPrToAssignList as $prHeader)
+                                        <tr>
+                                            <td><a href="{{ route('admin.purchase_requests.show', ['purchase_request' => $prHeader]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $prHeader->code }}</a></td>
+                                            <td>{{ $prHeader->date_string }}</td>
+                                            <td>{{ $prHeader->priority }}</td>
+                                            <td>{{ $prHeader->department->name }}</td>
+                                            <td>{{ $prHeader->createdBy->name }}</td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                            @else
+                                <div class="oaerror success">
+                                    <strong>Tidak PR baru yang butuh di-assign</strong>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     @if($isAssignedRole)
         <div class="row">
             <div class="col-md-6 col-sm-6 col-xs-6">
                 <div class="x_panel tile overflow_hidden">
                     <div class="x_title">
-                        <h3>Assignment MR ({{ $assignmentMrCount }})</h3>
+                        <span style="font-size: 24px; color: #000;">Job Assignment MR ({{ $assignmentMrCount }})</span> &nbsp;
+                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Anda ditugaskan untuk proses MR berikut"><i class="fa fa-question"></i></button>
                         <div class="nav navbar-right">
-                            <a href="{{ route('admin.assignment.mr') }}" class="btn btn-default">
+                            <a href="{{ route('admin.assignment.mr') }}" class="btn btn-primary">
                                 Lihat Semua
                             </a>
                         </div>
@@ -201,9 +308,10 @@
             <div class="col-md-6 col-sm-6 col-xs-6">
                 <div class="x_panel tile overflow_hidden">
                     <div class="x_title">
-                        <h3>Assignment PR ({{ $assignmentPrCount }})</h3>
+                        <span style="font-size: 24px; color: #000;">Job Assignment PR ({{ $assignmentPrCount }})</span> &nbsp;
+                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Anda ditugaskan untuk proses PR berikut"><i class="fa fa-question"></i></button>
                         <div class="nav navbar-right">
-                            <a href="{{ route('admin.assignment.pr') }}" class="btn btn-default">
+                            <a href="{{ route('admin.assignment.pr') }}" class="btn btn-primary">
                                 Lihat Semua
                             </a>
                         </div>

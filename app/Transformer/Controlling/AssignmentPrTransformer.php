@@ -38,15 +38,21 @@ class AssignmentPrTransformer extends TransformerAbstract
             $prShowRoute = route('admin.purchase_requests.show', ['purchase_request' => $history->purchase_request_header]);
             $prCode = "<a name='". $history->purchase_request_header->code. "' style='text-decoration: underline; font-weight: bold;' href='" . $prShowRoute. "' target='_blank'>". $history->purchase_request_header->code. "</a>";
 
+            $differentProcessor = '-';
+            if($history->status_id === 18){
+                $differentProcessor = $history->is_different_processor === 1 ? 'Tidak Sesuai' : 'Sesuai';
+            }
+
             return[
-                'created_at'    => $createdDate,
-                'pr_code'       => $prCode,
-                'doc_created_at'=> $docCreatedDate,
-                'assigned_user' => $history->assignedUser->name,
-                'assigner_user' => $history->assignerUser->name ?? '-',
-                'processed_by'  => $history->processedBy->name ?? 'Belum Diproses',
-                'processed_date'=> $processedDate,
-                'status'        => $history->status->description,
+                'created_at'            => $createdDate,
+                'pr_code'               => $prCode,
+                'doc_created_at'        => $docCreatedDate,
+                'assigned_user'         => $history->assignedUser->name,
+                'assigner_user'         => $history->assignerUser->name ?? '-',
+                'processed_by'          => $history->processedBy->name ?? 'Belum Diproses',
+                'processed_date'        => $processedDate,
+                'different_processor'   => $differentProcessor,
+                'status'                => $history->status->description,
             ];
         }
         catch (\Exception $exception){

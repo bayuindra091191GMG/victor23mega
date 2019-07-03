@@ -43,6 +43,7 @@
                 <th class="text-center">Tanggal buat Dokumen</th>
                 <th class="text-center">Di-assign ke</th>
                 <th class="text-center">Di-assign oleh</th>
+                <th class="text-center">Diproses sesuai assign?</th>
                 <th class="text-center">Diproses oleh</th>
                 <th class="text-center">Tanggal diproses</th>
                 <th class="text-center">Status</th>
@@ -110,6 +111,7 @@
                     },
                     { data: 'assigned_user', name: 'assigned_user', class: 'text-center' },
                     { data: 'assigner_user', name: 'assigner_user', class: 'text-center' },
+                    { data: 'different_processor', name: 'different_processor', class: 'text-center' },
                     { data: 'processed_by', name: 'processed_by', class: 'text-center' },
                     { data: 'processed_date', name: 'processed_date', class: 'text-center',
                         render: function ( data, type, row ){

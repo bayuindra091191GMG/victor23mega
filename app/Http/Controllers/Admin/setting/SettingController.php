@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Setting;
 
 use App\Mail\TestingMail;
+use App\Models\Auth\Role\Role;
 use App\Models\Auth\User\User;
 use App\Models\PreferenceCompany;
 use Bogardo\Mailgun\Facades\Mailgun;
@@ -55,8 +56,16 @@ class SettingController extends Controller
 
     public function preference(){
         $preference = PreferenceCompany::find(1);
+        $assignerRoleId = intval($preference->assigner_role_id);
+        $roles = Role::orderBy('name')->get();
 
-        return View('admin.settings.edit-preference', compact('preference'));
+        $data = [
+            'preference'        => $preference,
+            'roles'             => $roles,
+            'assignerRoleId'    => $assignerRoleId
+        ];
+
+        return View('admin.settings.edit-preference')->with($data);
     }
 
     public function preferenceUpdate(Request $request, PreferenceCompany $preference){

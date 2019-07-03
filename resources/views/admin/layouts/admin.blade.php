@@ -40,6 +40,14 @@
 @section('styles')
     {{ Html::style(mix('assets/admin/css/admin.css')) }}
     <style>
+        body{
+            color: #000;
+        }
+
+        h3{
+            color: #000;
+        }
+
         .has_notification{
             color: red !important;
         }

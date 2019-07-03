@@ -110,6 +110,7 @@
                     },
                     { data: 'assigned_user', name: 'assigned_user', class: 'text-center' },
                     { data: 'assigner_user', name: 'assigner_user', class: 'text-center' },
+                    { data: 'different_processor', name: 'different_processor', class: 'text-center' },
                     { data: 'processed_by', name: 'processed_by', class: 'text-center' },
                     { data: 'processed_date', name: 'processed_date', class: 'text-center',
                         render: function ( data, type, row ){

@@ -476,13 +476,54 @@ class DashboardController extends Controller
 //            dd($warning->item_stock->stock);
 //        }
 
-        // Get assignment notifications fot purchasing
+        // Get new MR/PR document to assign for purchasing manager
+        $newMrToAssignList = null;
+        $newMrToAssignCount = 0;
+        $newPrToAssignList = null;
+        $newPrToAssignCount = 0;
+        $preference = PreferenceCompany::find(1);
+        $assignerRoleId = intval($preference->assigner_role_id);
+        $isAssignerRole = false;
+        if($currentRole === $assignerRoleId || $currentRole === 1){
+            $isAssignerRole = true;
+            $newMrToAssignList = MaterialRequestHeader::where('status_id', 3)
+                ->where('is_approved', 1)
+                ->where('is_pr_created', 0)
+                ->whereNull('assigned_to')
+                ->orderBy('created_at', 'desc')
+                ->take(10)
+                ->get();
+
+            $newMrToAssignCount = DB::table('material_request_headers')
+                ->where('status_id', 3)
+                ->where('is_approved', 1)
+                ->where('is_pr_created', 0)
+                ->whereNull('assigned_to')
+                ->count();
+
+            $newPrToAssignList = PurchaseRequestHeader::where('status_id', 3)
+                ->where('is_approved', 1)
+                ->where('is_all_poed', 0)
+                ->whereNull('assigned_to')
+                ->orderBy('created_at', 'desc')
+                ->take(10)
+                ->get();
+
+            $newPrToAssignCount = DB::table('purchase_request_headers')
+                ->where('status_id', 3)
+                ->where('is_approved', 1)
+                ->where('is_all_poed', 0)
+                ->whereNull('assigned_to')
+                ->count();
+        }
+
+        // Get assignment notifications for purchasing staff
         $assignmentMrList = null;
         $assignmentMrCount = 0;
         $assignmentPrList = null;
         $assignmentPrCount = 0;
         $isAssignedRole = false;
-        if($currentRole === 5 || $currentRole === 8 || $currentRole === 10){
+        if($currentRole === 5 || $currentRole === 8 || $currentRole === 10 || $currentRole === 1){
             $isAssignedRole = true;
 
             $assignmentMrList = AssignmentMaterialRequest::where('status_id', 17)
@@ -491,7 +532,10 @@ class DashboardController extends Controller
                 ->take(10)
                 ->get();
 
-            $assignmentMrCount = $assignmentMrList->count();
+            $assignmentMrCount = DB::table('assignment_material_requests')
+                ->where('status_id', 17)
+                ->where('assigned_user_id', $user->id)
+                ->count();
 
             $assignmentPrList = AssignmentPurchaseRequest::where('status_id', 17)
                 ->where('assigned_user_id', $user->id)
@@ -499,7 +543,10 @@ class DashboardController extends Controller
                 ->take(10)
                 ->get();
 
-            $assignmentPrCount = $assignmentPrList->count();
+            $assignmentPrCount = DB::table('assignment_purchase_requests')
+                ->where('status_id', 17)
+                ->where('assigned_user_id', $user->id)
+                ->count();
         }
 
         $data = [
@@ -519,6 +566,11 @@ class DashboardController extends Controller
             'approvalPoCount'           => $approvalPoCount,
             'warningCount'              => $warningCount,
             'stockWarnings'             => $stockWarnings,
+            'isAssignerRole'            => $isAssignerRole,
+            'newMrToAssignList'         => $newMrToAssignList,
+            'newPrToAssignList'         => $newPrToAssignList,
+            'newMrToAssignCount'        => $newMrToAssignCount,
+            'newPrToAssignCount'        => $newPrToAssignCount,
             'isAssignedRole'            => $isAssignedRole,
             'assignmentMrList'          => $assignmentMrList,
             'assignmentPrList'          => $assignmentPrList,

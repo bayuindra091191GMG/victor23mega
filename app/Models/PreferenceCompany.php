@@ -40,6 +40,7 @@ class PreferenceCompany extends Eloquent
 		'email',
 		'ppn',
         'approval_setting',
+        'assigner_role_id',
 		'created_by',
 		'updated_by'
 	];

@@ -14,6 +14,7 @@ use App\Libs\Utilities;
 use App\Mail\ApprovalMaterialRequestCreated;
 use App\Models\ApprovalMaterialRequest;
 use App\Models\ApprovalRule;
+use App\Models\AssignmentMaterialRequest;
 use App\Models\Auth\Role\Role;
 use App\Models\AutoNumber;
 use App\Models\Department;
@@ -372,6 +373,18 @@ class MaterialRequestHeaderController extends Controller
                 $isAuthorized = true;
             }
 
+            // Check assigner role id
+            $preference = PreferenceCompany::find(1);
+            $assignerRoleId = intval($preference->assigner_role_id);
+            $isAssignerRole = false;
+            if($roleId === $assignerRoleId || $roleId === 1){
+                $isAssignerRole = true;
+            }
+
+            // Check document assigned
+            $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $header->id)
+                ->first();
+
             $data = [
                 'header'                    => $header,
                 'date'                      => $date,
@@ -390,7 +403,9 @@ class MaterialRequestHeaderController extends Controller
                 'trackedPiHeaders'          => $trackedPiHeaders ?? null,
 //                'trackedIdHeaders'          => $trackedIdHeaders ?? null,
                 'isAuthorized'              => $isAuthorized,
-                'isFeedbackAuthorized'      => $isFeedbackAuthorized
+                'isFeedbackAuthorized'      => $isFeedbackAuthorized,
+                'isAssignerRole'            => $isAssignerRole,
+                'assignmentMr'              => $assignmentMr
             ];
 
             return View('admin.inventory.material_requests.other.show')->with($data);
@@ -584,16 +599,28 @@ class MaterialRequestHeaderController extends Controller
                 $isAuthorized = true;
             }
 
+            // Check assigner role id
+            $preference = PreferenceCompany::find(1);
+            $assignerRoleId = intval($preference->assigner_role_id);
+            $isAssignerRole = false;
+            if($roleId === $assignerRoleId || $roleId === 1){
+                $isAssignerRole = true;
+            }
+
+            // Check document assigned
+            $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $header->id)
+                ->first();
+
             $data = [
-                'header'            => $header,
-                'date'              => $date,
-                'itemStocks'        => $itemStocks,
-                'isPrCreated'       => $isPrCreated,
-                'isApproved'        => $isApproved,
-                'approveMr'         => $approveMr,
-                'status'            => $status,
-                'approvalData'      => $arrData,
-                'setting'           => $setting->approval_setting,
+                'header'                    => $header,
+                'date'                      => $date,
+                'itemStocks'                => $itemStocks,
+                'isPrCreated'               => $isPrCreated,
+                'isApproved'                => $isApproved,
+                'approveMr'                 => $approveMr,
+                'status'                    => $status,
+                'approvalData'              => $arrData,
+                'setting'                   => $setting->approval_setting,
                 'isTrackingAvailable'       => $isTrackingAvailable,
                 'trackedPrHeader'           => $trackedPrHeader ?? null,
                 'trackedPoHeaders'          => $trackedPoHeaders ?? null,
@@ -601,7 +628,9 @@ class MaterialRequestHeaderController extends Controller
                 'trackedSjHeaders'          => $trackedSjHeaders ?? null,
                 'trackedPiHeaders'          => $trackedPiHeaders ?? null,
                 'isAuthorized'              => $isAuthorized,
-                'isFeedbackAuthorized'      => $isFeedbackAuthorized
+                'isFeedbackAuthorized'      => $isFeedbackAuthorized,
+                'isAssignerRole'            => $isAssignerRole,
+                'assignmentMr'              => $assignmentMr
             ];
 
             return View('admin.inventory.material_requests.fuel.show')->with($data);
@@ -797,16 +826,28 @@ class MaterialRequestHeaderController extends Controller
                 $isAuthorized = true;
             }
 
+            // Check assigner role id
+            $preference = PreferenceCompany::find(1);
+            $assignerRoleId = intval($preference->assigner_role_id);
+            $isAssignerRole = false;
+            if($roleId === $assignerRoleId || $roleId === 1){
+                $isAssignerRole = true;
+            }
+
+            // Check document assigned
+            $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $header->id)
+                ->first();
+
             $data = [
-                'header'            => $header,
-                'date'              => $date,
-                'itemStocks'        => $itemStocks,
-                'isPrCreated'       => $isPrCreated,
-                'isApproved'        => $isApproved,
-                'approveMr'         => $approveMr,
-                'status'            => $status,
-                'approvalData'      => $arrData,
-                'setting'           => $setting->approval_setting,
+                'header'                    => $header,
+                'date'                      => $date,
+                'itemStocks'                => $itemStocks,
+                'isPrCreated'               => $isPrCreated,
+                'isApproved'                => $isApproved,
+                'approveMr'                 => $approveMr,
+                'status'                    => $status,
+                'approvalData'              => $arrData,
+                'setting'                   => $setting->approval_setting,
                 'isTrackingAvailable'       => $isTrackingAvailable,
                 'trackedPrHeader'           => $trackedPrHeader ?? null,
                 'trackedPoHeaders'          => $trackedPoHeaders ?? null,
@@ -814,7 +855,9 @@ class MaterialRequestHeaderController extends Controller
                 'trackedSjHeaders'          => $trackedSjHeaders ?? null,
                 'trackedPiHeaders'          => $trackedPiHeaders ?? null,
                 'isAuthorized'              => $isAuthorized,
-                'isFeedbackAuthorized'      => $isFeedbackAuthorized
+                'isFeedbackAuthorized'      => $isFeedbackAuthorized,
+                'isAssignerRole'            => $isAssignerRole,
+                'assignmentMr'              => $assignmentMr
             ];
 
             return View('admin.inventory.material_requests.oil.show')->with($data);
@@ -972,21 +1015,35 @@ class MaterialRequestHeaderController extends Controller
                 }
             }
 
+            // Check assigner role id
+            $preference = PreferenceCompany::find(1);
+            $assignerRoleId = intval($preference->assigner_role_id);
+            $isAssignerRole = false;
+            if($roleId === $assignerRoleId || $roleId === 1){
+                $isAssignerRole = true;
+            }
+
+            // Check document assigned
+            $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $header->id)
+                ->first();
+
             $data = [
-                'header'            => $header,
-                'date'              => $date,
-                'isPrCreated'       => $isPrCreated,
-                'isApproved'        => $isApproved,
-                'approveMr'         => $approveMr,
-                'status'            => $status,
-                'approvalData'      => $arrData,
-                'setting'           => $setting->approval_setting,
-                'isAuthorized'      => $isAuthorized,
+                'header'                    => $header,
+                'date'                      => $date,
+                'isPrCreated'               => $isPrCreated,
+                'isApproved'                => $isApproved,
+                'approveMr'                 => $approveMr,
+                'status'                    => $status,
+                'approvalData'              => $arrData,
+                'setting'                   => $setting->approval_setting,
+                'isAuthorized'              => $isAuthorized,
                 'isTrackingAvailable'       => $isTrackingAvailable,
                 'trackedPrHeader'           => $trackedPrHeader ?? null,
                 'trackedPoHeaders'          => $trackedPoHeaders ?? null,
                 'trackedPiHeaders'          => $trackedPiHeaders ?? null,
-                'isFeedbackAuthorized'      => $isFeedbackAuthorized
+                'isFeedbackAuthorized'      => $isFeedbackAuthorized,
+                'isAssignerRole'            => $isAssignerRole,
+                'assignmentMr'              => $assignmentMr
             ];
 
             return View('admin.inventory.material_requests.service.show')->with($data);
@@ -1376,10 +1433,27 @@ class MaterialRequestHeaderController extends Controller
             }
         }
 
+        // Check assignment
+        $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $mrHeader->id)
+            ->where('status_id', 17)
+            ->first();
+
+        if(!empty($assignmentMr)){
+            $assignmentMr->status_id = 18;
+            $assignmentMr->processed_by = $user->id;
+            $assignmentMr->processed_date = $now->toDateTimeString();
+
+            if($user->id != $assignmentMr->assigned_user_id){
+                $assignmentMr->is_different_processor = 1;
+            }
+
+            $assignmentMr->save();
+        }
+
         Session::flash('message', 'Berhasil membuat material request!');
 
-        Session::forget('reorderItem');
-        Session::forget('warehouseId');
+//        Session::forget('reorderItem');
+//        Session::forget('warehouseId');
 
         if($type === '1'){
             return redirect()->route('admin.material_requests.other.show', ['material_request' => $mrHeader]);
