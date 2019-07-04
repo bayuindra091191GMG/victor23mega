@@ -35,6 +35,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
@@ -250,229 +251,265 @@ class PurchaseRequestHeaderController extends Controller
     }
 
     public function store(Request $request){
-    $validator = Validator::make($request->all(),[
-        'pr_code'       => 'required|max:30|regex:/^\S*$/u',
-        'km'            => 'max:20',
-        'hm'            => 'max:20',
-        'date'          => 'required'
-    ],[
-        'pr_code.required'      => 'Nomor PR wajib diisi!',
-        'pr_code.regex'         => 'Nomor PR harus tanpa spasi!'
-    ]);
+        $validator = Validator::make($request->all(),[
+            'pr_code'       => 'required|max:30|regex:/^\S*$/u',
+            'km'            => 'max:20',
+            'hm'            => 'max:20',
+            'date'          => 'required'
+        ],[
+            'pr_code.required'      => 'Nomor PR wajib diisi!',
+            'pr_code.regex'         => 'Nomor PR harus tanpa spasi!'
+        ]);
 
-    if ($validator->fails()) {
-        return redirect()
-            ->back()
-            ->withErrors($validator)
-            ->withInput();
-    }
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
-    // Validate details
-    $items = $request->input('item');
+        // Validate details
+        $items = $request->input('item');
 
-    if(count($items) == 0){
-        return redirect()->back()->withErrors('Detail barang wajib diisi!', 'default')->withInput($request->all());
-    }
+        if(count($items) == 0){
+            return redirect()->back()->withErrors('Detail barang wajib diisi!', 'default')->withInput($request->all());
+        }
 
-    $qtys = $request->input('qty');
-    $valid = true;
-    $i = 0;
-    foreach($items as $item){
-        if(empty($item)) $valid = false;
-        if(empty($qtys[$i]) || $qtys[$i] == '0') $valid = false;
-        $i++;
-    }
-
-    if(!$valid){
-        return redirect()->back()->withErrors('Detail barang dan jumlah wajib diisi!', 'default')->withInput($request->all());
-    }
-
-    // Get MR id
-    $mrId = $request->input('mr_id');
-
-    // Validate MR relationship
-    $validItem = true;
-    $validQty = true;
-    $i = 0;
-    $materialRequest = MaterialRequestHeader::find($mrId);
-    foreach($items as $item){
-        if(!empty($item)){
-            $mrDetail = $materialRequest->material_request_details->where('item_id', $item)->first();
-            if(empty($mrDetail)){
-                $validItem = false;
-                break;
-            }
-            else{
-                if($qtys[$i] > $mrDetail->quantity){
-                    $validQty = false;
-                    break;
-                }
-            }
+        $qtys = $request->input('qty');
+        $valid = true;
+        $i = 0;
+        foreach($items as $item){
+            if(empty($item)) $valid = false;
+            if(empty($qtys[$i]) || $qtys[$i] == '0') $valid = false;
             $i++;
         }
-    }
 
-    if(!$validItem){
-        return redirect()->back()->withErrors('Inventory tidak ada dalam MR!', 'default')->withInput($request->all());
-    }
-    if(!$validQty){
-        return redirect()->back()->withErrors('Kuantitas inventory tidak boleh melebihi kuantitas MR!', 'default')->withInput($request->all());
-    }
-
-    $user = Auth::user();
-    $now = Carbon::now('Asia/Jakarta');
-    $doc = Document::find(3);
-
-    // Generate auto number
-    if($request->filled('auto_number')){
-//        $sysNo = NumberingSystem::where('doc_id', '3')->first();
-//        $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-//        $prCode = Utilities::GenerateNumber($docCode, $sysNo->next_no);
-
-        $prPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
-        $sysNo = Utilities::GetNextAutoNumber($prPrepend);
-
-        $docCode = $doc->code. '-'. $user->employee->site->code;
-        $prCode = Utilities::GenerateNumber($docCode, $sysNo);
-
-        // Check existing number
-        if(PurchaseOrderHeader::where('code', $prCode)->exists()){
-            return redirect()->back()->withErrors('Nomor PR sudah terdaftar!', 'default')->withInput($request->all());
+        if(!$valid){
+            return redirect()->back()->withErrors('Detail barang dan jumlah wajib diisi!', 'default')->withInput($request->all());
         }
 
-        //$sysNo->next_no++;
-        //$sysNo->save();
-    }
-    else{
-        $prCode = $request->input('pr_code');
+        // Get MR id
+        $mrId = $request->input('mr_id');
 
-        // Check existing number
-        if(PurchaseOrderHeader::where('code', $prCode)->exists()){
-            return redirect()->back()->withErrors('Nomor PR sudah terdaftar!', 'default')->withInput($request->all());
+        // Validate MR relationship
+        $validItem = true;
+        $validQty = true;
+        $i = 0;
+        $materialRequest = MaterialRequestHeader::find($mrId);
+        foreach($items as $item){
+            if(!empty($item)){
+                $mrDetail = $materialRequest->material_request_details->where('item_id', $item)->first();
+                if(empty($mrDetail)){
+                    $validItem = false;
+                    break;
+                }
+                else{
+                    if($qtys[$i] > $mrDetail->quantity){
+                        $validQty = false;
+                        break;
+                    }
+                }
+                $i++;
+            }
         }
-    }
 
-    $now = Carbon::now('Asia/Jakarta');
-    $date = Carbon::createFromFormat('d M Y', $request->input('date'), 'Asia/Jakarta');
-    $limitDate = Carbon::createFromFormat('d M Y', $request->input('date'), 'Asia/Jakarta');
+        if(!$validItem){
+            return redirect()->back()->withErrors('Inventory tidak ada dalam MR!', 'default')->withInput($request->all());
+        }
+        if(!$validQty){
+            return redirect()->back()->withErrors('Kuantitas inventory tidak boleh melebihi kuantitas MR!', 'default')->withInput($request->all());
+        }
 
-    $priority = $request->input('priority');
-    if($priority == 'Part - P1' || $priority == 'Non-Part - P1'){
-        $limitDate->addDays(8);
-    }
-    elseif($priority == 'Part - P2' || $priority == 'Non-Part - P2'){
-        $limitDate->addDays(15);
-    }
-    else{
-        $limitDate->addDays(30);
-    }
+        $user = Auth::user();
+        $now = Carbon::now('Asia/Jakarta');
+        $doc = Document::find(3);
 
-    $mrHeader = MaterialRequestHeader::find($mrId);
+        // Generate auto number
+        if($request->filled('auto_number')){
+    //        $sysNo = NumberingSystem::where('doc_id', '3')->first();
+    //        $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
+    //        $prCode = Utilities::GenerateNumber($docCode, $sysNo->next_no);
 
-    // Mark pr created
-    $mrHeader->is_pr_created = 1;
-    $mrHeader->save();
+            $prPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $sysNo = Utilities::GetNextAutoNumber($prPrepend);
 
-    $prHeader = PurchaseRequestHeader::create([
-        'code'                  => $prCode,
-        'site_id'               => $user->employee->site_id,
-        'material_request_id'   => $mrId,
-        'date'                  => $date->toDateTimeString(),
-        'department_id'         => $mrHeader->department_id,
-        'priority'              => $mrHeader->priority,
-        'priority_limit_date'   => $limitDate->toDateTimeString(),
-        'km'                    => $mrHeader->km,
-        'hm'                    => $mrHeader->hm,
-        'is_approved'           => 1,
-        'approved_date'         => $now->toDateTimeString(),
-        'is_al_poed'            => 0,
-        'is_retur'              => 0,
-        'status_id'             => 3,
-        'created_by'            => $user->id,
-        'created_at'            => $now->toDateTimeString(),
-        'updated_by'            => $user->id,
-        'updated_at'            => $now->toDateTimeString(),
-//        'warehouse_id'          => $materialRequest->warehouse_id,
-        'is_reorder'            => $materialRequest->is_reorder
-    ]);
+            $docCode = $doc->code. '-'. $user->employee->site->code;
+            $prCode = Utilities::GenerateNumber($docCode, $sysNo);
 
-    if($request->filled('machinery_id')){
-        $prHeader->machinery_id = $request->input('machinery_id');
-        $prHeader->save();
-    }
+            // Check existing number
+            if(PurchaseOrderHeader::where('code', $prCode)->exists()){
+                return redirect()->back()->withErrors('Nomor PR sudah terdaftar!', 'default')->withInput($request->all());
+            }
 
-    // Create purchase request detail
-    $qty = $request->input('qty');
-    $remark = $request->input('remark');
-    $idx = 0;
-    foreach($request->input('item') as $item){
-        if(!empty($item)){
-            $prDetail = PurchaseRequestDetail::create([
-                'header_id'         => $prHeader->id,
-                'item_id'           => $item,
-                'quantity'          => $qty[$idx],
-                'quantity_poed'     => 0,
-                'quantity_invoiced' => 0,
-                'quantity_retur'    => 0
+            //$sysNo->next_no++;
+            //$sysNo->save();
+        }
+        else{
+            $prCode = $request->input('pr_code');
+
+            // Check existing number
+            if(PurchaseOrderHeader::where('code', $prCode)->exists()){
+                return redirect()->back()->withErrors('Nomor PR sudah terdaftar!', 'default')->withInput($request->all());
+            }
+        }
+
+        $now = Carbon::now('Asia/Jakarta');
+        $date = Carbon::createFromFormat('d M Y', $request->input('date'), 'Asia/Jakarta');
+        $limitDate = Carbon::createFromFormat('d M Y', $request->input('date'), 'Asia/Jakarta');
+
+        $priority = $request->input('priority');
+        if($priority == 'Part - P1' || $priority == 'Non-Part - P1'){
+            $limitDate->addDays(8);
+        }
+        elseif($priority == 'Part - P2' || $priority == 'Non-Part - P2'){
+            $limitDate->addDays(15);
+        }
+        else{
+            $limitDate->addDays(30);
+        }
+
+        $mrHeader = MaterialRequestHeader::find($mrId);
+
+        // Mark pr created
+        $mrHeader->is_pr_created = 1;
+        $mrHeader->save();
+
+        $prHeader = PurchaseRequestHeader::create([
+            'code'                  => $prCode,
+            'site_id'               => $user->employee->site_id,
+            'material_request_id'   => $mrId,
+            'date'                  => $date->toDateTimeString(),
+            'department_id'         => $mrHeader->department_id,
+            'priority'              => $mrHeader->priority,
+            'priority_limit_date'   => $limitDate->toDateTimeString(),
+            'km'                    => $mrHeader->km,
+            'hm'                    => $mrHeader->hm,
+            'is_approved'           => 1,
+            'approved_date'         => $now->toDateTimeString(),
+            'is_al_poed'            => 0,
+            'is_retur'              => 0,
+            'status_id'             => 3,
+            'created_by'            => $user->id,
+            'created_at'            => $now->toDateTimeString(),
+            'updated_by'            => $user->id,
+            'updated_at'            => $now->toDateTimeString(),
+    //        'warehouse_id'          => $materialRequest->warehouse_id,
+            'is_reorder'            => $materialRequest->is_reorder
+        ]);
+
+        if($request->filled('machinery_id')){
+            $prHeader->machinery_id = $request->input('machinery_id');
+            $prHeader->save();
+        }
+
+        // Create purchase request detail
+        $qty = $request->input('qty');
+        $remark = $request->input('remark');
+        $idx = 0;
+        foreach($request->input('item') as $item){
+            if(!empty($item)){
+                $prDetail = PurchaseRequestDetail::create([
+                    'header_id'         => $prHeader->id,
+                    'item_id'           => $item,
+                    'quantity'          => $qty[$idx],
+                    'quantity_poed'     => 0,
+                    'quantity_invoiced' => 0,
+                    'quantity_retur'    => 0
+                ]);
+
+                if(!empty($remark[$idx])) $prDetail->remark = $remark[$idx];
+                $prDetail->save();
+            }
+            $idx++;
+        }
+
+        // Increase autonumber
+        if($request->filled('auto_number')){
+            $prPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            Utilities::UpdateAutoNumber($prPrepend);
+        }
+
+        // Check Approval Feature
+        $preference = PreferenceCompany::find(1);
+
+        try{
+            if($preference->approval_setting == 1) {
+                $approvals = ApprovalRule::where('document_id', 3)->get();
+                if($approvals->count() > 0){
+                    foreach($approvals as $approval){
+                        if(!empty($approval->user->email_address)){
+                            Mail::to($approval->user->email_address)->send(new ApprovalPurchaseRequestCreated($prHeader, $approval->user));
+                        }
+                    }
+                }
+            }
+        }
+        catch (\Exception $ex){
+            dd($ex);
+        }
+
+        try{
+            // Send notification
+            $mrCreator = $prHeader->material_request_header->createdBy;
+            $mrCreator->notify(new PurchaseRequestCreated($prHeader, 'true'));
+
+            $roleIds = [12,13];
+            $roles = Role::whereIn('id', $roleIds)->get();
+            foreach($roles as $role){
+                $users =  $role->users()->get();
+                if($users->count() > 0){
+                    foreach ($users as $notifiedUser){
+                        if($notifiedUser->id !== $mrCreator->id){
+                            $notifiedUser->notify(new PurchaseRequestCreated($prHeader, 'false'));
+                        }
+                    }
+                }
+            }
+        }
+        catch(\Exception $ex){
+            error_log($ex);
+        }
+
+        // Check assignment
+        $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $mrHeader->id)
+            ->where('status_id', 17)
+            ->first();
+
+        if(!empty($assignmentMr)){
+            $assignmentMr->status_id = 18;
+            $assignmentMr->processed_by = $user->id;
+            $assignmentMr->processed_date = $now->toDateTimeString();
+
+            if($user->id != $assignmentMr->assigned_user_id){
+                $assignmentMr->is_different_processor = 1;
+            }
+
+            $assignmentMr->save();
+
+            // Create PR assignment entry
+            AssignmentPurchaseRequest::create([
+                'purchase_request_id'       => $prHeader->id,
+                'assigned_user_id'          => $assignmentMr->assigned_user_id,
+                'assigner_user_id'          => $user->id,
+                'status_id'                 => 17,
+                'created_by'                => $user->id,
+                'created_at'                => $now,
+                'updated_by'                => $user->id,
+                'updated_at'                => $now
             ]);
 
-            if(!empty($remark[$idx])) $prDetail->remark = $remark[$idx];
-            $prDetail->save();
+            $prHeader->assigned_to = $assignmentMr->assigned_user_id;
+            $prHeader->save();
         }
-        $idx++;
+
+        // Update processed by for assignment
+        $mrHeader->processed_by = $user->id;
+        $mrHeader->save();
+
+        Session::flash('message', 'Berhasil membuat purchase request!');
+
+        return redirect()->route('admin.purchase_requests.show', ['purchase_request' => $prHeader]);
     }
-
-    // Increase autonumber
-    if($request->filled('auto_number')){
-        $prPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
-        Utilities::UpdateAutoNumber($prPrepend);
-    }
-
-    // Check Approval Feature
-    $preference = PreferenceCompany::find(1);
-
-    try{
-        if($preference->approval_setting == 1) {
-            $approvals = ApprovalRule::where('document_id', 3)->get();
-            if($approvals->count() > 0){
-                foreach($approvals as $approval){
-                    if(!empty($approval->user->email_address)){
-                        Mail::to($approval->user->email_address)->send(new ApprovalPurchaseRequestCreated($prHeader, $approval->user));
-                    }
-                }
-            }
-        }
-    }
-    catch (\Exception $ex){
-        dd($ex);
-    }
-
-    try{
-        // Send notification
-        $mrCreator = $prHeader->material_request_header->createdBy;
-        $mrCreator->notify(new PurchaseRequestCreated($prHeader, 'true'));
-
-        $roleIds = [12,13];
-        $roles = Role::whereIn('id', $roleIds)->get();
-        foreach($roles as $role){
-            $users =  $role->users()->get();
-            if($users->count() > 0){
-                foreach ($users as $notifiedUser){
-                    if($notifiedUser->id !== $mrCreator->id){
-                        $notifiedUser->notify(new PurchaseRequestCreated($prHeader, 'false'));
-                    }
-                }
-            }
-        }
-    }
-    catch(\Exception $ex){
-        error_log($ex);
-    }
-
-    Session::flash('message', 'Berhasil membuat purchase request!');
-
-    return redirect()->route('admin.purchase_requests.show', ['purchase_request' => $prHeader]);
-}
 
     public function storeService(Request $request){
         $validator = Validator::make($request->all(),[
@@ -674,6 +711,27 @@ class PurchaseRequestHeaderController extends Controller
         $purchase_request->updated_by = $user->id;
         $purchase_request->updated_at = $now->toDateTimeString();
         $purchase_request->save();
+
+        // Check assignment
+        $assignmentPr = AssignmentPurchaseRequest::where('purchase_request_id', $prHeader->id)
+            ->where('status_id', 17)
+            ->first();
+
+        if(!empty($assignmentPr)){
+            $assignmentPr->status_id = 18;
+            $assignmentPr->processed_by = $user->id;
+            $assignmentPr->processed_date = $now->toDateTimeString();
+
+            if($user->id != $assignmentPr->assigned_user_id){
+                $assignmentPr->is_different_processor = 1;
+            }
+
+            $assignmentPr->save();
+        }
+
+        // Update processed by for assignment
+        $prHeader->processed_by = $user->id;
+        $prHeader->save();
 
         Session::flash('message', 'Berhasil ubah purchase request!');
 

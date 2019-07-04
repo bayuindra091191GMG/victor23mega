@@ -12,6 +12,7 @@ use App\Models\MaterialRequestHeader;
 use App\Models\PurchaseRequestHeader;
 use App\Transformer\Controlling\AssignmentMrTransformer;
 use App\Transformer\Controlling\AssignmentPrTransformer;
+use App\Transformer\Controlling\AssignmentTrackingTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -110,8 +111,6 @@ class AssignmentController extends Controller
     }
 
     public function createAssignmentMr(){
-
-
         $mrHeaders = MaterialRequestHeader::where('status_id', 3)
             ->where('is_approved', 1)
             ->where('is_pr_created', 0)
@@ -148,6 +147,19 @@ class AssignmentController extends Controller
             $user = Auth::user();
             $now = Carbon::now('Asia/Jakarta')->toDateTimeString();
 
+            // Check existing assignment
+            $existAssignment = AssignmentMaterialRequest::where('material_request_id', $mrId)->first();
+            if(!empty($existAssignment)){
+                $response = collect([
+                    'error'                 => 'MR sudah di-assign, mohon refresh halaman!',
+                    'assigned_user_id'      => $assignedUserId,
+                    'assigned_name'         => '',
+                    'mr_id'                 => $mrId
+                ]);
+
+                return new JsonResponse($response);
+            }
+
             // Create assignment entry
             AssignmentMaterialRequest::create([
                 'material_request_id'       => $mrId,
@@ -167,6 +179,7 @@ class AssignmentController extends Controller
 
             $assignedUser = User::find($assignedUserId);
             $response = collect([
+                'error'                 => 'none',
                 'assigned_user_id'      => $assignedUserId,
                 'assigned_name'         => $assignedUser->name,
                 'mr_id'                 => $mrId
@@ -185,6 +198,19 @@ class AssignmentController extends Controller
             $prId = $request->input('pr_id');
             $user = Auth::user();
             $now = Carbon::now('Asia/Jakarta')->toDateTimeString();
+
+            // Check existing assignment
+            $existAssignment = AssignmentPurchaseRequest::where('purchase_request_id', $prId)->first();
+            if(!empty($existAssignment)){
+                $response = collect([
+                    'error'                 => 'PR sudah di-assign, mohon refresh halaman!',
+                    'assigned_user_id'      => $assignedUserId,
+                    'assigned_name'         => '',
+                    'pr_id'                 => $prId
+                ]);
+
+                return new JsonResponse($response);
+            }
 
             // Create assignment entry
             AssignmentPurchaseRequest::create([
@@ -214,6 +240,131 @@ class AssignmentController extends Controller
         }
         catch (\Exception $ex){
             error_log('storeAssignmentPr error ex: '. $ex);
+        }
+    }
+
+    public function track(Request $request){
+        try{
+
+            // Filter selected user
+            $selectedUserId = -1;
+            $selectedUser = null;
+            if($request->user_id != null){
+                $selectedUserId = intval($request->user_id);
+                if($selectedUserId > 0){
+                    $selectedUser = User::find($selectedUserId);
+                    if(empty($selectedUser)){
+                        $selectedUserId = -1;
+                    }
+                }
+            }
+
+            // Filter "Staff Purchasing" role
+            $users = User::orderBy('name')->get();
+            $purchasingUsers = collect();
+            foreach ($users as $user){
+                if(!empty($user->roles->pluck('id')[0])){
+                    $roleId = $user->roles->pluck('id')[0];
+                    if($roleId === 5){
+                        $purchasingUsers->push($user);
+                    }
+                }
+            }
+
+            // Date filter
+            $filterDateStart = Carbon::today()->subMonths(1)->format('d M Y');
+            $filterDateEnd = Carbon::today()->format('d M Y');
+
+            if($request->date_start != null && $request->date_end != null){
+
+                $dateStartDecoded = rawurldecode($request->date_start);
+                $dateEndDecoded = rawurldecode($request->date_end);
+                $start = Carbon::createFromFormat('d M Y', $dateStartDecoded, 'Asia/Jakarta');
+                $end = Carbon::createFromFormat('d M Y', $dateEndDecoded, 'Asia/Jakarta');
+
+                if($end->gt($start)){
+                    $filterDateStart = $dateStartDecoded;
+                    $filterDateEnd = $dateEndDecoded;
+                }
+            }
+
+            // Document type filter
+            $docType = 'mr';
+//            if($request->doc_type != null){
+//                $docType = $request->doc_type;
+//            }
+
+            $data = [
+                'selectedUserId'        => $selectedUserId,
+                'selectedUser'          => $selectedUser,
+                'purchasingUsers'       => $purchasingUsers,
+                'filterDateStart'       => $filterDateStart,
+                'filterDateEnd'         => $filterDateEnd,
+                'docType'               => $docType
+            ];
+
+            return view('admin.assignment.track')->with($data);
+        }
+        catch (\Exception $ex){
+            dd($ex);
+            error_log('AssignmentController - track error ex: '. $ex);
+        }
+    }
+
+    public function getTrack(Request $request)
+    {
+        try{
+//            $docType = $request->input('doc_type');
+            $docType = 'mr';
+            $userId = intval($request->input('user_id'));
+            $start = Carbon::createFromFormat('d M Y', $request->input('date_start'), 'Asia/Jakarta');
+            $end = Carbon::createFromFormat('d M Y', $request->input('date_end'), 'Asia/Jakarta');
+
+            if($docType === 'mr'){
+                $assignments = AssignmentMaterialRequest::whereBetween('created_at', array($start->toDateTimeString(), $end->toDateTimeString()));
+                if($userId > 0){
+                    $assignments = $assignments->where('assigned_user_id', $userId)->get();
+                }
+                else{
+                    $assignments = $assignments->get();
+                }
+
+                // Sort by staff name using closure
+                $assignments = $assignments->sortBy(function($assignment) {
+                    return $assignment->assignedUser->name;
+                });
+
+                $assignments = $assignments->sortByDesc('created_at');
+
+                return DataTables::of($assignments)
+                    ->setTransformer(new AssignmentTrackingTransformer)
+                    ->addIndexColumn()
+                    ->make(true);
+            }
+            else{
+                $assignments = AssignmentPurchaseRequest::whereBetween('created_at', array($start->toDateTimeString(), $end->toDateTimeString()));
+                if($userId > 0){
+                    $assignments = $assignments->where('assigned_user_id', $userId)->get();
+                }
+                else{
+                    $assignments = $assignments->get();
+                }
+
+                // Sort by staff name using closure
+                $assignments = $assignments->sortBy(function($assignment) {
+                    return $assignment->assignedUser->name;
+                });
+
+                $assignments = $assignments->sortByDesc('created_at');
+
+                return DataTables::of($assignments)
+                    ->setTransformer(new AssignmentPrTransformer)
+                    ->addIndexColumn()
+                    ->make(true);
+            }
+        }
+        catch (\Exception $ex){
+            error_log($ex);
         }
     }
 }

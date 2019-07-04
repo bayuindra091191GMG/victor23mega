@@ -596,6 +596,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('assignment/tugas_purchase', 'Controlling\Assignment2Controller@assigmentPRIndex')->name('assignment.pr');
     Route::get('assignment/histori/mr', 'Controlling\AssignmentController@indexHistoryAssignmentMr')->name('assignment.mr.history');
     Route::get('assignment/histori/pr', 'Controlling\AssignmentController@indexHistoryAssignmentPr')->name('assignment.pr.history');
+    Route::get('assignment/track', 'Controlling\AssignmentController@track')->name('assignment.track');
 });
 
 
@@ -703,6 +704,7 @@ Route::get('/datatables-history_assigment_mr', 'Admin\Controlling\AssignmentCont
 Route::get('/datatables-history_assigment_pr', 'Admin\Controlling\AssignmentController@getIndexPr')->name('datatables.history_assigment_pr');
 Route::get('/datatables-staff_assigment_mr', 'Admin\Controlling\Assignment2Controller@getIndexMr')->name('datatables.staff_assigment_mr');
 Route::get('/datatables-staff_assigment_pr', 'Admin\Controlling\Assignment2Controller@getIndexPr')->name('datatables.staff_assigment_pr');
+Route::get('/datatables-track_assignment', 'Admin\Controlling\AssignmentController@getTrack')->name('datatables.assignment.track');
 
 // DOCUMENTS
 Route::get('/documents/purchase-request', function (){

@@ -148,7 +148,7 @@
 
     @if($isAssignerRole)
         <div class="row">
-            <div class="col-md-6 col-sm-6 col-xs-6">
+            <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel tile overflow_hidden">
                     <div class="x_title">
                         <span style="font-size: 24px; color: #000;">Dokumen MR terbaru untuk di-assign ({{ $newMrToAssignCount }})</span>&nbsp;
@@ -195,14 +195,16 @@
                                 </table>
                             @else
                                 <div class="oaerror success">
-                                    <strong>Tidak MR baru yang butuh di-assign</strong>
+                                    <strong>Tidak ada MR baru yang butuh di-assign</strong>
                                 </div>
                             @endif
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-sm-6 col-xs-6">
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel tile overflow_hidden">
                     <div class="x_title">
                         <span style="font-size: 24px; color: #000;">Dokumen PR terbaru untuk di-assign ({{ $newPrToAssignCount }})</span> &nbsp;
@@ -241,7 +243,7 @@
                                 </table>
                             @else
                                 <div class="oaerror success">
-                                    <strong>Tidak PR baru yang butuh di-assign</strong>
+                                    <strong>Tidak ada PR baru yang butuh di-assign</strong>
                                 </div>
                             @endif
                         </div>
@@ -298,7 +300,7 @@
                                 </table>
                             @else
                                 <div class="oaerror success">
-                                    <strong>Tidak assignment MR</strong>
+                                    <strong>Tidak ada assignment MR</strong>
                                 </div>
                             @endif
                         </div>
@@ -342,7 +344,7 @@
                                 </table>
                             @else
                                 <div class="oaerror success">
-                                    <strong>Tidak assignment PR</strong>
+                                    <strong>Tidak ada assignment PR</strong>
                                 </div>
                             @endif
                         </div>

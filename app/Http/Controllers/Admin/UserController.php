@@ -378,7 +378,7 @@ class UserController extends Controller
 
         foreach ($users as $user){
             $roleId = $user->roles->pluck('id')[0];
-            if($roleId === 5 || $roleId === 8 || $roleId === 10){
+            if($roleId === 5){
                 $newUserCollect = collect([
                     'id'        => $user->id,
                     'email'     => $user->email,

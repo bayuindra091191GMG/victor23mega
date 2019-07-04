@@ -17,6 +17,7 @@ use App\Mail\PurchaseOrderMailToCreator;
 use App\Mail\PurchaseOrderApprovedMailNotification;
 use App\Models\ApprovalPurchaseOrder;
 use App\Models\ApprovalRule;
+use App\Models\AssignmentPurchaseRequest;
 use App\Models\Auth\Role\Role;
 use App\Models\Auth\User\User;
 use App\Models\Department;
@@ -775,6 +776,29 @@ class PurchaseOrderHeaderController extends Controller
             catch(\Exception $ex){
                 error_log($ex);
             }
+        }
+
+        // Check assignment
+        $assignmentPr = AssignmentPurchaseRequest::where('purchase_request_id', $purchaseRequest->id)
+            ->where('status_id', 17)
+            ->first();
+
+        if(!empty($assignmentPr) && $allPoed){
+            $assignmentPr->status_id = 18;
+            $assignmentPr->processed_by = $user->id;
+            $assignmentPr->processed_date = $now->toDateTimeString();
+
+            if($user->id != $assignmentPr->assigned_user_id){
+                $assignmentPr->is_different_processor = 1;
+            }
+
+            $assignmentPr->save();
+        }
+
+        // Update processed by for assignment
+        if($allPoed){
+            $purchaseRequest->processed_by = $user->id;
+            $purchaseRequest->save();
         }
 
         Session::flash('message', 'Berhasil membuat Purchase Order!');

@@ -189,14 +189,15 @@
                 },
                 success: function(data) {
                     //alert(data.mr_id);
-                    if ((data.errors)){
+                    let error = data['error'];
+                    if (error !== 'none'){
                         setTimeout(function () {
-                            toastr.error('Gagal assign!', 'Peringatan', {timeOut: 6000, positionClass: "toast-top-center"});
+                            toastr.error(data['error'], 'Peringatan', {timeOut: 6000, positionClass: "toast-top-center"});
                         }, 500);
                     }
                     else{
                         $('#modal_assign').modal('hide');
-                        toastr.success('Berhasil assign!', 'Sukses', {timeOut: 5000});
+                        toastr.success('Berhasil assign!', 'Sukses', {timeOut: 6000, positionClass: "toast-top-center"});
                         $('#row_' + data['mr_id']).html(data['assigned_name']);
                     }
                 }

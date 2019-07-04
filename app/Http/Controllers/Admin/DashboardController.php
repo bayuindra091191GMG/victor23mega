@@ -484,14 +484,14 @@ class DashboardController extends Controller
         $preference = PreferenceCompany::find(1);
         $assignerRoleId = intval($preference->assigner_role_id);
         $isAssignerRole = false;
-        if($currentRole === $assignerRoleId || $currentRole === 1){
+        if($currentRole === $assignerRoleId || $currentRole === 1 || $currentRole === 3){
             $isAssignerRole = true;
             $newMrToAssignList = MaterialRequestHeader::where('status_id', 3)
                 ->where('is_approved', 1)
                 ->where('is_pr_created', 0)
                 ->whereNull('assigned_to')
                 ->orderBy('created_at', 'desc')
-                ->take(10)
+                ->take(5)
                 ->get();
 
             $newMrToAssignCount = DB::table('material_request_headers')
@@ -506,7 +506,7 @@ class DashboardController extends Controller
                 ->where('is_all_poed', 0)
                 ->whereNull('assigned_to')
                 ->orderBy('created_at', 'desc')
-                ->take(10)
+                ->take(5)
                 ->get();
 
             $newPrToAssignCount = DB::table('purchase_request_headers')
@@ -523,13 +523,13 @@ class DashboardController extends Controller
         $assignmentPrList = null;
         $assignmentPrCount = 0;
         $isAssignedRole = false;
-        if($currentRole === 5 || $currentRole === 8 || $currentRole === 10 || $currentRole === 1){
+        if($currentRole === 5 || $currentRole === 1 || $currentRole === 3){
             $isAssignedRole = true;
 
             $assignmentMrList = AssignmentMaterialRequest::where('status_id', 17)
                 ->where('assigned_user_id', $user->id)
                 ->orderBy('created_at')
-                ->take(10)
+                ->take(5)
                 ->get();
 
             $assignmentMrCount = DB::table('assignment_material_requests')
@@ -540,7 +540,7 @@ class DashboardController extends Controller
             $assignmentPrList = AssignmentPurchaseRequest::where('status_id', 17)
                 ->where('assigned_user_id', $user->id)
                 ->orderBy('created_at')
-                ->take(10)
+                ->take(5)
                 ->get();
 
             $assignmentPrCount = DB::table('assignment_purchase_requests')

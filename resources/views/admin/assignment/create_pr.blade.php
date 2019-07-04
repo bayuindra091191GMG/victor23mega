@@ -164,9 +164,10 @@
                     'pr_id': $('#pr_id').val()
                 },
                 success: function(data) {
-                    if ((data.errors)){
+                    let error = data['error'];
+                    if (error !== 'none'){
                         setTimeout(function () {
-                            toastr.error('Gagal assign!', 'Peringatan', {timeOut: 6000, positionClass: "toast-top-center"});
+                            toastr.error(data['error'], 'Peringatan', {timeOut: 6000, positionClass: "toast-top-center"});
                         }, 500);
                     }
                     else{

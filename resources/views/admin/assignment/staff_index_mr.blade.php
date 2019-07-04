@@ -100,15 +100,5 @@
                 }
             });
         });
-
-        $(document).on('click', '.delete-modal', function(){
-            $('#deleteModal').modal({
-                backdrop: 'static',
-                keyboard: false
-            });
-
-            $('#deleted-id').val($(this).data('id'));
-        });
     </script>
-    @include('partials._deletejs', ['routeUrl' => 'admin.departments.destroy', 'redirectUrl' => 'admin.departments'])
 @endsection
