@@ -38,6 +38,9 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $updated_by
  * @property \Carbon\Carbon $updated_at
  * @property int $warehouse_id
+ * @property int $processed_by
+ * @property int $assigned_to
+ * @property \Carbon\Carbon $all_poed_processed_date
  * 
  * @property \App\Models\Department $department
  * @property \App\Models\Department $warehouse
@@ -85,7 +88,8 @@ class PurchaseRequestHeader extends Eloquent
 		'date',
         'approved_date',
 		'closed_at',
-        'priority_limit_date'
+        'priority_limit_date',
+        'all_poed_processed_date'
 	];
 
 	protected $fillable = [
@@ -114,7 +118,8 @@ class PurchaseRequestHeader extends Eloquent
         'warehouse_id',
         'is_reorder',
         'processed_by',
-        'assigned_to'
+        'assigned_to',
+        'all_poed_processed_date'
 	];
 
     public function scopeDateDescending(Builder $query){

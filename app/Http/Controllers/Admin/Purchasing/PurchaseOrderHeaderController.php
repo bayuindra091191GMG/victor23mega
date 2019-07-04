@@ -798,6 +798,7 @@ class PurchaseOrderHeaderController extends Controller
         // Update processed by for assignment
         if($allPoed){
             $purchaseRequest->processed_by = $user->id;
+            $purchaseRequest->all_poed_processed_date = $now->toDateTimeString();
             $purchaseRequest->save();
         }
 

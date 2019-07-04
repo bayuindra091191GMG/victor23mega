@@ -67,36 +67,39 @@
 
     @if(!empty($selectedUserId > -1 && $docType === 'mr'))
         <div class="row">
-            <table class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
-                   width="100%" id="assignment_table">
-                <thead>
-                <tr>
-{{--                    <th class="text-center">No</th>--}}
-{{--                    <th class="text-center">Di-assign ke</th>--}}
-{{--                    <th class="text-center">Di-assign oleh</th>--}}
-{{--                    <th class="text-center">Tanggal Assignment</th>--}}
-{{--                    <th class="text-center">No MR</th>--}}
-{{--                    <th class="text-center">Tanggal buat Dokumen</th>--}}
-{{--                    <th class="text-center">Diproses sesuai assign?</th>--}}
-{{--                    <th class="text-center">Diproses oleh</th>--}}
-{{--                    <th class="text-center">Tanggal diproses</th>--}}
-{{--                    <th class="text-center">Status</th>--}}
-                    <th class="text-center">No</th>
-                    <th class="text-center">Di-assign ke</th>
-                    <th class="text-center">Di-assign oleh</th>
-                    <th class="text-center">Tanggal Assignment</th>
-                    <th class="text-center">Status</th>
-                    <th class="text-center">No MR</th>
-                    <th class="text-center">MR Diproses sesuai assign?</th>
-                    <th class="text-center">Tanggal Proses MR</th>
-                    <th class="text-center">No PR</th>
-                    <th class="text-center">PR Diproses sesuai assign?</th>
-                    <th class="text-center">Tanggal Proses PR</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
+                       width="100%" id="assignment_table">
+                    <thead>
+                    <tr>
+                        {{--                    <th class="text-center">No</th>--}}
+                        {{--                    <th class="text-center">Di-assign ke</th>--}}
+                        {{--                    <th class="text-center">Di-assign oleh</th>--}}
+                        {{--                    <th class="text-center">Tanggal Assignment</th>--}}
+                        {{--                    <th class="text-center">No MR</th>--}}
+                        {{--                    <th class="text-center">Tanggal buat Dokumen</th>--}}
+                        {{--                    <th class="text-center">Diproses sesuai assign?</th>--}}
+                        {{--                    <th class="text-center">Diproses oleh</th>--}}
+                        {{--                    <th class="text-center">Tanggal diproses</th>--}}
+                        {{--                    <th class="text-center">Status</th>--}}
+                        <th class="text-center">No</th>
+                        <th class="text-center">Di-assign ke</th>
+                        <th class="text-center">Di-assign oleh</th>
+                        <th class="text-center">Tanggal Assignment</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">No MR</th>
+                        <th class="text-center">MR Diproses sesuai assign?</th>
+                        <th class="text-center">Tanggal Proses MR</th>
+                        <th class="text-center">No PR</th>
+                        <th class="text-center">PR Diproses sesuai assign?</th>
+                        <th class="text-center">Tanggal Proses PR</th>
+                        <th class="text-center">No PO</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
     @endif
 
@@ -203,6 +206,7 @@
                 {{--});--}}
 
             $('#assignment_table').DataTable({
+                responsive: false,
                 processing: true,
                 serverSide: true,
                 pageLength: 25,
@@ -248,6 +252,7 @@
                             return data;
                         }
                     },
+                    { data: 'po_code', name: 'po_code', class: 'text-center' },
                 ],
                 language: {
                     url: "//cdn.datatables.net/plug-ins/1.10.16/i18n/Indonesian-Alternative.json"
