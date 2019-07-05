@@ -44,6 +44,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \App\Models\Auth\User\User $user
  * @property \App\Models\Site $site
  * @property \Illuminate\Database\Eloquent\Collection $purchase_invoice_details
+ * @property \Illuminate\Database\Eloquent\Collection $payment_requests_pi_details
  *
  * @package App\Models
  */
@@ -224,5 +225,10 @@ class PurchaseInvoiceHeader extends Eloquent
     public function site()
     {
         return $this->belongsTo(\App\Models\Site::class);
+    }
+
+    public function payment_requests_pi_details()
+    {
+        return $this->hasMany(\App\Models\PaymentRequestsPiDetail::class, 'purchase_invoice_header_id');
     }
 }

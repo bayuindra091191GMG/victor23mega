@@ -50,7 +50,16 @@ class AssignmentTrackingTransformer extends TransformerAbstract
 
             $prCode = '-';
             $poCode = '-';
+            $piCode = '-';
+            $rfpCode = '-';
             $processedPrDate = '-';
+            $prCreatedBy = '-';
+            $poCreatedBy = '-';
+            $piCreatedBy = '-';
+            $rfpCreatedBy = '-';
+            $poCreatedDate = '-';
+            $piCreatedDate = '-';
+            $rfpCreatedDate = '-';
             if($history->material_request_header->is_pr_created === 1){
                 $trackStatus = 'Sudah Proses MR ke PR';
                 $prHeader = $history->material_request_header->purchase_request_headers->first();
@@ -60,15 +69,7 @@ class AssignmentTrackingTransformer extends TransformerAbstract
                 // Get PR detail url
                 $prShowRoute = route('admin.purchase_requests.show', ['purchase_request' => $prHeader]);
                 $prCode = "<a name='". $prHeader->code. "' style='text-decoration: underline; font-weight: bold;' href='" . $prShowRoute. "' target='_blank'>". $prHeader->code. "</a>";
-
-                // Get PO datas
-                if($prHeader->purchase_order_headers->count() > 0){
-                    $poCode = '';
-                    foreach ($prHeader->purchase_order_headers as $poHeader){
-                        $poShowRoute = route('admin.purchase_orders.show', ['purchase_order' => $poHeader]);
-                        $poCode .= "<a name='". $poHeader->code. "' style='text-decoration: underline; font-weight: bold;' href='" . $poShowRoute. "' target='_blank'>". $poHeader->code. "</a><br/>";
-                    }
-                }
+                $prCreatedBy = $prHeader->createdBy->name;
 
                 if($prHeader->is_all_poed === 1){
                     $differentPrProcessor = $prHeader->processed_by !== $history->assigned_user_id ? 'Tidak Sesuai' : 'Sesuai';
@@ -76,6 +77,71 @@ class AssignmentTrackingTransformer extends TransformerAbstract
                 }
                 elseif ($prHeader->is_all_poed === 2){
                     $trackStatus = 'Sebagian Proses PR ke PO';
+                }
+
+                // Get PO datas
+                $isPiFound = false;
+                $isRfpFound = false;
+                if($prHeader->purchase_order_headers->count() > 0){
+                    $poCode = '';
+                    $piCode = '';
+                    $rfpCode = '';
+                    $poCreatedBy = '';
+                    $piCreatedBy = '';
+                    $rfpCreatedBy = '';
+                    $poCreatedDate = '';
+                    $piCreatedDate = '';
+                    $rfpCreatedDate = '';
+                    foreach ($prHeader->purchase_order_headers as $poHeader){
+                        $poShowRoute = route('admin.purchase_orders.show', ['purchase_order' => $poHeader]);
+                        $poCode .= "<a name='". $poHeader->code. "' style='text-decoration: underline; font-weight: bold;' href='" . $poShowRoute. "' target='_blank'>". $poHeader->code. "</a><br/>";
+                        $poCreatedBy = $poHeader->createdBy->name. '<br/>';
+                        $poCreatedDate = Carbon::parse($poHeader->created_at)->format('d M Y'). '<br/>';
+
+                        // Get PI datas
+                        if($poHeader->purchase_invoice_headers->count() > 0){
+                            $isPiFound = true;
+                            foreach ($poHeader->purchase_invoice_headers as $piHeader) {
+                                $piShowRoute = route('admin.purchase_invoices.show', ['purchase_invoice' => $piHeader]);
+                                $piCode .= "<a name='". $piHeader->code. "' style='text-decoration: underline; font-weight: bold;' href='" . $piShowRoute. "' target='_blank'>". $piHeader->code. "</a><br/>";
+                                $piCreatedBy .= $piHeader->createdBy->name. '<br/>';
+                                $piCreatedDate = Carbon::parse($piHeader->created_at)->format('d M Y'). '<br/>';
+
+                                // Get RFP by PI datas
+                                if($piHeader->payment_requests_pi_details->count() > 0){
+                                    $isRfpFound = true;
+                                    foreach ($piHeader->payment_requests_pi_details as $rfpPiDetail){
+                                        $rfpPiShowRoute = route('admin.payment_requests.show', ['payment_request' => $rfpPiDetail->payment_request]);
+                                        $rfpCode .= "<a name='". $rfpPiDetail->payment_request->code. "' style='text-decoration: underline; font-weight: bold;' href='" . $rfpPiShowRoute. "' target='_blank'>". $rfpPiDetail->payment_request->code. "</a><br/>";
+                                        $rfpCreatedBy .= $rfpPiDetail->payment_request->createdBy->name. '<br/>';
+                                        $rfpCreatedDate = Carbon::parse($rfpPiDetail->payment_request->created_at)->format('d M Y'). '<br/>';
+                                    }
+                                }
+                            }
+                        }
+
+                        // Get RFP by PO datas
+                        if($poHeader->payment_requests_po_details->count() > 0){
+                            $isRfpFound = true;
+                            foreach ($poHeader->payment_requests_po_details as $rfpPoDetail){
+                                $rfpPoShowRoute = route('admin.payment_requests.show', ['payment_request' => $rfpPoDetail->payment_request]);
+                                $rfpCode .= "<a name='". $rfpPoDetail->payment_request->code. "' style='text-decoration: underline; font-weight: bold;' href='" . $rfpPoShowRoute. "' target='_blank'>". $rfpPoDetail->payment_request->code. "</a><br/>";
+                                $rfpCreatedBy .= $rfpPoDetail->payment_request->createdBy->name. '<br/>';
+                            }
+                        }
+                    }
+                }
+
+                if(!$isPiFound){
+                    $piCode = '-';
+                    $piCreatedBy = '-';
+                    $piCreatedDate = '-';
+                }
+
+                if(!$isRfpFound){
+                    $rfpCode = '-';
+                    $rfpCreatedBy = '-';
+                    $rfpCreatedDate = '-';
                 }
             }
 
@@ -89,8 +155,16 @@ class AssignmentTrackingTransformer extends TransformerAbstract
                 'different_mr_processor'=> $differentMrProcessor,
                 'pr_code'               => $prCode,
                 'processed_pr_date'     => $processedPrDate,
-                'different_pr_processor'=> $differentPrProcessor,
-                'po_code'               => $poCode
+                'pr_created_by'         => $prCreatedBy,
+                'po_code'               => $poCode,
+                'po_created_at'         => $poCreatedDate,
+                'po_created_by'         => $poCreatedBy,
+                'pi_code'               => $piCode,
+                'pi_created_at'         => $piCreatedDate,
+                'pi_created_by'         => $piCreatedBy,
+                'rfp_code'              => $rfpCode,
+                'rfp_created_at'        => $rfpCreatedDate,
+                'rfp_created_by'        => $rfpCreatedBy
             ];
         }
         catch (\Exception $exception){

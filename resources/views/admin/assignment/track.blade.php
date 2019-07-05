@@ -88,12 +88,19 @@
                         <th class="text-center">Tanggal Assignment</th>
                         <th class="text-center">Status</th>
                         <th class="text-center">No MR</th>
-                        <th class="text-center">MR Diproses sesuai assign?</th>
-                        <th class="text-center">Tanggal Proses MR</th>
+                        <th class="text-center">Tanggal Proses MR ke PR</th>
                         <th class="text-center">No PR</th>
-                        <th class="text-center">PR Diproses sesuai assign?</th>
-                        <th class="text-center">Tanggal Proses PR</th>
+                        <th class="text-center">PR Dibuat Oleh</th>
+                        <th class="text-center">Tanggal Proses PR ke PO</th>
                         <th class="text-center">No PO</th>
+                        <th class="text-center">Tanggal PO Dibuat</th>
+                        <th class="text-center">PO Dibuat Oleh</th>
+                        <th class="text-center">No PI</th>
+                        <th class="text-center">Tanggal PI Dibuat</th>
+                        <th class="text-center">PI Dibuat Oleh</th>
+                        <th class="text-center">No RFP</th>
+                        <th class="text-center">Tanggal RFP Dibuat</th>
+                        <th class="text-center">RFP Dibuat Oleh</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -233,7 +240,6 @@
                     },
                     { data: 'track_status', name: 'track_status', class: 'text-center' },
                     { data: 'mr_code', name: 'mr_code', class: 'text-center' },
-                    { data: 'different_mr_processor', name: 'different_mr_processor', class: 'text-center' },
                     { data: 'processed_mr_date', name: 'processed_mr_date', class: 'text-center',
                         render: function ( data, type, row ){
                             if ( (type === 'display' || type === 'filter') && data !== '-'){
@@ -243,7 +249,7 @@
                         }
                     },
                     { data: 'pr_code', name: 'mr_code', class: 'text-center' },
-                    { data: 'different_pr_processor', name: 'different_pr_processor', class: 'text-center' },
+                    { data: 'pr_created_by', name: 'pr_created_by', class: 'text-center' },
                     { data: 'processed_pr_date', name: 'processed_pr_date', class: 'text-center',
                         render: function ( data, type, row ){
                             if ( (type === 'display' || type === 'filter') && data !== '-' ){
@@ -253,6 +259,14 @@
                         }
                     },
                     { data: 'po_code', name: 'po_code', class: 'text-center' },
+                    { data: 'po_created_at', name: 'po_created_at', class: 'text-center' },
+                    { data: 'po_created_by', name: 'po_created_by', class: 'text-center' },
+                    { data: 'pi_code', name: 'pi_code', class: 'text-center' },
+                    { data: 'pi_created_at', name: 'pi_created_at', class: 'text-center' },
+                    { data: 'pi_created_by', name: 'pi_created_by', class: 'text-center' },
+                    { data: 'rfp_code', name: 'rfp_code', class: 'text-center' },
+                    { data: 'rfp_created_at', name: 'rfp_created_at', class: 'text-center' },
+                    { data: 'rfp_created_by', name: 'rfp_created_by', class: 'text-center' },
                 ],
                 language: {
                     url: "//cdn.datatables.net/plug-ins/1.10.16/i18n/Indonesian-Alternative.json"
