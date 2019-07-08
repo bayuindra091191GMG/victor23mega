@@ -203,59 +203,59 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="x_panel tile overflow_hidden">
-                    <div class="x_title">
-                        <span style="font-size: 24px; color: #000;">Dokumen PR terbaru untuk di-assign ({{ $newPrToAssignCount }})</span> &nbsp;
-                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Kondisi PR yang belum diproses, status Open dan belum di-assign"><i class="fa fa-question"></i></button>
-                        <div class="nav navbar-right">
-                            <a href="{{ route('admin.assignment.pr.assign') }}" class="btn btn-primary">
-                                Lihat Semua
-                            </a>
-                        </div>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
-                        <div class="warning-notice">
-                            @if($newPrToAssignList->count() > 0)
-                                <table class="table">
-                                    <thead>
-                                    <tr>
-                                        <th>No PR</th>
-                                        <th>Tanggal PR</th>
-                                        <th>Prioritas</th>
-                                        <th>Departemen</th>
-                                        <th>Dibuat oleh</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach($newPrToAssignList as $prHeader)
-                                        <tr>
-                                            <td><a href="{{ route('admin.purchase_requests.show', ['purchase_request' => $prHeader]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $prHeader->code }}</a></td>
-                                            <td>{{ $prHeader->date_string }}</td>
-                                            <td>{{ $prHeader->priority }}</td>
-                                            <td>{{ $prHeader->department->name }}</td>
-                                            <td>{{ $prHeader->createdBy->name }}</td>
-                                        </tr>
-                                    @endforeach
-                                    </tbody>
-                                </table>
-                            @else
-                                <div class="oaerror success">
-                                    <strong>Tidak ada PR baru yang butuh di-assign</strong>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+{{--        <div class="row">--}}
+{{--            <div class="col-md-12 col-sm-12 col-xs-12">--}}
+{{--                <div class="x_panel tile overflow_hidden">--}}
+{{--                    <div class="x_title">--}}
+{{--                        <span style="font-size: 24px; color: #000;">Dokumen PR terbaru untuk di-assign ({{ $newPrToAssignCount }})</span> &nbsp;--}}
+{{--                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Kondisi PR yang belum diproses, status Open dan belum di-assign"><i class="fa fa-question"></i></button>--}}
+{{--                        <div class="nav navbar-right">--}}
+{{--                            <a href="{{ route('admin.assignment.pr.assign') }}" class="btn btn-primary">--}}
+{{--                                Lihat Semua--}}
+{{--                            </a>--}}
+{{--                        </div>--}}
+{{--                        <div class="clearfix"></div>--}}
+{{--                    </div>--}}
+{{--                    <div class="x_content">--}}
+{{--                        <div class="warning-notice">--}}
+{{--                            @if($newPrToAssignList->count() > 0)--}}
+{{--                                <table class="table">--}}
+{{--                                    <thead>--}}
+{{--                                    <tr>--}}
+{{--                                        <th>No PR</th>--}}
+{{--                                        <th>Tanggal PR</th>--}}
+{{--                                        <th>Prioritas</th>--}}
+{{--                                        <th>Departemen</th>--}}
+{{--                                        <th>Dibuat oleh</th>--}}
+{{--                                    </tr>--}}
+{{--                                    </thead>--}}
+{{--                                    <tbody>--}}
+{{--                                    @foreach($newPrToAssignList as $prHeader)--}}
+{{--                                        <tr>--}}
+{{--                                            <td><a href="{{ route('admin.purchase_requests.show', ['purchase_request' => $prHeader]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $prHeader->code }}</a></td>--}}
+{{--                                            <td>{{ $prHeader->date_string }}</td>--}}
+{{--                                            <td>{{ $prHeader->priority }}</td>--}}
+{{--                                            <td>{{ $prHeader->department->name }}</td>--}}
+{{--                                            <td>{{ $prHeader->createdBy->name }}</td>--}}
+{{--                                        </tr>--}}
+{{--                                    @endforeach--}}
+{{--                                    </tbody>--}}
+{{--                                </table>--}}
+{{--                            @else--}}
+{{--                                <div class="oaerror success">--}}
+{{--                                    <strong>Tidak ada PR baru yang butuh di-assign</strong>--}}
+{{--                                </div>--}}
+{{--                            @endif--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        </div>--}}
     @endif
 
     @if($isAssignedRole)
         <div class="row">
-            <div class="col-md-6 col-sm-6 col-xs-6">
+            <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel tile overflow_hidden">
                     <div class="x_title">
                         <span style="font-size: 24px; color: #000;">Job Assignment MR ({{ $assignmentMrCount }})</span> &nbsp;
@@ -307,50 +307,50 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-sm-6 col-xs-6">
-                <div class="x_panel tile overflow_hidden">
-                    <div class="x_title">
-                        <span style="font-size: 24px; color: #000;">Job Assignment PR ({{ $assignmentPrCount }})</span> &nbsp;
-                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Anda ditugaskan untuk proses PR berikut"><i class="fa fa-question"></i></button>
-                        <div class="nav navbar-right">
-                            <a href="{{ route('admin.assignment.pr') }}" class="btn btn-primary">
-                                Lihat Semua
-                            </a>
-                        </div>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
-                        <div class="warning-notice">
-                            @if($assignmentPrList->count() > 0)
-                                <table class="table">
-                                    <thead>
-                                    <tr>
-                                        <th>Tanggal Assignment</th>
-                                        <th>No PR</th>
-                                        <th>Tanggal PR</th>
-                                        <th>Di-assign oleh</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach($assignmentPrList as $assignment)
-                                        <tr>
-                                            <td>{{ $assignment->created_at_string }}</td>
-                                            <td><a href="{{ route('admin.purchase_requests.show', ['purchase_request' => $assignment->purchase_request_header]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $assignment->purchase_request_header->code }}</a></td>
-                                            <td>{{ $assignment->purchase_request_header->date_string }}</td>
-                                            <td>{{ $assignment->assignerUser->name }}</td>
-                                        </tr>
-                                    @endforeach
-                                    </tbody>
-                                </table>
-                            @else
-                                <div class="oaerror success">
-                                    <strong>Tidak ada assignment PR</strong>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
+{{--            <div class="col-md-6 col-sm-6 col-xs-6">--}}
+{{--                <div class="x_panel tile overflow_hidden">--}}
+{{--                    <div class="x_title">--}}
+{{--                        <span style="font-size: 24px; color: #000;">Job Assignment PR ({{ $assignmentPrCount }})</span> &nbsp;--}}
+{{--                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Anda ditugaskan untuk proses PR berikut"><i class="fa fa-question"></i></button>--}}
+{{--                        <div class="nav navbar-right">--}}
+{{--                            <a href="{{ route('admin.assignment.pr') }}" class="btn btn-primary">--}}
+{{--                                Lihat Semua--}}
+{{--                            </a>--}}
+{{--                        </div>--}}
+{{--                        <div class="clearfix"></div>--}}
+{{--                    </div>--}}
+{{--                    <div class="x_content">--}}
+{{--                        <div class="warning-notice">--}}
+{{--                            @if($assignmentPrList->count() > 0)--}}
+{{--                                <table class="table">--}}
+{{--                                    <thead>--}}
+{{--                                    <tr>--}}
+{{--                                        <th>Tanggal Assignment</th>--}}
+{{--                                        <th>No PR</th>--}}
+{{--                                        <th>Tanggal PR</th>--}}
+{{--                                        <th>Di-assign oleh</th>--}}
+{{--                                    </tr>--}}
+{{--                                    </thead>--}}
+{{--                                    <tbody>--}}
+{{--                                    @foreach($assignmentPrList as $assignment)--}}
+{{--                                        <tr>--}}
+{{--                                            <td>{{ $assignment->created_at_string }}</td>--}}
+{{--                                            <td><a href="{{ route('admin.purchase_requests.show', ['purchase_request' => $assignment->purchase_request_header]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $assignment->purchase_request_header->code }}</a></td>--}}
+{{--                                            <td>{{ $assignment->purchase_request_header->date_string }}</td>--}}
+{{--                                            <td>{{ $assignment->assignerUser->name }}</td>--}}
+{{--                                        </tr>--}}
+{{--                                    @endforeach--}}
+{{--                                    </tbody>--}}
+{{--                                </table>--}}
+{{--                            @else--}}
+{{--                                <div class="oaerror success">--}}
+{{--                                    <strong>Tidak ada assignment PR</strong>--}}
+{{--                                </div>--}}
+{{--                            @endif--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
         </div>
     @endif
 

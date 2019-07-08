@@ -95,15 +95,15 @@ class SettingController extends Controller
 
     public function emailTest(){
         try{
-//            Mail::to('hellbardx2@gmail.com')->send(new TestingMail());
+            Mail::to('hellbardx2@gmail.com')->send(new TestingMail());
 
-            $data = [
-                'test'  => 'test'
-            ];
-
-            Mailgun::send('email.test', $data, function ($message) {
-                $message->to('hellbardx2@gmail.com', 'John Doe')->subject('DWS TEST EMAIL');
-            });
+//            $data = [
+//                'test'  => 'test'
+//            ];
+//
+//            Mailgun::send('email.test', $data, function ($message) {
+//                $message->to('hellbardx2@gmail.com', 'John Doe')->subject('DWS TEST EMAIL');
+//            });
         }
         catch (\Exception $ex){
             dd($ex);

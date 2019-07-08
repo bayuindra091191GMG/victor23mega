@@ -501,20 +501,20 @@ class DashboardController extends Controller
                 ->whereNull('assigned_to')
                 ->count();
 
-            $newPrToAssignList = PurchaseRequestHeader::where('status_id', 3)
-                ->where('is_approved', 1)
-                ->where('is_all_poed', 0)
-                ->whereNull('assigned_to')
-                ->orderBy('created_at', 'desc')
-                ->take(5)
-                ->get();
-
-            $newPrToAssignCount = DB::table('purchase_request_headers')
-                ->where('status_id', 3)
-                ->where('is_approved', 1)
-                ->where('is_all_poed', 0)
-                ->whereNull('assigned_to')
-                ->count();
+//            $newPrToAssignList = PurchaseRequestHeader::where('status_id', 3)
+//                ->where('is_approved', 1)
+//                ->where('is_all_poed', 0)
+//                ->whereNull('assigned_to')
+//                ->orderBy('created_at', 'desc')
+//                ->take(5)
+//                ->get();
+//
+//            $newPrToAssignCount = DB::table('purchase_request_headers')
+//                ->where('status_id', 3)
+//                ->where('is_approved', 1)
+//                ->where('is_all_poed', 0)
+//                ->whereNull('assigned_to')
+//                ->count();
         }
 
         // Get assignment notifications for purchasing staff
@@ -537,16 +537,16 @@ class DashboardController extends Controller
                 ->where('assigned_user_id', $user->id)
                 ->count();
 
-            $assignmentPrList = AssignmentPurchaseRequest::where('status_id', 17)
-                ->where('assigned_user_id', $user->id)
-                ->orderBy('created_at')
-                ->take(5)
-                ->get();
-
-            $assignmentPrCount = DB::table('assignment_purchase_requests')
-                ->where('status_id', 17)
-                ->where('assigned_user_id', $user->id)
-                ->count();
+//            $assignmentPrList = AssignmentPurchaseRequest::where('status_id', 17)
+//                ->where('assigned_user_id', $user->id)
+//                ->orderBy('created_at')
+//                ->take(5)
+//                ->get();
+//
+//            $assignmentPrCount = DB::table('assignment_purchase_requests')
+//                ->where('status_id', 17)
+//                ->where('assigned_user_id', $user->id)
+//                ->count();
         }
 
         $data = [
