@@ -36,6 +36,7 @@
                 <th class="text-center">Tanggal</th>
                 <th class="text-center">Departemen</th>
                 <th class="text-center">Prioritas</th>
+                <th class="text-center">Kode Unit</th>
                 <th class="text-center">Dibuat Oleh</th>
                 <th class="text-center">Tanggal Dibuat</th>
             </tr>
@@ -57,6 +58,7 @@
                         <td class="text-center">{{ $header->date_string }}</td>
                         <td class="text-center">{{ $header->department->name }}</td>
                         <td class="text-center">{{ $header->priority }}</td>
+                        <td class="text-center">{{ $header->machinery->code ?? '-' }}</td>
                         <td class="text-center">{{ $header->createdBy->name }}</td>
                         <td class="text-center">{{ $header->created_at_string }}</td>
                     </tr>

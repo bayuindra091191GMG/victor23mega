@@ -111,7 +111,8 @@ class AssignmentController extends Controller
     }
 
     public function createAssignmentMr(){
-        $mrHeaders = MaterialRequestHeader::where('status_id', 3)
+        $mrHeaders = MaterialRequestHeader::with(['department', 'machinery', 'createdBy'])
+            ->where('status_id', 3)
             ->where('is_approved', 1)
             ->where('is_pr_created', 0)
             ->whereNull('assigned_to')

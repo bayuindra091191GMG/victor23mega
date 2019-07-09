@@ -482,9 +482,10 @@ class DashboardController extends Controller
         $newPrToAssignList = null;
         $newPrToAssignCount = 0;
         $preference = PreferenceCompany::find(1);
-        $assignerRoleId = intval($preference->assigner_role_id);
+//        $assignerRoleId = intval($preference->assigner_role_id);
+        $assignerUserId = $user->id;
         $isAssignerRole = false;
-        if($currentRole === $assignerRoleId || $currentRole === 1 || $currentRole === 3){
+        if($assignerUserId === 23 || $assignerUserId === 32 || $currentRole === 1 || $currentRole === 3){
             $isAssignerRole = true;
             $newMrToAssignList = MaterialRequestHeader::where('status_id', 3)
                 ->where('is_approved', 1)
@@ -526,14 +527,12 @@ class DashboardController extends Controller
         if($currentRole === 5 || $currentRole === 1 || $currentRole === 3){
             $isAssignedRole = true;
 
-            $assignmentMrList = AssignmentMaterialRequest::where('status_id', 17)
-                ->where('assigned_user_id', $user->id)
+            $assignmentMrList = AssignmentMaterialRequest::where('assigned_user_id', $user->id)
                 ->orderBy('created_at')
                 ->take(5)
                 ->get();
 
             $assignmentMrCount = DB::table('assignment_material_requests')
-                ->where('status_id', 17)
                 ->where('assigned_user_id', $user->id)
                 ->count();
 

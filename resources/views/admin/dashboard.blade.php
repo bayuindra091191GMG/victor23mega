@@ -170,6 +170,7 @@
                                         <th>Tanggal MR</th>
                                         <th>Prioritas</th>
                                         <th>Departemen</th>
+                                        <th>Kode Unit</th>
                                         <th>Dibuat oleh</th>
                                     </tr>
                                     </thead>
@@ -188,6 +189,7 @@
                                             <td>{{ $mrHeader->date_string }}</td>
                                             <td>{{ $mrHeader->priority }}</td>
                                             <td>{{ $mrHeader->department->name }}</td>
+                                            <td>{{ $mrHeader->machinery->code ?? '-' }}</td>
                                             <td>{{ $mrHeader->createdBy->name }}</td>
                                         </tr>
                                     @endforeach
