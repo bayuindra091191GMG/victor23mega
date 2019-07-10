@@ -14,19 +14,19 @@
         <div class="clearfix"></div>
     </div>
 
-    <div class="ln_solid"></div>
-    <div class="panel-heading">
-        <ul class="nav nav-pills nav-justified thumbnail custom-color" style="height:auto!important;">
-            <li class="active"><a>
-                    <h4 class="list-group-item-heading"><b>Tugas Material Request</b></h4>
-                </a>
-            </li>
-            <li><a href="{{route('admin.assignment.pr')}}">
-                    <h4 class="list-group-item-heading"><b>Tugas Purchase Request</b></h4>
-                </a>
-            </li>
-        </ul>
-    </div>
+{{--    <div class="ln_solid"></div>--}}
+{{--    <div class="panel-heading">--}}
+{{--        <ul class="nav nav-pills nav-justified thumbnail custom-color" style="height:auto!important;">--}}
+{{--            <li class="active"><a>--}}
+{{--                    <h4 class="list-group-item-heading"><b>Tugas Material Request</b></h4>--}}
+{{--                </a>--}}
+{{--            </li>--}}
+{{--            <li><a href="{{route('admin.assignment.pr')}}">--}}
+{{--                    <h4 class="list-group-item-heading"><b>Tugas Purchase Request</b></h4>--}}
+{{--                </a>--}}
+{{--            </li>--}}
+{{--        </ul>--}}
+{{--    </div>--}}
 
     <div class="panel-body">
         <div class="tab-content">

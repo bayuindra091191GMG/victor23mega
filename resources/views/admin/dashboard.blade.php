@@ -152,7 +152,7 @@
                 <div class="x_panel tile overflow_hidden">
                     <div class="x_title">
                         <span style="font-size: 24px; color: #000;">Dokumen MR terbaru untuk di-assign ({{ $newMrToAssignCount }})</span>&nbsp;
-                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Kondisi MR sudah di-approve, status Open, belum diproses ke PR dan belum di-assign"><i class="fa fa-question"></i></button>
+                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Kondisi MR sudah di-approve, status Open, belum proses ke PR, belum proses ke PO dan belum di-assign"><i class="fa fa-question"></i></button>
                         <div class="nav navbar-right">
                             <a href="{{ route('admin.assignment.mr.assign') }}" class="btn btn-primary">
                                 Lihat Semua
@@ -261,7 +261,7 @@
                 <div class="x_panel tile overflow_hidden">
                     <div class="x_title">
                         <span style="font-size: 24px; color: #000;">Job Assignment MR ({{ $assignmentMrCount }})</span> &nbsp;
-                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Anda ditugaskan untuk proses MR berikut"><i class="fa fa-question"></i></button>
+                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Anda ditugaskan untuk proses MR berikut sampai tahap PO"><i class="fa fa-question"></i></button>
                         <div class="nav navbar-right">
                             <a href="{{ route('admin.assignment.mr') }}" class="btn btn-primary">
                                 Lihat Semua

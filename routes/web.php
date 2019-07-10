@@ -702,7 +702,7 @@ Route::get('/datatables-purchase_order_index_chart', 'Admin\DashboardController@
 // Assignment
 Route::get('/datatables-history_assigment_mr', 'Admin\Controlling\AssignmentController@getIndexMr')->name('datatables.history_assigment_mr');
 Route::get('/datatables-history_assigment_pr', 'Admin\Controlling\AssignmentController@getIndexPr')->name('datatables.history_assigment_pr');
-Route::get('/datatables-staff_assigment_mr', 'Admin\Controlling\Assignment2Controller@getIndexMr')->name('datatables.staff_assigment_mr');
+Route::get('/datatables-staff_assigment_mr', 'Admin\Controlling\AssignmentController@getIndexStaffMr')->name('datatables.staff_assigment_mr');
 Route::get('/datatables-staff_assigment_pr', 'Admin\Controlling\Assignment2Controller@getIndexPr')->name('datatables.staff_assigment_pr');
 Route::get('/datatables-track_assignment', 'Admin\Controlling\AssignmentController@getTrack')->name('datatables.assignment.track');
 

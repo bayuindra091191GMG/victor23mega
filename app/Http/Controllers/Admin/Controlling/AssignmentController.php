@@ -91,6 +91,41 @@ class AssignmentController extends Controller
         }
     }
 
+    public function getIndexStaffMr(Request $request)
+    {
+        try{
+//            $start = Carbon::createFromFormat('d M Y', $request->input('date_start'), 'Asia/Jakarta');
+//            $end = Carbon::createFromFormat('d M Y', $request->input('date_end'), 'Asia/Jakarta');
+
+            $user = Auth::user();
+
+            $assignmentMrRawList = AssignmentMaterialRequest::where('assigned_user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            $assignmentMrList = collect();
+            foreach ($assignmentMrRawList as $mrToAssign){
+                if($mrToAssign->material_request_header->is_pr_created  === 1){
+                    $prHeader = $mrToAssign->material_request_header->purchase_request_headers->first();
+                    if($prHeader->is_all_poed === 0 || $prHeader->is_all_poed === 2){
+                        $assignmentMrList->push($mrToAssign);
+                    }
+                }
+                else{
+                    $assignmentMrList->push($mrToAssign);
+                }
+            }
+
+            return DataTables::of($assignmentMrList)
+                ->setTransformer(new AssignmentMrTransformer)
+                ->addIndexColumn()
+                ->make(true);
+        }
+        catch (\Exception $ex){
+            error_log($ex);
+        }
+    }
+
     public function getIndexPr(Request $request)
     {
         try{

@@ -527,14 +527,26 @@ class DashboardController extends Controller
         if($currentRole === 5 || $currentRole === 1 || $currentRole === 3){
             $isAssignedRole = true;
 
-            $assignmentMrList = AssignmentMaterialRequest::where('assigned_user_id', $user->id)
+            $assignmentMrRawList = AssignmentMaterialRequest::where('assigned_user_id', $user->id)
                 ->orderBy('created_at')
-                ->take(5)
                 ->get();
 
-            $assignmentMrCount = DB::table('assignment_material_requests')
-                ->where('assigned_user_id', $user->id)
-                ->count();
+            $assignmentMrList = collect();
+            foreach ($assignmentMrRawList as $mrToAssign){
+                if($mrToAssign->material_request_header->is_pr_created  === 1){
+                    $prHeader = $mrToAssign->material_request_header->purchase_request_headers->first();
+                    if($prHeader->is_all_poed === 0 || $prHeader->is_all_poed === 2){
+                        $assignmentMrList->push($mrToAssign);
+                    }
+                }
+                else{
+                    $assignmentMrList->push($mrToAssign);
+                }
+            }
+
+            $assignmentMrList = $assignmentMrList->take(5);
+
+            $assignmentMrCount = $assignmentMrList->count();
 
 //            $assignmentPrList = AssignmentPurchaseRequest::where('status_id', 17)
 //                ->where('assigned_user_id', $user->id)
