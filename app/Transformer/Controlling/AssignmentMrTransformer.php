@@ -50,6 +50,19 @@ class AssignmentMrTransformer extends TransformerAbstract
                 $differentProcessor = $history->is_different_processor === 1 ? 'Tidak Sesuai' : 'Sesuai';
             }
 
+            $status = $history->status->description;
+
+            // Track PO status
+            if($history->material_request_header->is_pr_created === 1){
+                $prHeader = $history->material_request_header->purchase_request_headers->first();
+                if($prHeader->is_all_poed === 2){
+                    $status = 'Partial PO';
+                }
+                elseif($prHeader->is_all_poed === 1){
+                    $status = 'Complete PO';
+                }
+            }
+
             return[
                 'created_at'            => $createdDate,
                 'mr_code'               => $mrCode,
@@ -59,7 +72,7 @@ class AssignmentMrTransformer extends TransformerAbstract
                 'processed_by'          => $history->processedBy->name ?? 'Belum Diproses',
                 'processed_date'        => $processedDate ?? '-',
                 'different_processor'   => $differentProcessor,
-                'status'                => $history->status->description,
+                'status'                => $status
             ];
         }
         catch (\Exception $exception){

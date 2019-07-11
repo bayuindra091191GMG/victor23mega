@@ -33,26 +33,28 @@
         </div>
     </div>
     <div class="row">
-        <table class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
-               width="100%" id="assignment_table">
-            <thead>
-            <tr>
-                <th class="text-center">No</th>
-                <th class="text-center">Tanggal Assignment</th>
-                <th class="text-center">No MR</th>
-                <th class="text-center">Tanggal buat Dokumen</th>
-                <th class="text-center">Di-assign ke</th>
-                <th class="text-center">Di-assign oleh</th>
-                <th class="text-center">Diproses sesuai assign?</th>
-                <th class="text-center">Diproses oleh</th>
-                <th class="text-center">Tanggal diproses</th>
-                <th class="text-center">Status</th>
-{{--                <th class="text-center">Tindakan</th>--}}
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
+                   width="100%" id="assignment_table">
+                <thead>
+                <tr>
+                    <th class="text-center">No</th>
+                    <th class="text-center">Tanggal Assignment</th>
+                    <th class="text-center">Status Assignment</th>
+                    <th class="text-center">No MR</th>
+                    <th class="text-center">Tanggal buat Dokumen</th>
+                    <th class="text-center">Di-assign ke</th>
+                    <th class="text-center">Di-assign oleh</th>
+                    <th class="text-center">Diproses sesuai assign?</th>
+                    <th class="text-center">Diproses oleh</th>
+                    <th class="text-center">Tanggal diproses</th>
+                    {{--                <th class="text-center">Tindakan</th>--}}
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     @include('partials._delete')
@@ -82,6 +84,7 @@
             $('#assignment_table').DataTable({
                 processing: true,
                 serverSide: true,
+                responsive: false,
                 pageLength: 50,
                 ajax: {
                     url: '{!! route('datatables.history_assigment_mr') !!}',
@@ -100,6 +103,7 @@
                             return data;
                         }
                     },
+                    { data: 'status', name: 'status', class: 'text-center' },
                     { data: 'mr_code', name: 'mr_code', class: 'text-center' },
                     { data: 'doc_created_at', name: 'doc_created_at', class: 'text-center',
                         render: function ( data, type, row ){
@@ -121,7 +125,6 @@
                             return data;
                         }
                     },
-                    { data: 'status', name: 'status', class: 'text-center' }
                     // { data: 'action', name:'action', orderable: false, searchable: false, class: 'text-center' }
                 ],
                 language: {
