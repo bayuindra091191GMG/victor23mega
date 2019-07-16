@@ -528,6 +528,7 @@ class DashboardController extends Controller
             $isAssignedRole = true;
 
             $assignmentMrRawList = AssignmentMaterialRequest::where('assigned_user_id', $user->id)
+                ->where('status_id', 3)
                 ->orderBy('created_at')
                 ->get();
 
