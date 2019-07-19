@@ -33,11 +33,13 @@ class AssignmentController extends Controller
             $start = Carbon::createFromFormat('d M Y', $dateStartDecoded, 'Asia/Jakarta');
             $end = Carbon::createFromFormat('d M Y', $dateEndDecoded, 'Asia/Jakarta');
 
-            if($end->gt($start)){
+            if($end->greaterThanOrEqualTo($start)){
                 $filterDateStart = $dateStartDecoded;
                 $filterDateEnd = $dateEndDecoded;
             }
         }
+
+        //dd($filterDateStart. ' - '. $filterDateEnd);
 
         $data = [
             'filterDateStart'   => $filterDateStart,
@@ -77,6 +79,8 @@ class AssignmentController extends Controller
         try{
             $start = Carbon::createFromFormat('d M Y', $request->input('date_start'), 'Asia/Jakarta');
             $end = Carbon::createFromFormat('d M Y', $request->input('date_end'), 'Asia/Jakarta');
+            $start->subDays(1);
+            $end->addDays(1);
 
             $histories = AssignmentMaterialRequest::whereBetween('created_at', array($start->toDateTimeString(), $end->toDateTimeString()))
                 ->get();
@@ -318,7 +322,7 @@ class AssignmentController extends Controller
                 $start = Carbon::createFromFormat('d M Y', $dateStartDecoded, 'Asia/Jakarta');
                 $end = Carbon::createFromFormat('d M Y', $dateEndDecoded, 'Asia/Jakarta');
 
-                if($end->gt($start)){
+                if($end->greaterThanOrEqualTo($start)){
                     $filterDateStart = $dateStartDecoded;
                     $filterDateEnd = $dateEndDecoded;
                 }
@@ -355,6 +359,8 @@ class AssignmentController extends Controller
             $userId = intval($request->input('user_id'));
             $start = Carbon::createFromFormat('d M Y', $request->input('date_start'), 'Asia/Jakarta');
             $end = Carbon::createFromFormat('d M Y', $request->input('date_end'), 'Asia/Jakarta');
+            $start->subDays(1);
+            $end->addDays(1);
 
             if($docType === 'mr'){
                 $assignments = AssignmentMaterialRequest::whereBetween('created_at', array($start->toDateTimeString(), $end->toDateTimeString()));
