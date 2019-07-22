@@ -1167,6 +1167,9 @@ class MaterialRequestHeaderController extends Controller
         if($siteId === 3  && ($departmentId === "7" || $departmentId === "4")){
             $docId = 18;
         }
+        elseif($departmentId === '57'){
+            $docId = 19;
+        }
         else{
             if($type == '1'){
                 if($priority == 'Part - P1' || $priority == 'Part - P2' || $priority == 'Part - P3'){
@@ -1300,22 +1303,22 @@ class MaterialRequestHeaderController extends Controller
         }
 
         // Reorder process
-        if($isReorder){
-            $idx = 0;
-            foreach($request->input('item') as $item){
-                if(!empty($item)){
-                    $splitted = explode('#', $item);
-                    $itemId = intval($splitted[0]);
-                    $qtyInt = intval($qty[$idx]);
-                    $itemStock = ItemStock::where('warehouse_id', $warehouseId)
-                        ->where('item_id', $itemId)
-                        ->first();
-                    $itemStock->stock_on_reorder += $qtyInt;
-                    $itemStock->save();
-                }
-                $idx++;
-            }
-        }
+//        if($isReorder){
+//            $idx = 0;
+//            foreach($request->input('item') as $item){
+//                if(!empty($item)){
+//                    $splitted = explode('#', $item);
+//                    $itemId = intval($splitted[0]);
+//                    $qtyInt = intval($qty[$idx]);
+//                    $itemStock = ItemStock::where('warehouse_id', $warehouseId)
+//                        ->where('item_id', $itemId)
+//                        ->first();
+//                    $itemStock->stock_on_reorder += $qtyInt;
+//                    $itemStock->save();
+//                }
+//                $idx++;
+//            }
+//        }
 
         // Check Approval Feature
         $environment = env('APP_ENV','local');
@@ -1354,7 +1357,7 @@ class MaterialRequestHeaderController extends Controller
                         }
                         else{
                             try{
-                                if($docId === 18){
+                                if($docId === 19){
                                     Mail::to('mudagigih@gmail.com')->send(new ApprovalMaterialRequestCreated($mrHeader, $approval->user));
                                 }
                                 else{
