@@ -245,6 +245,9 @@ class MaterialRequestHeaderController extends Controller
             if($header->site_id ===  3  && ($header->department_id === 7 || $header->department_id === 4)){
                 $docId = 18;
             }
+            elseif($header->department_id === 57){
+                $docId = 19;
+            }
             else{
                 // Get priority type
                 if($header->priority === 'Part - P1' || $header->priority === 'Part - P2' || $header->priority === 'Part - P3'){
@@ -474,6 +477,9 @@ class MaterialRequestHeaderController extends Controller
             if($header->site_id ===  3  && ($header->department_id === 7 || $header->department_id === 4)){
                 $docId = 18;
             }
+            elseif($header->department_id === 57){
+                $docId = 19;
+            }
             else{
                 // Get priority type
                 if($header->priority === 'Part - P1' || $header->priority === 'Part - P2' || $header->priority === 'Part - P3'){
@@ -701,6 +707,9 @@ class MaterialRequestHeaderController extends Controller
             if($header->site_id ===  3  && ($header->department_id === 7 || $header->department_id === 4)){
                 $docId = 18;
             }
+            elseif($header->department_id === 57){
+                $docId = 19;
+            }
             else{
                 // Get priority type
                 if($header->priority === 'Part - P1' || $header->priority === 'Part - P2' || $header->priority === 'Part - P3'){
@@ -903,6 +912,9 @@ class MaterialRequestHeaderController extends Controller
             // Custom approval rule for Mr. Christ
             if($header->site_id ===  3  && ($header->department_id === 7 || $header->department_id === 4)){
                 $docId = 18;
+            }
+            elseif($header->department_id === 57){
+                $docId = 19;
             }
             else{
                 // Get priority type
@@ -1546,6 +1558,9 @@ class MaterialRequestHeaderController extends Controller
         // Approval custom rules for Mr. Christ
         if($siteId === 3  && ($departmentId === "7" || $departmentId === "4")){
             $docId = 18;
+        }
+        elseif($departmentId === '57'){
+            $docId = 19;
         }
         else{
             if($type == '1'){
