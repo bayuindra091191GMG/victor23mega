@@ -109,14 +109,16 @@ class AssignmentController extends Controller
 
             $assignmentMrList = collect();
             foreach ($assignmentMrRawList as $mrToAssign){
-                if($mrToAssign->material_request_header->is_pr_created  === 1){
-                    $prHeader = $mrToAssign->material_request_header->purchase_request_headers->first();
-                    if($prHeader->is_all_poed === 0 || $prHeader->is_all_poed === 2){
+                if($mrToAssign->material_request_header->status_id !== 11){
+                    if($mrToAssign->material_request_header->is_pr_created  === 1){
+                        $prHeader = $mrToAssign->material_request_header->purchase_request_headers->first();
+                        if($prHeader->is_all_poed === 0 || $prHeader->is_all_poed === 2){
+                            $assignmentMrList->push($mrToAssign);
+                        }
+                    }
+                    else{
                         $assignmentMrList->push($mrToAssign);
                     }
-                }
-                else{
-                    $assignmentMrList->push($mrToAssign);
                 }
             }
 
