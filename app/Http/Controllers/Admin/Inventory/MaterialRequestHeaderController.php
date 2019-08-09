@@ -1539,8 +1539,8 @@ class MaterialRequestHeaderController extends Controller
                 return redirect()->back()->withErrors('Nomor MR sudah terdaftar!', 'default')->withInput($request->all());
             }
 
-            $sysNo->next_no++;
-            $sysNo->save();
+//            $sysNo->next_no++;
+//            $sysNo->save();
         }
         else{
             $mrCode = $request->input('mr_code');
