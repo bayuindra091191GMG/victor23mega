@@ -1649,6 +1649,13 @@ class MaterialRequestHeaderController extends Controller
             'remark'            => $request->input('note')
         ]);
 
+        // Increase autonumber
+        if($request->filled('auto_number')){
+            //$mrPrepend = 'MR/'. $now->year. '/'. $now->month;
+            $mrPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            Utilities::UpdateAutoNumber($mrPrepend);
+        }
+
         // Check Approval Feature
         $environment = env('APP_ENV','local');
         $preference = PreferenceCompany::find(1);
