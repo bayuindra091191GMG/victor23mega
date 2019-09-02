@@ -471,36 +471,36 @@ class PurchaseRequestHeaderController extends Controller
         }
 
         // Check assignment
-        $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $mrHeader->id)
-            ->where('status_id', 17)
-            ->first();
-
-        if(!empty($assignmentMr)){
-            $assignmentMr->status_id = 18;
-            $assignmentMr->processed_by = $user->id;
-            $assignmentMr->processed_date = $now->toDateTimeString();
-
-            if($user->id != $assignmentMr->assigned_user_id){
-                $assignmentMr->is_different_processor = 1;
-            }
-
-            $assignmentMr->save();
-
-            // Create PR assignment entry
-            AssignmentPurchaseRequest::create([
-                'purchase_request_id'       => $prHeader->id,
-                'assigned_user_id'          => $assignmentMr->assigned_user_id,
-                'assigner_user_id'          => $user->id,
-                'status_id'                 => 17,
-                'created_by'                => $user->id,
-                'created_at'                => $now,
-                'updated_by'                => $user->id,
-                'updated_at'                => $now
-            ]);
-
-            $prHeader->assigned_to = $assignmentMr->assigned_user_id;
-            $prHeader->save();
-        }
+//        $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $mrHeader->id)
+//            ->where('status_id', 17)
+//            ->first();
+//
+//        if(!empty($assignmentMr)){
+//            $assignmentMr->status_id = 18;
+//            $assignmentMr->processed_by = $user->id;
+//            $assignmentMr->processed_date = $now->toDateTimeString();
+//
+//            if($user->id != $assignmentMr->assigned_user_id){
+//                $assignmentMr->is_different_processor = 1;
+//            }
+//
+//            $assignmentMr->save();
+//
+//            // Create PR assignment entry
+//            AssignmentPurchaseRequest::create([
+//                'purchase_request_id'       => $prHeader->id,
+//                'assigned_user_id'          => $assignmentMr->assigned_user_id,
+//                'assigner_user_id'          => $user->id,
+//                'status_id'                 => 17,
+//                'created_by'                => $user->id,
+//                'created_at'                => $now,
+//                'updated_by'                => $user->id,
+//                'updated_at'                => $now
+//            ]);
+//
+//            $prHeader->assigned_to = $assignmentMr->assigned_user_id;
+//            $prHeader->save();
+//        }
 
         // Update processed by for assignment
         $mrHeader->processed_by = $user->id;

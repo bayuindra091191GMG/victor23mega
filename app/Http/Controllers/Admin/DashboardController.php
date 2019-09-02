@@ -482,41 +482,25 @@ class DashboardController extends Controller
         $newPrToAssignList = null;
         $newPrToAssignCount = 0;
         $preference = PreferenceCompany::find(1);
-//        $assignerRoleId = intval($preference->assigner_role_id);
         $assignerUserId = $user->id;
         $isAssignerRole = false;
-        if($assignerUserId === 23 || $assignerUserId === 32 || $currentRole === 1 || $currentRole === 3){
-            $isAssignerRole = true;
-            $newMrToAssignList = MaterialRequestHeader::where('status_id', 3)
-                ->where('is_approved', 1)
-                ->where('is_pr_created', 0)
-                ->whereNull('assigned_to')
-                ->orderBy('created_at', 'desc')
-                ->take(5)
-                ->get();
-
-            $newMrToAssignCount = DB::table('material_request_headers')
-                ->where('status_id', 3)
-                ->where('is_approved', 1)
-                ->where('is_pr_created', 0)
-                ->whereNull('assigned_to')
-                ->count();
-
-//            $newPrToAssignList = PurchaseRequestHeader::where('status_id', 3)
+//        if($assignerUserId === 23 || $assignerUserId === 32 || $currentRole === 1 || $currentRole === 3){
+//            $isAssignerRole = true;
+//            $newMrToAssignList = MaterialRequestHeader::where('status_id', 3)
 //                ->where('is_approved', 1)
-//                ->where('is_all_poed', 0)
+//                ->where('is_pr_created', 0)
 //                ->whereNull('assigned_to')
 //                ->orderBy('created_at', 'desc')
 //                ->take(5)
 //                ->get();
 //
-//            $newPrToAssignCount = DB::table('purchase_request_headers')
+//            $newMrToAssignCount = DB::table('material_request_headers')
 //                ->where('status_id', 3)
 //                ->where('is_approved', 1)
-//                ->where('is_all_poed', 0)
+//                ->where('is_pr_created', 0)
 //                ->whereNull('assigned_to')
 //                ->count();
-        }
+//        }
 
         // Get assignment notifications for purchasing staff
         $assignmentMrList = null;
@@ -524,45 +508,31 @@ class DashboardController extends Controller
         $assignmentPrList = null;
         $assignmentPrCount = 0;
         $isAssignedRole = false;
-        if($currentRole === 5 || $currentRole === 1 || $currentRole === 3){
-            $isAssignedRole = true;
-
-            $assignmentMrRawList = AssignmentMaterialRequest::where('assigned_user_id', $user->id)
-                ->orderBy('created_at')
-                ->get();
-
-            $assignmentMrList = collect();
-            foreach ($assignmentMrRawList as $mrToAssign){
-                if($mrToAssign->material_request_header->status_id !== 11){
-                    if($mrToAssign->material_request_header->is_pr_created  === 1){
-                        $prHeader = $mrToAssign->material_request_header->purchase_request_headers->first();
-                        if($prHeader->is_all_poed === 0 || $prHeader->is_all_poed === 2){
-                            $assignmentMrList->push($mrToAssign);
-                        }
-                    }
-                    else{
-                        $assignmentMrList->push($mrToAssign);
-                    }
-                }
-            }
-
-            //dd($assignmentMrList);
-
-            $assignmentMrCount = $assignmentMrList->count();
-            $assignmentMrList = $assignmentMrList->take(5);
-
-
-//            $assignmentPrList = AssignmentPurchaseRequest::where('status_id', 17)
-//                ->where('assigned_user_id', $user->id)
+//        if($currentRole === 5 || $currentRole === 1 || $currentRole === 3){
+//            $isAssignedRole = true;
+//
+//            $assignmentMrRawList = AssignmentMaterialRequest::where('assigned_user_id', $user->id)
 //                ->orderBy('created_at')
-//                ->take(5)
 //                ->get();
 //
-//            $assignmentPrCount = DB::table('assignment_purchase_requests')
-//                ->where('status_id', 17)
-//                ->where('assigned_user_id', $user->id)
-//                ->count();
-        }
+//            $assignmentMrList = collect();
+//            foreach ($assignmentMrRawList as $mrToAssign){
+//                if($mrToAssign->material_request_header->status_id !== 11){
+//                    if($mrToAssign->material_request_header->is_pr_created  === 1){
+//                        $prHeader = $mrToAssign->material_request_header->purchase_request_headers->first();
+//                        if($prHeader->is_all_poed === 0 || $prHeader->is_all_poed === 2){
+//                            $assignmentMrList->push($mrToAssign);
+//                        }
+//                    }
+//                    else{
+//                        $assignmentMrList->push($mrToAssign);
+//                    }
+//                }
+//            }
+//
+//            $assignmentMrCount = $assignmentMrList->count();
+//            $assignmentMrList = $assignmentMrList->take(5);
+//        }
 
         $data = [
             'counts'                    => $counts,

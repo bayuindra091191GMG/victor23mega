@@ -1741,21 +1741,21 @@ class MaterialRequestHeaderController extends Controller
         }
 
         // Check assignment
-        $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $mrHeader->id)
-            ->where('status_id', 17)
-            ->first();
-
-        if(!empty($assignmentMr)){
-            $assignmentMr->status_id = 18;
-            $assignmentMr->processed_by = $user->id;
-            $assignmentMr->processed_date = $now->toDateTimeString();
-
-            if($user->id != $assignmentMr->assigned_user_id){
-                $assignmentMr->is_different_processor = 1;
-            }
-
-            $assignmentMr->save();
-        }
+//        $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $mrHeader->id)
+//            ->where('status_id', 17)
+//            ->first();
+//
+//        if(!empty($assignmentMr)){
+//            $assignmentMr->status_id = 18;
+//            $assignmentMr->processed_by = $user->id;
+//            $assignmentMr->processed_date = $now->toDateTimeString();
+//
+//            if($user->id != $assignmentMr->assigned_user_id){
+//                $assignmentMr->is_different_processor = 1;
+//            }
+//
+//            $assignmentMr->save();
+//        }
 
         // Update processed by for assignment
         $mrHeader->processed_by = $user->id;

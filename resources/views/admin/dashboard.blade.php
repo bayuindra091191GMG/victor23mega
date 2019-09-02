@@ -146,73 +146,15 @@
     {{--</div>--}}
     {{--<br />--}}
 
-    @if($isAssignerRole)
-        <div class="row">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="x_panel tile overflow_hidden">
-                    <div class="x_title">
-                        <span style="font-size: 24px; color: #000;">Dokumen MR terbaru untuk di-assign ({{ $newMrToAssignCount }})</span>&nbsp;
-                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Kondisi MR sudah di-approve, status Open, belum proses ke PR, belum proses ke PO dan belum di-assign"><i class="fa fa-question"></i></button>
-                        <div class="nav navbar-right">
-                            <a href="{{ route('admin.assignment.mr.assign') }}" class="btn btn-primary">
-                                Lihat Semua
-                            </a>
-                        </div>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
-                        <div class="warning-notice">
-                            @if($newMrToAssignList->count() > 0)
-                                <table class="table">
-                                    <thead>
-                                    <tr>
-                                        <th>No MR</th>
-                                        <th>Tanggal MR</th>
-                                        <th>Prioritas</th>
-                                        <th>Departemen</th>
-                                        <th>Kode Unit</th>
-                                        <th>Dibuat oleh</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach($newMrToAssignList as $mrHeader)
-                                        <tr>
-                                            @if($mrHeader->type === 1)
-                                                <td><a href="{{ route('admin.material_requests.other.show', ['material_request' => $mrHeader]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $mrHeader->code }}</a></td>
-                                            @elseif($mrHeader->type === 2)
-                                                <td><a href="{{ route('admin.material_requests.fuel.show', ['material_request' => $mrHeader]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $mrHeader->code }}</a></td>
-                                            @elseif($mrHeader->type === 3)
-                                                <td><a href="{{ route('admin.material_requests.oil.show', ['material_request' => $mrHeader]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $mrHeader->code }}</a></td>
-                                            @else
-                                                <td><a href="{{ route('admin.material_requests.service.show', ['material_request' => $mrHeader]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $mrHeader->code }}</a></td>
-                                            @endif
-                                            <td>{{ $mrHeader->date_string }}</td>
-                                            <td>{{ $mrHeader->priority }}</td>
-                                            <td>{{ $mrHeader->department->name }}</td>
-                                            <td>{{ $mrHeader->machinery->code ?? '-' }}</td>
-                                            <td>{{ $mrHeader->createdBy->name }}</td>
-                                        </tr>
-                                    @endforeach
-                                    </tbody>
-                                </table>
-                            @else
-                                <div class="oaerror success">
-                                    <strong>Tidak ada MR baru yang butuh di-assign</strong>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+{{--    @if($isAssignerRole)--}}
 {{--        <div class="row">--}}
 {{--            <div class="col-md-12 col-sm-12 col-xs-12">--}}
 {{--                <div class="x_panel tile overflow_hidden">--}}
 {{--                    <div class="x_title">--}}
-{{--                        <span style="font-size: 24px; color: #000;">Dokumen PR terbaru untuk di-assign ({{ $newPrToAssignCount }})</span> &nbsp;--}}
-{{--                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Kondisi PR yang belum diproses, status Open dan belum di-assign"><i class="fa fa-question"></i></button>--}}
+{{--                        <span style="font-size: 24px; color: #000;">Dokumen MR terbaru untuk di-assign ({{ $newMrToAssignCount }})</span>&nbsp;--}}
+{{--                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Kondisi MR sudah di-approve, status Open, belum proses ke PR, belum proses ke PO dan belum di-assign"><i class="fa fa-question"></i></button>--}}
 {{--                        <div class="nav navbar-right">--}}
-{{--                            <a href="{{ route('admin.assignment.pr.assign') }}" class="btn btn-primary">--}}
+{{--                            <a href="{{ route('admin.assignment.mr.assign') }}" class="btn btn-primary">--}}
 {{--                                Lihat Semua--}}
 {{--                            </a>--}}
 {{--                        </div>--}}
@@ -220,32 +162,42 @@
 {{--                    </div>--}}
 {{--                    <div class="x_content">--}}
 {{--                        <div class="warning-notice">--}}
-{{--                            @if($newPrToAssignList->count() > 0)--}}
+{{--                            @if($newMrToAssignList->count() > 0)--}}
 {{--                                <table class="table">--}}
 {{--                                    <thead>--}}
 {{--                                    <tr>--}}
-{{--                                        <th>No PR</th>--}}
-{{--                                        <th>Tanggal PR</th>--}}
+{{--                                        <th>No MR</th>--}}
+{{--                                        <th>Tanggal MR</th>--}}
 {{--                                        <th>Prioritas</th>--}}
 {{--                                        <th>Departemen</th>--}}
+{{--                                        <th>Kode Unit</th>--}}
 {{--                                        <th>Dibuat oleh</th>--}}
 {{--                                    </tr>--}}
 {{--                                    </thead>--}}
 {{--                                    <tbody>--}}
-{{--                                    @foreach($newPrToAssignList as $prHeader)--}}
+{{--                                    @foreach($newMrToAssignList as $mrHeader)--}}
 {{--                                        <tr>--}}
-{{--                                            <td><a href="{{ route('admin.purchase_requests.show', ['purchase_request' => $prHeader]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $prHeader->code }}</a></td>--}}
-{{--                                            <td>{{ $prHeader->date_string }}</td>--}}
-{{--                                            <td>{{ $prHeader->priority }}</td>--}}
-{{--                                            <td>{{ $prHeader->department->name }}</td>--}}
-{{--                                            <td>{{ $prHeader->createdBy->name }}</td>--}}
+{{--                                            @if($mrHeader->type === 1)--}}
+{{--                                                <td><a href="{{ route('admin.material_requests.other.show', ['material_request' => $mrHeader]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $mrHeader->code }}</a></td>--}}
+{{--                                            @elseif($mrHeader->type === 2)--}}
+{{--                                                <td><a href="{{ route('admin.material_requests.fuel.show', ['material_request' => $mrHeader]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $mrHeader->code }}</a></td>--}}
+{{--                                            @elseif($mrHeader->type === 3)--}}
+{{--                                                <td><a href="{{ route('admin.material_requests.oil.show', ['material_request' => $mrHeader]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $mrHeader->code }}</a></td>--}}
+{{--                                            @else--}}
+{{--                                                <td><a href="{{ route('admin.material_requests.service.show', ['material_request' => $mrHeader]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $mrHeader->code }}</a></td>--}}
+{{--                                            @endif--}}
+{{--                                            <td>{{ $mrHeader->date_string }}</td>--}}
+{{--                                            <td>{{ $mrHeader->priority }}</td>--}}
+{{--                                            <td>{{ $mrHeader->department->name }}</td>--}}
+{{--                                            <td>{{ $mrHeader->machinery->code ?? '-' }}</td>--}}
+{{--                                            <td>{{ $mrHeader->createdBy->name }}</td>--}}
 {{--                                        </tr>--}}
 {{--                                    @endforeach--}}
 {{--                                    </tbody>--}}
 {{--                                </table>--}}
 {{--                            @else--}}
 {{--                                <div class="oaerror success">--}}
-{{--                                    <strong>Tidak ada PR baru yang butuh di-assign</strong>--}}
+{{--                                    <strong>Tidak ada MR baru yang butuh di-assign</strong>--}}
 {{--                                </div>--}}
 {{--                            @endif--}}
 {{--                        </div>--}}
@@ -253,69 +205,17 @@
 {{--                </div>--}}
 {{--            </div>--}}
 {{--        </div>--}}
-    @endif
+{{--    @endif--}}
 
-    @if($isAssignedRole)
-        <div class="row">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="x_panel tile overflow_hidden">
-                    <div class="x_title">
-                        <span style="font-size: 24px; color: #000;">Job Assignment MR ({{ $assignmentMrCount }})</span> &nbsp;
-                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Anda ditugaskan untuk proses MR berikut sampai tahap PO"><i class="fa fa-question"></i></button>
-                        <div class="nav navbar-right">
-                            <a href="{{ route('admin.assignment.mr') }}" class="btn btn-primary">
-                                Lihat Semua
-                            </a>
-                        </div>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
-                        <div class="warning-notice">
-                            @if($assignmentMrList->count() > 0)
-                                <table class="table">
-                                    <thead>
-                                    <tr>
-                                        <th>Tanggal Assignment</th>
-                                        <th>No MR</th>
-                                        <th>Tanggal MR</th>
-                                        <th>Di-assign oleh</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach($assignmentMrList as $assignment)
-                                        <tr>
-                                            <td>{{ $assignment->created_at_string }}</td>
-                                            @if($assignment->material_request_header->type === 1)
-                                                <td><a href="{{ route('admin.material_requests.other.show', ['material_request' => $assignment->material_request_header]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $assignment->material_request_header->code }}</a></td>
-                                            @elseif($assignment->material_request_header->type === 2)
-                                                <td><a href="{{ route('admin.material_requests.fuel.show', ['material_request' => $assignment->material_request_header]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $assignment->material_request_header->code }}</a></td>
-                                            @elseif($assignment->material_request_header->type === 3)
-                                                <td><a href="{{ route('admin.material_requests.oil.show', ['material_request' => $assignment->material_request_header]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $assignment->material_request_header->code }}</a></td>
-                                            @else
-                                                <td><a href="{{ route('admin.material_requests.service.show', ['material_request' => $assignment->material_request_header]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $assignment->material_request_header->code }}</a></td>
-                                            @endif
-                                            <td>{{ $assignment->material_request_header->date_string }}</td>
-                                            <td>{{ $assignment->assignerUser->name }}</td>
-                                        </tr>
-                                    @endforeach
-                                    </tbody>
-                                </table>
-                            @else
-                                <div class="oaerror success">
-                                    <strong>Tidak ada assignment MR</strong>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
-{{--            <div class="col-md-6 col-sm-6 col-xs-6">--}}
+{{--    @if($isAssignedRole)--}}
+{{--        <div class="row">--}}
+{{--            <div class="col-md-12 col-sm-12 col-xs-12">--}}
 {{--                <div class="x_panel tile overflow_hidden">--}}
 {{--                    <div class="x_title">--}}
-{{--                        <span style="font-size: 24px; color: #000;">Job Assignment PR ({{ $assignmentPrCount }})</span> &nbsp;--}}
-{{--                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Anda ditugaskan untuk proses PR berikut"><i class="fa fa-question"></i></button>--}}
+{{--                        <span style="font-size: 24px; color: #000;">Job Assignment MR ({{ $assignmentMrCount }})</span> &nbsp;--}}
+{{--                        <button type="button" class="btn btn-round btn-info" data-toggle="tooltip" data-placement="top" title="Anda ditugaskan untuk proses MR berikut sampai tahap PO"><i class="fa fa-question"></i></button>--}}
 {{--                        <div class="nav navbar-right">--}}
-{{--                            <a href="{{ route('admin.assignment.pr') }}" class="btn btn-primary">--}}
+{{--                            <a href="{{ route('admin.assignment.mr') }}" class="btn btn-primary">--}}
 {{--                                Lihat Semua--}}
 {{--                            </a>--}}
 {{--                        </div>--}}
@@ -323,22 +223,30 @@
 {{--                    </div>--}}
 {{--                    <div class="x_content">--}}
 {{--                        <div class="warning-notice">--}}
-{{--                            @if($assignmentPrList->count() > 0)--}}
+{{--                            @if($assignmentMrList->count() > 0)--}}
 {{--                                <table class="table">--}}
 {{--                                    <thead>--}}
 {{--                                    <tr>--}}
 {{--                                        <th>Tanggal Assignment</th>--}}
-{{--                                        <th>No PR</th>--}}
-{{--                                        <th>Tanggal PR</th>--}}
+{{--                                        <th>No MR</th>--}}
+{{--                                        <th>Tanggal MR</th>--}}
 {{--                                        <th>Di-assign oleh</th>--}}
 {{--                                    </tr>--}}
 {{--                                    </thead>--}}
 {{--                                    <tbody>--}}
-{{--                                    @foreach($assignmentPrList as $assignment)--}}
+{{--                                    @foreach($assignmentMrList as $assignment)--}}
 {{--                                        <tr>--}}
 {{--                                            <td>{{ $assignment->created_at_string }}</td>--}}
-{{--                                            <td><a href="{{ route('admin.purchase_requests.show', ['purchase_request' => $assignment->purchase_request_header]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $assignment->purchase_request_header->code }}</a></td>--}}
-{{--                                            <td>{{ $assignment->purchase_request_header->date_string }}</td>--}}
+{{--                                            @if($assignment->material_request_header->type === 1)--}}
+{{--                                                <td><a href="{{ route('admin.material_requests.other.show', ['material_request' => $assignment->material_request_header]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $assignment->material_request_header->code }}</a></td>--}}
+{{--                                            @elseif($assignment->material_request_header->type === 2)--}}
+{{--                                                <td><a href="{{ route('admin.material_requests.fuel.show', ['material_request' => $assignment->material_request_header]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $assignment->material_request_header->code }}</a></td>--}}
+{{--                                            @elseif($assignment->material_request_header->type === 3)--}}
+{{--                                                <td><a href="{{ route('admin.material_requests.oil.show', ['material_request' => $assignment->material_request_header]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $assignment->material_request_header->code }}</a></td>--}}
+{{--                                            @else--}}
+{{--                                                <td><a href="{{ route('admin.material_requests.service.show', ['material_request' => $assignment->material_request_header]) }}" target="_blank" style="font-weight: bold; text-decoration: underline;">{{ $assignment->material_request_header->code }}</a></td>--}}
+{{--                                            @endif--}}
+{{--                                            <td>{{ $assignment->material_request_header->date_string }}</td>--}}
 {{--                                            <td>{{ $assignment->assignerUser->name }}</td>--}}
 {{--                                        </tr>--}}
 {{--                                    @endforeach--}}
@@ -346,15 +254,15 @@
 {{--                                </table>--}}
 {{--                            @else--}}
 {{--                                <div class="oaerror success">--}}
-{{--                                    <strong>Tidak ada assignment PR</strong>--}}
+{{--                                    <strong>Tidak ada assignment MR</strong>--}}
 {{--                                </div>--}}
 {{--                            @endif--}}
 {{--                        </div>--}}
 {{--                    </div>--}}
 {{--                </div>--}}
 {{--            </div>--}}
-        </div>
-    @endif
+{{--        </div>--}}
+{{--    @endif--}}
 
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
