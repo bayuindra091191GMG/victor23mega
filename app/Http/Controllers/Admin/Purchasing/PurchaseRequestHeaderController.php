@@ -13,6 +13,7 @@ use App\Exports\PurchaseRequestExport;
 use App\Http\Controllers\Controller;
 use App\Libs\Utilities;
 use App\Mail\ApprovalPurchaseRequestCreated;
+use App\Mail\PurchaseRequestCreatedMailNotification;
 use App\Models\ApprovalRule;
 use App\Models\AssignmentMaterialRequest;
 use App\Models\AssignmentPurchaseRequest;
@@ -465,6 +466,22 @@ class PurchaseRequestHeaderController extends Controller
                     }
                 }
             }
+
+            // Send email notification to purchasing users
+            $environment = env('APP_ENV','local');
+            if($environment === 'prod'){
+                // Ginanjar
+                $purchasingUser1 = User::find(16);
+                Mail::to($purchasingUser1->email_address)->send(new PurchaseRequestCreatedMailNotification($prHeader, $purchasingUser1));
+
+                // Petrus
+                $purchasingUser2 = User::find(25);
+                Mail::to($purchasingUser2->email_address)->send(new PurchaseRequestCreatedMailNotification($prHeader, $purchasingUser2));
+
+                // Karina
+                $purchasingUser3 = User::find(47);
+                Mail::to($purchasingUser3->email_address)->send(new PurchaseRequestCreatedMailNotification($prHeader, $purchasingUser3));
+            }
         }
         catch(\Exception $ex){
             error_log($ex);
@@ -713,25 +730,25 @@ class PurchaseRequestHeaderController extends Controller
         $purchase_request->save();
 
         // Check assignment
-        $assignmentPr = AssignmentPurchaseRequest::where('purchase_request_id', $prHeader->id)
-            ->where('status_id', 17)
-            ->first();
-
-        if(!empty($assignmentPr)){
-            $assignmentPr->status_id = 18;
-            $assignmentPr->processed_by = $user->id;
-            $assignmentPr->processed_date = $now->toDateTimeString();
-
-            if($user->id != $assignmentPr->assigned_user_id){
-                $assignmentPr->is_different_processor = 1;
-            }
-
-            $assignmentPr->save();
-        }
+//        $assignmentPr = AssignmentPurchaseRequest::where('purchase_request_id', $prHeader->id)
+//            ->where('status_id', 17)
+//            ->first();
+//
+//        if(!empty($assignmentPr)){
+//            $assignmentPr->status_id = 18;
+//            $assignmentPr->processed_by = $user->id;
+//            $assignmentPr->processed_date = $now->toDateTimeString();
+//
+//            if($user->id != $assignmentPr->assigned_user_id){
+//                $assignmentPr->is_different_processor = 1;
+//            }
+//
+//            $assignmentPr->save();
+//        }
 
         // Update processed by for assignment
-        $prHeader->processed_by = $user->id;
-        $prHeader->save();
+//        $prHeader->processed_by = $user->id;
+//        $prHeader->save();
 
         Session::flash('message', 'Berhasil ubah purchase request!');
 

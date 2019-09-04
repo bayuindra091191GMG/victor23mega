@@ -740,23 +740,23 @@ class PurchaseOrderHeaderController extends Controller
 
                     // Ginanjar
                     $purchasingUser4 = User::find(16);
-                    Mail::to($purchasingUser4->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+                    Mail::to($purchasingUser4->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $purchasingUser4));
 
                     // Petrus
                     $purchasingUser2 = User::find(25);
-                    Mail::to($purchasingUser2->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+                    Mail::to($purchasingUser2->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $purchasingUser2));
 
                     // Lena
                     $purchasingUser1 = User::find(27);
-                    Mail::to($purchasingUser1->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+                    Mail::to($purchasingUser1->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $purchasingUser1));
 
                     // Irene
                     $purchasingUser5 = User::find(40);
-                    Mail::to($purchasingUser5->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+                    Mail::to($purchasingUser5->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $purchasingUser5));
 
                     // Karina
                     $purchasingUser3 = User::find(47);
-                    Mail::to($purchasingUser3->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $poHeader->createdBy));
+                    Mail::to($purchasingUser3->email_address)->send(new PurchaseOrderApprovedMailNotification($poHeader, $purchasingUser3));
                 }
 
                 // Send notification

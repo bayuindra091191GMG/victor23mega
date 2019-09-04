@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\MaterialRequestApprovedMailNotification;
 use App\Mail\PurchaseOrderMailToCreator;
 use App\Mail\PurchaseOrderApprovedMailNotification;
 use App\Models\ApprovalMaterialRequest;
@@ -456,6 +457,22 @@ class ApprovalRuleController extends Controller
                         $notifiedUser->notify(new MaterialRequestCreated($header, $isInStock, 'false'));
                     }
                 }
+            }
+
+            // Send email notification to purchasing users
+            $environment = env('APP_ENV','local');
+            if($environment === 'prod'){
+                // Ginanjar
+                $purchasingUser1 = User::find(16);
+                Mail::to($purchasingUser1->email_address)->send(new MaterialRequestApprovedMailNotification($header, $purchasingUser1));
+
+                // Petrus
+                $purchasingUser2 = User::find(25);
+                Mail::to($purchasingUser2->email_address)->send(new MaterialRequestApprovedMailNotification($header, $purchasingUser2));
+
+                // Karina
+                $purchasingUser3 = User::find(47);
+                Mail::to($purchasingUser3->email_address)->send(new MaterialRequestApprovedMailNotification($header, $purchasingUser3));
             }
         }
 

@@ -12,10 +12,12 @@ namespace App\Http\Controllers\Admin\Inventory;
 use App\Http\Controllers\Controller;
 use App\Libs\Utilities;
 use App\Mail\ApprovalMaterialRequestCreated;
+use App\Mail\MaterialRequestApprovedMailNotification;
 use App\Models\ApprovalMaterialRequest;
 use App\Models\ApprovalRule;
 use App\Models\AssignmentMaterialRequest;
 use App\Models\Auth\Role\Role;
+use App\Models\Auth\User\User;
 use App\Models\AutoNumber;
 use App\Models\Department;
 use App\Models\Document;
@@ -385,8 +387,8 @@ class MaterialRequestHeaderController extends Controller
             }
 
             // Check document assigned
-            $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $header->id)
-                ->first();
+//            $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $header->id)
+//                ->first();
 
             $data = [
                 'header'                    => $header,
@@ -408,7 +410,7 @@ class MaterialRequestHeaderController extends Controller
                 'isAuthorized'              => $isAuthorized,
                 'isFeedbackAuthorized'      => $isFeedbackAuthorized,
                 'isAssignerRole'            => $isAssignerRole,
-                'assignmentMr'              => $assignmentMr
+                //'assignmentMr'              => $assignmentMr
             ];
 
             return View('admin.inventory.material_requests.other.show')->with($data);
@@ -614,8 +616,8 @@ class MaterialRequestHeaderController extends Controller
             }
 
             // Check document assigned
-            $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $header->id)
-                ->first();
+//            $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $header->id)
+//                ->first();
 
             $data = [
                 'header'                    => $header,
@@ -636,7 +638,7 @@ class MaterialRequestHeaderController extends Controller
                 'isAuthorized'              => $isAuthorized,
                 'isFeedbackAuthorized'      => $isFeedbackAuthorized,
                 'isAssignerRole'            => $isAssignerRole,
-                'assignmentMr'              => $assignmentMr
+//                'assignmentMr'              => $assignmentMr
             ];
 
             return View('admin.inventory.material_requests.fuel.show')->with($data);
@@ -844,8 +846,8 @@ class MaterialRequestHeaderController extends Controller
             }
 
             // Check document assigned
-            $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $header->id)
-                ->first();
+//            $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $header->id)
+//                ->first();
 
             $data = [
                 'header'                    => $header,
@@ -866,7 +868,7 @@ class MaterialRequestHeaderController extends Controller
                 'isAuthorized'              => $isAuthorized,
                 'isFeedbackAuthorized'      => $isFeedbackAuthorized,
                 'isAssignerRole'            => $isAssignerRole,
-                'assignmentMr'              => $assignmentMr
+//                'assignmentMr'              => $assignmentMr
             ];
 
             return View('admin.inventory.material_requests.oil.show')->with($data);
@@ -1036,8 +1038,8 @@ class MaterialRequestHeaderController extends Controller
             }
 
             // Check document assigned
-            $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $header->id)
-                ->first();
+//            $assignmentMr = AssignmentMaterialRequest::where('material_request_id', $header->id)
+//                ->first();
 
             $data = [
                 'header'                    => $header,
@@ -1055,7 +1057,7 @@ class MaterialRequestHeaderController extends Controller
                 'trackedPiHeaders'          => $trackedPiHeaders ?? null,
                 'isFeedbackAuthorized'      => $isFeedbackAuthorized,
                 'isAssignerRole'            => $isAssignerRole,
-                'assignmentMr'              => $assignmentMr
+//                'assignmentMr'              => $assignmentMr
             ];
 
             return View('admin.inventory.material_requests.service.show')->with($data);
@@ -1447,6 +1449,22 @@ class MaterialRequestHeaderController extends Controller
                     }
                 }
             }
+
+            // Send email notification to purchasing users
+            $environment = env('APP_ENV','local');
+            if($environment === 'prod'){
+                // Ginanjar
+                $purchasingUser1 = User::find(16);
+                Mail::to($purchasingUser1->email_address)->send(new MaterialRequestApprovedMailNotification($mrHeader, $purchasingUser1));
+
+                // Petrus
+                $purchasingUser2 = User::find(25);
+                Mail::to($purchasingUser2->email_address)->send(new MaterialRequestApprovedMailNotification($mrHeader, $purchasingUser2));
+
+                // Karina
+                $purchasingUser3 = User::find(47);
+                Mail::to($purchasingUser3->email_address)->send(new MaterialRequestApprovedMailNotification($mrHeader, $purchasingUser3));
+            }
         }
 
         Session::flash('message', 'Berhasil membuat material request!');
@@ -1744,6 +1762,22 @@ class MaterialRequestHeaderController extends Controller
                         $notifiedUser->notify(new MaterialRequestCreated($mrHeader, false, 'false'));
                     }
                 }
+            }
+
+            // Send email notification to purchasing users
+            $environment = env('APP_ENV','local');
+            if($environment === 'prod'){
+                // Ginanjar
+                $purchasingUser1 = User::find(16);
+                Mail::to($purchasingUser1->email_address)->send(new MaterialRequestApprovedMailNotification($mrHeader, $purchasingUser1));
+
+                // Petrus
+                $purchasingUser2 = User::find(25);
+                Mail::to($purchasingUser2->email_address)->send(new MaterialRequestApprovedMailNotification($mrHeader, $purchasingUser2));
+
+                // Karina
+                $purchasingUser3 = User::find(47);
+                Mail::to($purchasingUser3->email_address)->send(new MaterialRequestApprovedMailNotification($mrHeader, $purchasingUser3));
             }
         }
 

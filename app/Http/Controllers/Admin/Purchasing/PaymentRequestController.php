@@ -11,7 +11,9 @@ namespace App\Http\Controllers\Admin\Purchasing;
 
 use App\Http\Controllers\Controller;
 use App\Libs\Utilities;
+use App\Mail\RequestForPaymentCreatedMailNotification;
 use App\Models\ApprovalRule;
+use App\Models\Auth\User\User;
 use App\Models\NumberingSystem;
 use App\Models\PaymentRequest;
 use App\Models\PaymentRequestsPiDetail;
@@ -25,6 +27,7 @@ use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
@@ -318,6 +321,22 @@ class PaymentRequestController extends Controller
 
                 $prDetail->save();
             }
+        }
+
+        // Send email notification to purchasing users
+        $environment = env('APP_ENV','local');
+        if($environment === 'prod'){
+            // Ginanjar
+            $purchasingUser1 = User::find(16);
+            Mail::to($purchasingUser1->email_address)->send(new RequestForPaymentCreatedMailNotification($paymentRequest, $purchasingUser1));
+
+            // Petrus
+            $purchasingUser2 = User::find(25);
+            Mail::to($purchasingUser2->email_address)->send(new RequestForPaymentCreatedMailNotification($paymentRequest, $purchasingUser2));
+
+            // Karina
+            $purchasingUser3 = User::find(47);
+            Mail::to($purchasingUser3->email_address)->send(new RequestForPaymentCreatedMailNotification($paymentRequest, $purchasingUser3));
         }
 
         Session::flash('message', 'Berhasil membuat Payment Request!');
