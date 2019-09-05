@@ -781,20 +781,27 @@ class ApprovalRuleController extends Controller
                     $header->save();
 
                     // Update item stock
-                    foreach ($header->purchase_order_details as $detail){
-                        $itemDb = Item::find($detail->item_id);
-                        $itemDb->stock_on_order += $detail->quantity;
-                        $itemDb->save();
+                    try{
+                        foreach ($header->purchase_order_details as $detail){
+                            $itemDb = Item::find($detail->item_id);
+                            $itemDb->stock_on_order += $detail->quantity;
+                            $itemDb->save();
 
-                        $itemStock = ItemStock::where('item_id', $detail->item_id)->where('warehouse_id', $header->warehouse_id)->first();
-                        $itemStock->stock_on_order += $detail->quantity;
+                            $itemStock = ItemStock::where('item_id', $detail->item_id)->where('warehouse_id', $header->warehouse_id)->first();
+                            if(!empty($itemStock)){
+                                $itemStock->stock_on_order += $detail->quantity;
+                            }
 
-                        // Reset item on reorder
-                        if($header->is_reorder === 1){
-                            $itemStock->stock_on_reorder -= $detail->quantity;
+                            // Reset item on reorder
+                            if($header->is_reorder === 1){
+                                $itemStock->stock_on_reorder -= $detail->quantity;
+                            }
+
+                            $itemStock->save();
                         }
-
-                        $itemStock->save();
+                    }
+                    catch (\Exception $ex){
+                        Log::error('ApprovalRuleController - approvePo - update item stock error EX: '. $ex);
                     }
                 }
 
