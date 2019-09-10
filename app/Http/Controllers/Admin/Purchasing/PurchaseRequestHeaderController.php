@@ -89,9 +89,17 @@ class PurchaseRequestHeaderController extends Controller
 
         // Numbering System
         $user = Auth::user();
-        $sysNo = NumberingSystem::where('doc_id', '3')->first();
-        $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+        $now = Carbon::now('Asia/Jakarta');
+//        $sysNo = NumberingSystem::where('doc_id', '3')->first();
+//        $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
+//        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+
+        $doc = Document::find(3);
+        $prPrepend = $doc->code. '/'. $now->year;
+        $sysNo = Utilities::GetNextAutoNumber($prPrepend);
+
+        $docCode = $doc->code. '-'. $user->employee->site->code;
+        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo);
 
         $data = [
             'departments'       => $departments,
@@ -331,7 +339,7 @@ class PurchaseRequestHeaderController extends Controller
     //        $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
     //        $prCode = Utilities::GenerateNumber($docCode, $sysNo->next_no);
 
-            $prPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $prPrepend = $doc->code. '/'. $now->year;
             $sysNo = Utilities::GetNextAutoNumber($prPrepend);
 
             $docCode = $doc->code. '-'. $user->employee->site->code;

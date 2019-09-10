@@ -182,10 +182,20 @@ class IssuedDocketExport implements FromView, ShouldAutoSize, WithStrictNullComp
                 if($this->type !== 'bbm'){
                     $columnUom = 'G2:G'. $this->counter;
                     $event->sheet->getDelegate()->getStyle($columnUom)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
                 }
                 else{
-                    $columnHm= 'G2:G'. $this->counter;
+                    $columnShift = 'G2:G'. $this->counter;
+                    $event->sheet->getDelegate()->getStyle($columnShift)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                    $columnTime = 'H2:H'. $this->counter;
+                    $event->sheet->getDelegate()->getStyle($columnTime)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                    $columnHm= 'I2:I'. $this->counter;
                     $event->sheet->getDelegate()->getStyle($columnHm)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+                    $columnKm= 'J2:J'. $this->counter;
+                    $event->sheet->getDelegate()->getStyle($columnKm)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                 }
             },
         ];
@@ -206,7 +216,10 @@ class IssuedDocketExport implements FromView, ShouldAutoSize, WithStrictNullComp
         else{
             return [
                 'A' => '@',
-                'D' => '@'
+                'D' => '@',
+                'E' => '@',
+                'F' => '@',
+                'G' => '@',
             ];
         }
     }

@@ -211,15 +211,22 @@
                             </thead>
                             <tbody>
                             @php( $idx = 0 )
+                            @php( $oldIdx = 0 )
                             @if(!empty($purchaseRequest))
+                                @php( $oldInclude = old('include') )
+                                @php( $oldQty = old('qty') )
+                                @php( $oldPrice = old('price') )
+                                @php( $oldDiscount = old('discount') )
+                                @php( $oldSubtotal = old('subtotal') )
+                                @php( $oldRemark = old('remark') )
                                 @foreach($purchaseRequest->purchase_request_details as $detail)
                                     @if($detail->quantity_poed < $detail->quantity)
                                         @php( $qty = $detail->quantity - $detail->quantity_poed )
                                         @php( $idx++ )
                                         <tr class='item{{ $idx }}'>
                                             <td class='text-center'>
-                                                <input type="checkbox" class="flat" id="check{{ $idx }}" onclick="changeInput({{ $idx }});" checked />
-                                                <input type="hidden" id="include{{ $idx }}" name="include[]" value="true"/>
+                                                <input type="checkbox" class="flat" id="check{{ $idx }}" onclick="changeInput({{ $idx }});" @if(!empty($oldInclude) && $oldInclude[$oldIdx] !== 'true') @else checked @endif />
+                                                <input type="hidden" id="include{{ $idx }}" name="include[]" value="{{ !empty($oldInclude) ? $oldInclude[$oldIdx] : 'true' }}"/>
                                             </td>
                                             <td>
                                                 {{ $detail->item->code. ' - '. $detail->item->name }}
@@ -227,28 +234,36 @@
                                                 <input type='hidden' name='item_value[]' value='{{ $detail->item_id }}'/>
                                             </td>
                                             <td>
-                                                <input type='text' name='qty[]' class='form-control text-center' value='{{ $qty }}' readonly/>
+                                                <input type='text' name='qty[]' class='form-control text-center' value='{{ !empty($oldQty) ? $oldQty[$oldIdx] : $qty }}' readonly/>
                                             </td>
                                             <td>
-                                                <input type='text' name='price[]' class='form-control text-right' value='0' readonly/>
+                                                <input type='text' name='price[]' class='form-control text-right' value='{{ !empty($oldPrice) ? $oldPrice[$oldIdx] : 0 }}' readonly/>
                                             </td>
                                             <td>
-                                                <input type='text' name='discount[]' class='form-control text-right' value='0' readonly/>
+                                                <input type='text' name='discount[]' class='form-control text-right' value='{{ !empty($oldDiscount) ? $oldDiscount[$oldIdx] : 0 }}' readonly/>
                                             </td>
                                             <td>
-                                                <input type='text' name='subtotal[]' class='form-control text-right' value='0' readonly/>
+                                                <input type='text' name='subtotal[]' class='form-control text-right' value='{{ !empty($oldSubtotal) && !empty($oldSubtotal[$oldIdx]) ? $oldSubtotal[$oldIdx] : 0 }}' readonly/>
                                             </td>
                                             <td>
-                                                <input type='text' name='remark[]' class='form-control' value='{{ $detail->remark }}' readonly/>
+                                                <input type='text' name='remark[]' class='form-control' value='{{ !empty($oldRemark) ? $oldRemark[$oldIdx] : $detail->remark }}' readonly/>
                                             </td>
                                             <td class='text-center'>
                                                 @php( $itemId = $detail->item_id. "#". $detail->item->code. "#". $detail->item->name )
-                                                <a class="edit-modal btn btn-info" data-id="{{ $idx }}" data-item-id="{{ $itemId }}" data-item-text="{{ $detail->item->code. ' - '. $detail->item->name }}" data-qty="{{ $qty }}" data-remark="{{ $detail->remark }}" data-price="0" data-discount="0">
+                                                <a class="edit-modal btn btn-info" data-id="{{ $idx }}"
+                                                   data-item-id="{{ $itemId }}"
+                                                   data-item-text="{{ $detail->item->code. ' - '.
+                                                   $detail->item->name }}"
+                                                   data-qty="{{ !empty($oldQty) ? App\Libs\Utilities::toFloat($oldQty[$oldIdx]) : $qty }}"
+                                                   data-remark="{{ !empty($oldRemark) ? $oldRemark[$oldIdx] : $detail->remark }}"
+                                                   data-price="{{ !empty($oldPrice) ? App\Libs\Utilities::toFloat($oldPrice[$oldIdx]) : 0 }}"
+                                                   data-discount="{{ !empty($oldDiscount) ? App\Libs\Utilities::toFloat($oldDiscount[$oldIdx]) : 0 }}">
                                                     <span class="glyphicon glyphicon-edit"></span>
                                                 </a>
                                             </td>
                                         </tr>
                                     @endif
+                                    @php( $oldIdx++ )
                                 @endforeach
                             @endif
                             </tbody>
@@ -838,7 +853,7 @@
             }
             var subtotalString = rupiahFormat(subtotal);
 
-            sbAdd.append("<td><input type='text' class='form-control' value='" + subtotalString + "' readonly/></td>");
+            sbAdd.append("<td><input type='text' name='subtotal[]' class='form-control' value='" + subtotalString + "' readonly/></td>");
             sbAdd.append("<td><input type='text' name='remark[]' class='form-control' value='" + remarkAdd + "' readonly/></td>");
 
             sbAdd.append("<td class='text-center'>");
@@ -1008,7 +1023,7 @@
             }
             var subtotalString = rupiahFormat(subtotal);
 
-            sbEdit.append("<td><input type='text' class='form-control text-right' value='" + subtotalString + "' readonly/></td>");
+            sbEdit.append("<td><input type='text' name='subtotal[]' class='form-control text-right' value='" + subtotalString + "' readonly/></td>");
             sbEdit.append("<td><input type='text' name='remark[]' class='form-control' value='" + remarkEdit + "' readonly/></td>");
 
             sbEdit.append("<td class='text-center'>");

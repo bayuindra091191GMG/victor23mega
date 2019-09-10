@@ -24,32 +24,32 @@
     <tbody>
     @php($i=1)
     @foreach($poHeaders as $item)
-        <tr>
-            <td>{{ $item->code }}</td>
-            <td>{{ $item->date_string }}</td>
-            <td>{{ $item->purchase_request_header->material_request_header->code }}</td>
-            <td>{{ $item->supplier->name }}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
+{{--        <tr>--}}
+{{--            <td>{{ $item->code }}</td>--}}
+{{--            <td>{{ $item->date_string }}</td>--}}
+{{--            <td>{{ $item->purchase_request_header->material_request_header->code }}</td>--}}
+{{--            <td>{{ $item->supplier->name }}</td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--        </tr>--}}
         @foreach($item->purchase_order_details as $detail)
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>{{ $item->code }}</td>
+                <td>{{ $item->date_string }}</td>
+                <td>{{ $item->purchase_request_header->material_request_header->code }}</td>
+                <td>{{ $item->supplier->name }}</td>
                 <td>{{ $detail->item->code }}</td>
                 <td>{{ $detail->item->part_number ?? '-' }}</td>
                 <td>{{ $detail->item->name }}</td>

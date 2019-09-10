@@ -95,7 +95,7 @@ class MaterialRequestHeaderController extends Controller
         $user = Auth::user();
         $now = Carbon::now('Asia/Jakarta');
         //$sysNo = NumberingSystem::where('doc_id', '9')->first();
-        $mrPrepend = 'MR/'. $now->year. '/'. $now->month;
+        $mrPrepend = 'MR/'. $now->year;
         $sysNo = Utilities::GetNextAutoNumber($mrPrepend);
 
         $docCode = 'MR-'. $user->employee->site->code;
@@ -121,7 +121,7 @@ class MaterialRequestHeaderController extends Controller
         $user = Auth::user();
         $now = Carbon::now('Asia/Jakarta');
         //$sysNo = NumberingSystem::where('doc_id', '10')->first();
-        $mrPrepend = 'MR-F/'. $now->year. '/'. $now->month;
+        $mrPrepend = 'MR-F/'. $now->year;
         $sysNo = Utilities::GetNextAutoNumber($mrPrepend);
 
         $docCode = 'MR-F-'. $user->employee->site->code;
@@ -147,7 +147,7 @@ class MaterialRequestHeaderController extends Controller
         $user = Auth::user();
         $now = Carbon::now('Asia/Jakarta');
         //$sysNo = NumberingSystem::where('doc_id', '11')->first();
-        $mrPrepend = 'MR-O/'. $now->year. '/'. $now->month;
+        $mrPrepend = 'MR-O/'. $now->year;
         $sysNo = Utilities::GetNextAutoNumber($mrPrepend);
 
         $docCode = 'MR-O-'. $user->employee->site->code;
@@ -173,7 +173,7 @@ class MaterialRequestHeaderController extends Controller
         $user = Auth::user();
         $now = Carbon::now('Asia/Jakarta');
         //$sysNo = NumberingSystem::where('doc_id', '12')->first();
-        $mrPrepend = 'MR-S/'. $now->year. '/'. $now->month;
+        $mrPrepend = 'MR-S/'. $now->year;
         $sysNo = Utilities::GetNextAutoNumber($mrPrepend);
 
         $docCode = 'MR-S-'. $user->employee->site->code;
@@ -1152,7 +1152,7 @@ class MaterialRequestHeaderController extends Controller
 
             //$sysNo = NumberingSystem::where('doc_id', '9')->first();
             $doc = Document::find($docId);
-            $mrPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $mrPrepend = $doc->code. '/'. $now->year;
             $sysNo = Utilities::GetNextAutoNumber($mrPrepend);
 
             $docCode = $doc->code. '-'. $user->employee->site->code;
@@ -1546,7 +1546,7 @@ class MaterialRequestHeaderController extends Controller
 //            $mrCode = Utilities::GenerateNumber($docCode, $sysNo->next_no);
 
             $doc = Document::find($docId);
-            $mrPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $mrPrepend = $doc->code. '/'. $now->year;
             $sysNo = Utilities::GetNextAutoNumber($mrPrepend);
 
             $docCode = $doc->code. '-'. $user->employee->site->code;

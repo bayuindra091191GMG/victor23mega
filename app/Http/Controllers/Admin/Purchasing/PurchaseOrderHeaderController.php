@@ -323,9 +323,17 @@ class PurchaseOrderHeaderController extends Controller
 
         // Numbering System
         $user = Auth::user();
-        $sysNo = NumberingSystem::where('doc_id', '4')->first();
-        $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-        $autoNumber = Utilities::GenerateNumberPurchaseOrder($docCode, $sysNo->next_no);
+        $now = Carbon::now('Asia/Jakarta');
+//        $sysNo = NumberingSystem::where('doc_id', '4')->first();
+//        $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
+//        $autoNumber = Utilities::GenerateNumberPurchaseOrder($docCode, $sysNo->next_no);
+
+        $doc = Document::find(4);
+        $prPrepend = $doc->code. '/'. $now->year;
+        $sysNo = Utilities::GetNextAutoNumber($prPrepend);
+
+        $docCode = $doc->code. '-'. $user->employee->site->code;
+        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo);
 
         $data = [
             'purchaseRequest'   => $purchaseRequest,
@@ -341,7 +349,7 @@ class PurchaseOrderHeaderController extends Controller
     }
 
     public function store(Request $request){
-//        dd($request);
+        //dd($request->input('subtotal'));
         $validator = Validator::make($request->all(),[
             'po_code'       => 'required|max:45|regex:/^\S*$/u',
             'date'          => 'required'

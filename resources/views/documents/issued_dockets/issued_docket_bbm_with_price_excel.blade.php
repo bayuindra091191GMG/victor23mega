@@ -19,23 +19,23 @@
     </thead>
     <tbody>
     @foreach($idHeaders as $header)
-        <tr>
-            <td>{{ $header->code }}</td>
-            <td>{{ $header->date_string }}</td>
-            <td>{{ $header->site->name }}</td>
-            @php( $costCode = !empty($header->account_id) ? $header->account->code : "Tidak Ada" )
-            <td>{{ $costCode }}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
+{{--        <tr>--}}
+{{--            <td>{{ $header->code }}</td>--}}
+{{--            <td>{{ $header->date_string }}</td>--}}
+{{--            <td>{{ $header->site->name }}</td>--}}
+{{--            @php( $costCode = !empty($header->account_id) ? $header->account->code : "Tidak Ada" )--}}
+{{--            <td>{{ $costCode }}</td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--            <td></td>--}}
+{{--        </tr>--}}
         @php( $totalQtyHeader = 0 )
         @php( $totalValueHeader = 0 )
         @foreach($header->issued_docket_details as $detail)
@@ -47,10 +47,11 @@
                 @php( $value = $detail->item->value ?? 0 )
                 @php( $subTotalValue = $value * $detail->quantity )
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>{{ $header->code }}</td>
+                    <td>{{ $header->date_string }}</td>
+                    <td>{{ $header->site->name }}</td>
+                    @php( $costCode = !empty($header->account_id) ? $header->account->code : "Tidak Ada" )
+                    <td>{{ $costCode }}</td>
                     <td>{{ $detail->item->code }}</td>
                     <td>{{ $detail->machinery->code }}</td>
                     <td>{{ $detail->shift }}</td>
@@ -64,6 +65,22 @@
                 </tr>
             @endif
         @endforeach
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
     @endforeach
         <tr>
             <td colspan="12">TOTAL</td>

@@ -15,17 +15,20 @@ class Utilities
         $mod = strlen($nextNumber);
         switch ($mod){
             case 1:
-                $modulus = "000";
+                $modulus = "0000";
                 break;
             case 2:
-                $modulus = "00";
+                $modulus = "000";
                 break;
             case 3:
+                $modulus = "00";
+                break;
+            case 4:
                 $modulus = "0";
                 break;
         }
 
-        $number = $code."/".$now->year."/".$now->month."/".$modulus.$nextNumber;
+        $number = $code. "/". $now->year. "/". $modulus.$nextNumber;
         return $number;
     }
 

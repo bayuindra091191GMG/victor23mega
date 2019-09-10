@@ -57,11 +57,21 @@ class DocketController extends Controller
      */
     public function create()
     {
-        $sysNo = NumberingSystem::where('doc_id', '1')->first();
-        $document = Document::where('id', '1')->first();
-        $autoNumber = Utilities::GenerateNumber($document->code, $sysNo->next_no);
+//        $sysNo = NumberingSystem::where('doc_id', '1')->first();
+//        $document = Document::where('id', '1')->first();
+//        $autoNumber = Utilities::GenerateNumber($document->code, $sysNo->next_no);
         $warehouses = Warehouse::where('id', '!=', 0)->get();
         $departments = Department::orderBy('name')->get();
+
+        $now = Carbon::now('Asia/Jakarta');
+        $user = Auth::user();
+
+        $doc = Document::find(1);
+        $docketPrepend = $doc->code. '/'. $now->year;
+        $sysNo = Utilities::GetNextAutoNumber($docketPrepend);
+
+        $docCode = $doc->code. '-'. $user->employee->site->code;
+        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo);
 
         $data = [
             'departments'       => $departments,
@@ -74,11 +84,22 @@ class DocketController extends Controller
 
     public function createFuel()
     {
-        $sysNo = NumberingSystem::where('doc_id', '1')->first();
-        $document = Document::where('id', '1')->first();
-        $autoNumber = Utilities::GenerateNumber($document->code, $sysNo->next_no);
+//        $sysNo = NumberingSystem::where('doc_id', '1')->first();
+//        $document = Document::where('id', '1')->first();
+//        $autoNumber = Utilities::GenerateNumber($document->code, $sysNo->next_no);
+
         $warehouses = Warehouse::where('id', '!=', 0)->get();
         $departments = Department::orderBy('name')->get();
+
+        $now = Carbon::now('Asia/Jakarta');
+        $user = Auth::user();
+
+        $doc = Document::find(1);
+        $docketPrepend = $doc->code. '/'. $now->year;
+        $sysNo = Utilities::GetNextAutoNumber($docketPrepend);
+
+        $docCode = $doc->code. '-'. $user->employee->site->code;
+        $autoNumber = Utilities::GenerateNumber($docCode, $sysNo);
 
         $data = [
             'departments'       => $departments,
@@ -213,8 +234,7 @@ class DocketController extends Controller
 //            $sysNo = NumberingSystem::where('doc_id', '1')->first();
 //            $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
 //            $docketNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
-
-            $docketPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $docketPrepend = $doc->code. '/'. $now->year;
             $sysNo = Utilities::GetNextAutoNumber($docketPrepend);
 
             $docCode = $doc->code. '-'. $user->employee->site->code;
@@ -476,7 +496,7 @@ class DocketController extends Controller
 //            $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
 //            $docketNumber = Utilities::GenerateNumber($docCode, $sysNo->next_no);
 
-            $docketPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $docketPrepend = $doc->code. '/'. $now->year;
             $sysNo = Utilities::GetNextAutoNumber($docketPrepend);
 
             $docCode = $doc->code. '-'. $user->employee->site->code;
