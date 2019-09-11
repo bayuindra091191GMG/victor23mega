@@ -113,8 +113,9 @@ class DocketController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return Response
+     * @throws \Exception
      */
     public function store(Request $request)
     {
@@ -369,7 +370,7 @@ class DocketController extends Controller
 
         // Increase autonumber
         if($request->filled('auto_number')){
-            $docketPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $docketPrepend = $doc->code. '/'. $now->year;
             Utilities::UpdateAutoNumber($docketPrepend);
         }
 
@@ -632,7 +633,7 @@ class DocketController extends Controller
 
         // Increase autonumber
         if($request->filled('auto_number')){
-            $docketPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $docketPrepend = $doc->code. '/'. $now->year;
             Utilities::UpdateAutoNumber($docketPrepend);
         }
 

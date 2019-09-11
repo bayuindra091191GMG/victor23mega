@@ -434,7 +434,7 @@ class PurchaseRequestHeaderController extends Controller
 
         // Increase autonumber
         if($request->filled('auto_number')){
-            $prPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $prPrepend = $doc->code. '/'. $now->year;
             Utilities::UpdateAutoNumber($prPrepend);
         }
 
@@ -562,14 +562,22 @@ class PurchaseRequestHeaderController extends Controller
         // Get MR id
         $mrId = $request->input('mr_id');
 
-        $user = \Auth::user();
+        $user = Auth::user();
+        $now = Carbon::now('Asia/Jakarta');
+        $doc = Document::find(3);
 
         // Generate auto number
         $prCode = 'default';
         if($request->filled('auto_number')){
-            $sysNo = NumberingSystem::where('doc_id', '3')->first();
-            $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
-            $prCode = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+//            $sysNo = NumberingSystem::where('doc_id', '3')->first();
+//            $docCode = $sysNo->document->code. '-'. $user->employee->site->code;
+//            $prCode = Utilities::GenerateNumber($docCode, $sysNo->next_no);
+
+            $prPrepend = $doc->code. '/'. $now->year;
+            $sysNo = Utilities::GetNextAutoNumber($prPrepend);
+
+            $docCode = $doc->code. '-'. $user->employee->site->code;
+            $prCode = Utilities::GenerateNumber($docCode, $sysNo);
 
             // Check existing number
             if(PurchaseOrderHeader::where('code', $prCode)->exists()){
@@ -683,6 +691,12 @@ class PurchaseRequestHeaderController extends Controller
         }
         catch(\Exception $ex){
             error_log($ex);
+        }
+
+        // Increase autonumber
+        if($request->filled('auto_number')){
+            $prPrepend = $doc->code. '/'. $now->year;
+            Utilities::UpdateAutoNumber($prPrepend);
         }
 
         Session::flash('message', 'Berhasil membuat purchase request!');
