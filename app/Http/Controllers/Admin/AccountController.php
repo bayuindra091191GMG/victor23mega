@@ -137,6 +137,28 @@ class AccountController extends Controller
         return Response::json($formatted_tags);
     }
 
+    public function getAccountsWithName(Request $request){
+        $term = trim($request->q);
+        $accounts = Account::where('code', 'LIKE', '%'. $term. '%')
+            ->orWhere('description', 'LIKE', '%'. $term. '%')
+            ->orWhere('location', 'LIKE', '%'. $term. '%')
+            ->get();
+
+        $formatted_tags = [];
+
+        foreach ($accounts as $account) {
+            $text = $account->code;
+            $value = $account->id. '#'. $account->code;
+            if(!empty($account->description)) {
+                $text .= ' - '. $account->description. " - ". $account->location;
+                $value .= '#'. $account->description;
+            }
+            $formatted_tags[] = ['id' => $value, 'text' => $text];
+        }
+
+        return Response::json($formatted_tags);
+    }
+
     public function downloadExcel(Request $request){
         $now = Carbon::now('Asia/Jakarta');
         $filename = 'COST_CODE_'. $now->toDateTimeString(). '.xlsx';

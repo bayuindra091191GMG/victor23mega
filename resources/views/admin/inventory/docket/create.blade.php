@@ -174,8 +174,11 @@
                                 <th class="text-center" style="width: 15%">
                                     Part Number
                                 </th>
-                                <th class="text-center" style="width: 20%">
+                                <th class="text-center" style="width: 15%">
                                     Keterangan
+                                </th>
+                                <th class="text-center" style="width: 10%">
+                                    Cost Code
                                 </th>
                                 <th class="text-center" style="width: 10%">
                                     QTY
@@ -183,7 +186,7 @@
                                 <th class="text-center" style="width: 20%">
                                     Remark
                                 </th>
-                                <th class="text-center" style="width: 20%">
+                                <th class="text-center" style="width: 15%">
                                     Tindakan
                                 </th>
                             </tr>
@@ -194,6 +197,8 @@
                                 @php( $oldItemCode = old('item_code') )
                                 @php( $oldItemPartNumber = old('item_part_number') )
                                 @php( $oldItemName = old('item_name') )
+                                @php( $oldAccounts = old('accounts') )
+                                @php( $oldAccountCodes = old('account_codes') )
                                 @php( $oldQty = old('qty') )
                                 @php( $oldRemark = old('remark') )
                                 @foreach(old('item') as $item)
@@ -210,6 +215,11 @@
                                         <td>
                                             {{ $oldItemName[$idx] }}
                                             <input type='hidden' name='item_name[]' value='{{ $oldItemName[$idx] }}'/>
+                                        </td>
+                                        <td class='text-right'>
+                                            {{ $oldAccountCodes[$idx] }}
+                                            <input type='hidden' name='accounts[]'  value="{{ $oldAccounts[$idx] }}"/>
+                                            <input type='hidden' name='account_codes[]'  value="{{ $oldAccountCodes[$idx] }}"/>
                                         </td>
                                         <td class='text-right'>
                                             {{ $oldQty[$idx] }}
@@ -305,6 +315,13 @@
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" min="0" id="qty_add" name="qty_add" autocomplete="off">
                                 <p class="errorQty text-center alert alert-danger hidden"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="account_add">Cost Code:</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="account_add" name="account_add"></select>
+                                <p class="errorItem text-center alert alert-danger hidden"></p>
                             </div>
                         </div>
                         <div class="form-group">
@@ -602,6 +619,7 @@
             var qtyAdd = $('#qty_add').val();
             var itemAdd = $('#item_add').val();
             var remarkAdd = $('#remark_add').val();
+            var accountAdd = $('#account_add').val();
 
             if(!itemAdd || itemAdd === ""){
                 alert('Mohon Pilih Part!');
@@ -613,9 +631,17 @@
                 return false;
             }
 
+            if(!accountAdd || accountAdd === ""){
+                alert('Mohon Pilih Cost Code!');
+                return false;
+            }
+
             // Split item value
             var splitted = itemAdd.split('#');
             var qty = parseFloat(qtyAdd);
+
+            // split cost code value
+            let splittedAcc = accountAdd.split('#');
 
             // Increase idx
             var idx = $('#index_counter').val();
@@ -632,6 +658,14 @@
             sbAdd.append("<input type='hidden' name='item_part_number[]' value='" + splitted[5] + "'/></td>");
             sbAdd.append("<td>" + splitted[2]);
             sbAdd.append("<input type='hidden' name='item_name[]' value='" + splitted[2] + "'/></td>");
+            sbAdd.append("<td>" + splittedAcc[1]);
+
+            if(!splittedAcc[2]){
+                sbAdd.append(" - " + splittedAcc[2]);
+            }
+
+            sbAdd.append("<input type='hidden' name='accounts[]' value='" + splittedAcc[0] + "'/></td>");
+            sbAdd.append("<input type='hidden' name='account_codes[]' value='" + splittedAcc[1] + "'/></td>");
 
             if(qtyAdd && qtyAdd !== ""){
                 sbAdd.append("<td class='text-right'>" + qtyAdd + "<input type='hidden' name='qty[]' value='" + qtyAdd + "'/></td>");
