@@ -1291,7 +1291,7 @@ class MaterialRequestHeaderController extends Controller
         // Increase autonumber
         if($request->filled('auto_number')){
             //$mrPrepend = 'MR/'. $now->year. '/'. $now->month;
-            $mrPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $mrPrepend = $doc->code. '/'. $now->year;
             Utilities::UpdateAutoNumber($mrPrepend);
         }
 
@@ -1670,7 +1670,7 @@ class MaterialRequestHeaderController extends Controller
         // Increase autonumber
         if($request->filled('auto_number')){
             //$mrPrepend = 'MR/'. $now->year. '/'. $now->month;
-            $mrPrepend = $doc->code. '/'. $now->year. '/'. $now->month;
+            $mrPrepend = $doc->code. '/'. $now->year;
             Utilities::UpdateAutoNumber($mrPrepend);
         }
 
