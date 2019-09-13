@@ -16,19 +16,19 @@
     <div class="row">
         <form class="form-inline" style="margin-bottom: 10px;">
             <div class="form-group">
-                <label>Status:</label>
+                <label>Status: </label>
                 <select id="filter-status" class="form-control" onchange="filterStatus(this)">
 
                     @if(!empty($filterStatus) && $filterStatus == '1')
-                        <option value='1' selected>Aktif</option>
+                        <option value='1' selected>AKTIF</option>
                     @else
-                        <option value='1'>Aktif</option>
+                        <option value='1'>AKTIF</option>
                     @endif
 
                     @if(!empty($filterStatus) && $filterStatus == '2')
-                        <option value='2' selected>NonAktif</option>
+                        <option value='2' selected>NON-AKTIF</option>
                     @else
-                        <option value='2'>NonAktif</option>
+                        <option value='2'>NON-AKTIF</option>
                     @endif
 
                 </select>
@@ -99,11 +99,9 @@
 
         function filterStatus(e){
             // Get status filter value
-            var status = e.value;
-
-            var url = "/admin/users?status=" + status;
-
-            window.location = url;
+            let status = e.value;
+            let url = '{{ route('admin.users') }}';
+            window.location = url + '?status=' + status;
         }
 
         $(document).on('click', '.delete-modal', function(){

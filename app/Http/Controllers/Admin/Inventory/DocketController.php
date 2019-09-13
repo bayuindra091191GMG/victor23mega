@@ -157,6 +157,7 @@ class DocketController extends Controller
         // Validate details
 //        $mrId = Input::get('mr_id');
         $qtys = Input::get('qty');
+        $accounts = $request->input('accounts');
         $mrCheck = true;
         $qtyCheck = true;
         $wrCheck = true;
@@ -166,11 +167,15 @@ class DocketController extends Controller
 
         foreach($items as $item){
             if(empty($item)) {
-                return redirect()->back()->withErrors('Inventory dan Kuantitas wajib diisi!', 'default')->withInput($request->all());
+                return redirect()->back()->withErrors('Inventory, Kuantitas dan Cost Code wajib diisi!', 'default')->withInput($request->all());
+            }
+
+            if(empty($accounts[$i])) {
+                return redirect()->back()->withErrors('Inventory, Kuantitas dan Cost Code wajib diisi!', 'default')->withInput($request->all());
             }
 
             if(empty($qtys[$i]) || $qtys[$i] == '0'){
-                return redirect()->back()->withErrors('Inventory dan Kuantitas wajib diisi!', 'default')->withInput($request->all());
+                return redirect()->back()->withErrors('Inventory, Kuantitas dan Cost Code wajib diisi!', 'default')->withInput($request->all());
             }
 
             // Validate MR relation
@@ -284,7 +289,7 @@ class DocketController extends Controller
             'created_by'                    => $user->id,
             'updated_by'                    => $user->id,
             'created_at'                    => $now->toDateString(),
-            'account_id'                    => $request->input('account') ?? null
+//            'account_id'                    => $request->input('account') ?? null
         ]);
 
         if(!empty($request->input('account'))){
@@ -304,7 +309,8 @@ class DocketController extends Controller
                     'item_id'           => $item,
                     'machinery_id'      => $docketHeader->machinery_id,
                     'quantity'          => $qty,
-                    'quantity_retur'    => 0
+                    'quantity_retur'    => 0,
+                    'account_id'        => $accounts[$idx]
                 ]);
 
                 if(!empty($remark[$idx])) $docketDetail->remarks = $remark[$idx];

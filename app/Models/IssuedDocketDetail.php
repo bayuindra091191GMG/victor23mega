@@ -30,6 +30,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \App\Models\IssuedDocketHeader $issued_docket_header
  * @property \App\Models\Item $item
  * @property \App\Models\Machinery $machinery
+ * @property \App\Models\Account $account
  *
  * @package App\Models
  */
@@ -42,7 +43,8 @@ class IssuedDocketDetail extends Eloquent
 		'item_id' => 'int',
 		'machinery_id' => 'int',
 		'quantity' => 'int',
-		'quantity_retur' => 'int'
+		'quantity_retur' => 'int',
+		'account_id' => 'int'
 	];
 
 	protected $fillable = [
@@ -58,7 +60,8 @@ class IssuedDocketDetail extends Eloquent
 		'km',
 		'fuelman',
 		'operator',
-		'shift'
+		'shift',
+        'account_id'
 	];
 
     protected $appends = [
@@ -102,4 +105,8 @@ class IssuedDocketDetail extends Eloquent
 	{
 		return $this->belongsTo(\App\Models\Machinery::class);
 	}
+
+	public function account(){
+        return $this->belongsTo(\App\Models\Account::class);
+    }
 }
