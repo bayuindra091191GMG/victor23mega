@@ -64,26 +64,26 @@
                     <select id="department" name="department" class="form-control col-md-7 col-xs-12 @if($errors->has('department')) parsley-error @endif">
                         <option value="-1"> - Pilih Departemen - </option>
                         @foreach($departments as $department)
-                            <option value="{{ $department->id }}">{{ $department->name }}</option>
+                            <option value="{{ $department->id }}" @if(!empty(old('department')) && old('department') == $department->id) selected @endif>{{ $department->name }}</option>
                         @endforeach
                     </select>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="account">
-                    Cost Code
-                    <span class="required">*</span>
-                </label>
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                    <select id="account" name="account" class="form-control col-md-7 col-xs-12 @if($errors->has('account')) parsley-error @endif">
-                        @if(!empty(old('account')))
-                            <option value="{{ old('account') }}" selected>{{ old('account_text') }}</option>
-                        @endif
-                    </select>
-                    <input type="hidden" id="account_text" name="account_text" value="{{ old('account_text') }}"/>
-                </div>
-            </div>
+{{--            <div class="form-group">--}}
+{{--                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="account">--}}
+{{--                    Cost Code--}}
+{{--                    <span class="required">*</span>--}}
+{{--                </label>--}}
+{{--                <div class="col-md-6 col-sm-6 col-xs-12">--}}
+{{--                    <select id="account" name="account" class="form-control col-md-7 col-xs-12 @if($errors->has('account')) parsley-error @endif">--}}
+{{--                        @if(!empty(old('account')))--}}
+{{--                            <option value="{{ old('account') }}" selected>{{ old('account_text') }}</option>--}}
+{{--                        @endif--}}
+{{--                    </select>--}}
+{{--                    <input type="hidden" id="account_text" name="account_text" value="{{ old('account_text') }}"/>--}}
+{{--                </div>--}}
+{{--            </div>--}}
 
             {{--<div class="form-group">--}}
                 {{--<label class="control-label col-md-3 col-sm-3 col-xs-12" for="mr_id">--}}
@@ -104,7 +104,7 @@
                     <select id="warehouse" name="warehouse" class="form-control col-md-7 col-xs-12 @if($errors->has('warehouse')) parsley-error @endif">
                         <option value="-1"> - Pilih Gudang - </option>
                         @foreach($warehouses as $warehouse)
-                            <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
+                            <option value="{{ $warehouse->id }}" @if(!empty(old('warehouse')) && old('warehouse') == $warehouse->id) selected @endif>{{ $warehouse->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -136,15 +136,18 @@
                                     Inventory
                                 </th>
                                 <th class="text-center" style="width: 10%">
-                                    Unit Alat Berat
+                                    Cost Code
                                 </th>
                                 <th class="text-center" style="width: 10%">
+                                    Unit Alat Berat
+                                </th>
+                                <th class="text-center" style="width: 5%">
                                     QTY
                                 </th>
                                 <th class="text-center" style="width: 5%">
                                     UOM
                                 </th>
-                                <th class="text-center" style="width: 10%">
+                                <th class="text-center" style="width: 5%">
                                     Shift
                                 </th>
                                 <th class="text-center" style="width: 5%">
@@ -172,73 +175,108 @@
                             </thead>
                             <tbody>
                             @php($idx = 0)
-                            {{--@if(!empty($materialRequest))--}}
-                                {{--@foreach($materialRequest->material_request_details as $detail)--}}
-                                    {{--@if($detail->quantity_issued < $detail->quantity)--}}
-                                        {{--@php($idx++)--}}
-                                        {{--<tr class='item{{ $idx }}'>--}}
-                                            {{--<td class='text-center'>--}}
-                                                {{--{{ $detail->item->code. ' - '. $detail->item->name }}--}}
-                                                {{--<input type='hidden' name='item[]' value='{{ $detail->item_id }}'/>--}}
-                                            {{--</td>--}}
-                                            {{--<td class='text-center'>--}}
-                                                {{--<input type='hidden' name='machinery[]' value=''/>--}}
-                                            {{--</td>--}}
-                                            {{--<td class='text-right'>--}}
-                                                {{--@php( $qty = $detail->quantity - $detail->quantity_issued )--}}
-                                                {{--{{ $qty }}--}}
-                                                {{--<input type='hidden' name='qty[]'  value="{{ $qty }}"/>--}}
-                                            {{--</td>--}}
-                                            {{--<td class='text-center'>--}}
-                                                {{--{{ $detail->item->uom }}--}}
-                                            {{--</td>--}}
-                                            {{--<td class='text-center'>--}}
-                                                {{--<input type='hidden' name='shift[]' value=''/>--}}
-                                            {{--</td>--}}
-                                            {{--<td class='text-center'>--}}
-                                                {{--<input type='hidden' name='time[]' value=''/>--}}
-                                            {{--</td>--}}
-                                            {{--<td class='text-center'>--}}
-                                                {{--<input type='hidden' name='hm[]' value=''/>--}}
-                                            {{--</td>--}}
-                                            {{--<td class='text-center'>--}}
-                                                {{--<input type='hidden' name='km[]' value=''/>--}}
-                                            {{--</td>--}}
-                                            {{--<td class='text-center'>--}}
-                                                {{--<input type='hidden' name='fuelman[]' value=''/>--}}
-                                            {{--</td>--}}
-                                            {{--<td class='text-center'>--}}
-                                                {{--<input type='hidden' name='operator[]' value=''/>--}}
-                                            {{--</td>--}}
-                                            {{--<td>--}}
-                                                {{--{{ $detail->remark }}--}}
-                                                {{--<input type='hidden' name='remark[]' value="{{ $detail->remark }}"/>--}}
-                                            {{--</td>--}}
-                                            {{--<td class="text-center">--}}
-                                                {{--<a class="edit-modal btn btn-info"--}}
-                                                   {{--data-id="{{ $idx }}"--}}
-                                                   {{--data-item-id="{{ $detail->item_id }}"--}}
-                                                   {{--data-item-text="{{ $detail->item->code }}"--}}
-                                                   {{--data-item-uom="{{ $detail->item->uom }}"--}}
-                                                   {{--data-machinery-id="" data-machinery-text=""--}}
-                                                   {{--data-qty="{{ $detail->quantity }}"--}}
-                                                   {{--data-shift=""--}}
-                                                   {{--data-time=""--}}
-                                                   {{--data-hm=""--}}
-                                                   {{--data-km=""--}}
-                                                   {{--data-fuelman=""--}}
-                                                   {{--data-operator=""--}}
-                                                   {{--data-remark="{{ $detail->remark }}">--}}
-                                                    {{--<span class="glyphicon glyphicon-edit"></span>--}}
-                                                {{--</a>--}}
-                                                {{--<a class="delete-modal btn btn-danger" data-id="{{ $idx }}" data-item-id="{{ $detail->item_id }}" data-item-text="{{ $detail->item->code. ' - '. $detail->item->name }}" data-machinery-id="" data-machinery-text="" data-qty="{{ $detail->quantity }}">--}}
-                                                    {{--<span class="glyphicon glyphicon-trash"></span>--}}
-                                                {{--</a>--}}
-                                            {{--</td>--}}
-                                        {{--</tr>--}}
-                                    {{--@endif--}}
-                                {{--@endforeach--}}
-                            {{--@endif--}}
+                            @if(!empty(old('item')))
+                                @php( $oldItemCodes = old('item_codes') )
+                                @php( $oldItemTextes = old('item_textes') )
+                                @php( $oldMachineries = old('machinery') )
+                                @php( $oldMachineryTextes = old('machinery_textes') )
+                                @php( $oldAccounts = old('accounts') )
+                                @php( $oldAccountTextes = old('account_textes') )
+                                @php( $oldQtys = old('qty') )
+                                @php( $oldUoms = old('uoms') )
+                                @php( $oldShifts = old('shift') )
+                                @php( $oldTimes = old('time') )
+                                @php( $oldHms = old('hm') )
+                                @php( $oldKms = old('km') )
+                                @php( $oldFuelmans = old('fuelman') )
+                                @php( $oldOperators = old('operator') )
+                                @php( $oldRemarks = old('remark') )
+                                @foreach(old('item') as $item)
+                                        <tr class='item{{ $idx }}'>
+                                            <td class='text-center'>
+                                                {{ $oldItemTextes[$idx] }}
+                                                <input type='hidden' name='item[]' value='{{ $item }}'/>
+                                                <input type='hidden' name='item_textes[]' value='{{ $oldItemTextes[$idx] }}'/>
+                                            </td>
+                                            <td class='text-center'>
+                                                {{ $oldAccountTextes[$idx] }}
+                                                <input type='hidden' name='accounts[]' value='{{ $oldAccounts[$idx] }}'/>
+                                                <input type='hidden' name='account_textes[]' value='{{ $oldAccountTextes[$idx] }}'/>
+                                            </td>
+                                            <td class='text-center'>
+                                                {{ $oldMachineryTextes[$idx] }}
+                                                <input type='hidden' name='machinery[]' value='{{ $oldMachineries[$idx] }}'/>
+                                                <input type='hidden' name='machinery_textes[]' value='{{ $oldMachineryTextes[$idx] }}'/>
+                                            </td>
+                                            <td class='text-right'>
+                                                {{ $oldQtys[$idx] }}
+                                                <input type='hidden' name='qty[]'  value="{{ $oldQtys[$idx] }}"/>
+                                            </td>
+                                            <td class='text-center'>
+                                                {{ $oldUoms[$idx] }}
+                                                <input type='hidden' name='uoms[]'  value="{{ $oldUoms[$idx] }}"/>
+                                            </td>
+                                            <td class='text-center'>
+                                                {{ $oldShifts[$idx] }}
+                                                <input type='hidden' name='shift[]' value='{{ $oldShifts[$idx] }}'/>
+                                            </td>
+                                            <td class='text-center'>
+                                                {{ $oldTimes[$idx]  }}
+                                                <input type='hidden' name='time[]' value='{{ $oldTimes[$idx] }}'/>
+                                            </td>
+                                            <td class='text-center'>
+                                                {{ $oldHms[$idx] }}
+                                                <input type='hidden' name='hm[]' value='{{ $oldHms[$idx] }}'/>
+                                            </td>
+                                            <td class='text-center'>
+                                                {{ $oldKms[$idx] }}
+                                                <input type='hidden' name='km[]' value='{{ $oldKms[$idx] }}'/>
+                                            </td>
+                                            <td class='text-center'>
+                                                {{ $oldFuelmans[$idx] }}
+                                                <input type='hidden' name='fuelman[]' value='{{ $oldFuelmans[$idx] }}'/>
+                                            </td>
+                                            <td class='text-center'>
+                                                {{ $oldOperators[$idx] }}
+                                                <input type='hidden' name='operator[]' value='{{ $oldOperators[$idx] }}'/>
+                                            </td>
+                                            <td>
+                                                {{ $oldRemarks[$idx] }}
+                                                <input type='hidden' name='remark[]' value="{{ $oldRemarks[$idx] }}"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <a class="edit-modal btn btn-info"
+                                                   data-id="{{ $idx }}"
+                                                   data-item-id="{{ $item }}"
+                                                   data-item-text="{{ $oldItemTextes[$idx] }}"
+                                                   data-item-uom="{{ $oldUoms[$idx] }}"
+                                                   data-account-id="{{ $oldAccounts[$idx] }}"
+                                                   data-account-text="{{ $oldAccountTextes[$idx] }}"
+                                                   data-machinery-id="{{ $oldMachineries[$idx] }}"
+                                                   data-machinery-text="{{ $oldMachineryTextes[$idx] }}"
+                                                   data-qty="{{ $oldQtys[$idx] }}"
+                                                   data-shift="{{ $oldShifts[$idx] }}"
+                                                   data-time="{{ $oldTimes[$idx] }}"
+                                                   data-hm="{{ $oldHms[$idx] }}"
+                                                   data-km="{{ $oldKms[$idx] }}"
+                                                   data-fuelman="{{ $oldFuelmans[$idx] }}"
+                                                   data-operator="{{ $oldOperators[$idx] }}"
+                                                   data-remark="{{ $oldRemarks[$idx] }}">
+                                                    <span class="glyphicon glyphicon-edit"></span>
+                                                </a>
+                                                <a class="delete-modal btn btn-danger" data-id="{{ $idx }}"
+                                                   data-item-id="{{ $item }}"
+                                                   data-item-text="{{ $oldItemTextes[$idx]  }}"
+                                                   data-machinery-id="{{ $oldMachineries[$idx] }}"
+                                                   data-machinery-text="{{ $oldMachineryTextes[$idx] }}"
+                                                   data-qty="{{ $oldQtys[$idx] }}">
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        @php($idx++)
+                                @endforeach
+                            @endif
                             </tbody>
                         </table>
                     </div>
@@ -260,7 +298,7 @@
 
     <!-- Modal form to add new detail -->
     <div id="addModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">×</button>
@@ -278,6 +316,13 @@
                             <label class="control-label col-sm-2" for="machinery_add">Alat Berat *:</label>
                             <div class="col-sm-10">
                                 <select class="form-control" id="machinery_add" name="machinery_add"></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="account_add">Cost Code *:</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="account_add" name="account_add"></select>
+                                <p class="errorItem text-center alert alert-danger hidden"></p>
                             </div>
                         </div>
                         <div class="form-group">
@@ -344,7 +389,7 @@
 
     <!-- Modal form to edit a detail -->
     <div id="editModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">×</button>
@@ -370,12 +415,18 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="control-label col-sm-2" for="account_edit">Cost Code *:</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="account_edit" name="account_edit"></select>
+                                <p class="errorItem text-center alert alert-danger hidden"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="control-label col-sm-2" for="qty_edit">QTY *:</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" min="0" id="qty_edit" name="qty">
                             </div>
                         </div>
-
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="shift_edit">Shift *:</label>
                             <div class="col-sm-10">
@@ -536,34 +587,34 @@
             }
         });
 
-        $('#account').select2({
-            placeholder: {
-                id: '-1',
-                text: ' - Pilih Nomor Cost Code - '
-            },
-            width: '100%',
-            minimumInputLength: 0,
-            allowClear: true,
-            ajax: {
-                url: '{{ route('select.accounts') }}',
-                dataType: 'json',
-                data: function (params) {
-                    return {
-                        q: $.trim(params.term)
-                    };
-                },
-                processResults: function (data) {
-                    return {
-                        results: data
-                    };
-                }
-            }
-        });
+        {{--$('#account').select2({--}}
+        {{--    placeholder: {--}}
+        {{--        id: '-1',--}}
+        {{--        text: ' - Pilih Nomor Cost Code - '--}}
+        {{--    },--}}
+        {{--    width: '100%',--}}
+        {{--    minimumInputLength: 0,--}}
+        {{--    allowClear: true,--}}
+        {{--    ajax: {--}}
+        {{--        url: '{{ route('select.accounts') }}',--}}
+        {{--        dataType: 'json',--}}
+        {{--        data: function (params) {--}}
+        {{--            return {--}}
+        {{--                q: $.trim(params.term)--}}
+        {{--            };--}}
+        {{--        },--}}
+        {{--        processResults: function (data) {--}}
+        {{--            return {--}}
+        {{--                results: data--}}
+        {{--            };--}}
+        {{--        }--}}
+        {{--    }--}}
+        {{--});--}}
 
-        $('#account').on('select2:select', function (e) {
-            var data = e.params.data;
-            $('#account_text').val(data.text);
-        });
+        {{--$('#account').on('select2:select', function (e) {--}}
+        {{--    var data = e.params.data;--}}
+        {{--    $('#account_text').val(data.text);--}}
+        {{--});--}}
 
         // Add new detail
         $(document).on('click', '.add-modal', function() {
@@ -591,13 +642,37 @@
                 }
             });
 
+            $('#account_add').select2({
+                placeholder: {
+                    id: '-1',
+                    text: ' - Pilih Cost Code - '
+                },
+                width: '100%',
+                minimumInputLength: 0,
+                ajax: {
+                    url: '{{ route('select.accounts.name') }}',
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            q: $.trim(params.term),
+                            type: 'fuel'
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    }
+                }
+            });
+
             $('#machinery_add').select2({
                 placeholder: {
                     id: '-1',
                     text: ' - Pilih Alat Berat - '
                 },
                 width: '100%',
-                minimumInputLength: 1,
+                minimumInputLength: 0,
                 ajax: {
                     url: '{{ route('select.machineries') }}',
                     dataType: 'json',
@@ -632,6 +707,7 @@
             var kmAdd = $('#km_add').val();
             var fuelmanAdd = $('#fuelman_add').val();
             var operatorAdd = $('#operator_add').val();
+            let accountAdd = $('#account_add').val();
 
             if(!shiftAdd || shiftAdd === "" ||
                 !timeAdd || timeAdd === "" ||
@@ -652,6 +728,14 @@
 
             var itemAddText = $('#item_add').text();
             var splittedItemAdd = itemAdd.split('#');
+
+            if(!accountAdd || accountAdd === ""){
+                alert('Mohon Pilih Cost Code!');
+                return false;
+            }
+
+            let splittedAccountAdd = accountAdd.split('#');
+            let accountAddText = $('#account_add').text();
 
             if(!machineryAdd || machineryAdd === ""){
                 alert('Mohon Pilih Alat Berat!');
@@ -677,9 +761,14 @@
 
             sbAdd.append("<tr class='item" + idx + "'>");
             sbAdd.append("<td class='text-center'>" + itemAddText);
-            sbAdd.append("<input type='hidden' name='item[]' value='" + splittedItemAdd[0] + "'/></td>");
+            sbAdd.append("<input type='hidden' name='item[]' value='" + splittedItemAdd[0] + "'/>");
+            sbAdd.append("<input type='hidden' name='item_textes[]' value='" + itemAddText + "'/></td>");
+            sbAdd.append("<td class='text-center'>" + accountAddText);
+            sbAdd.append("<input type='hidden' name='accounts[]' value='" + splittedAccountAdd[0] + "'/>");
+            sbAdd.append("<input type='hidden' name='account_textes[]' value='" + accountAddText + "'/></td>");
             sbAdd.append("<td class='text-center'>" + machineryAddText);
-            sbAdd.append("<input type='hidden' name='machinery[]' value='" + machineryAdd + "'/></td>");
+            sbAdd.append("<input type='hidden' name='machinery[]' value='" + machineryAdd + "'/>");
+            sbAdd.append("<input type='hidden' name='machinery_textes[]' value='" + machineryAddText + "'/></td>");
 
             if(qtyAdd && qtyAdd !== ""){
                 sbAdd.append("<td class='text-right'>" + qtyAdd + "<input type='hidden' name='qty[]' value='" + qtyAdd + "'/></td>");
@@ -688,7 +777,8 @@
                 sbAdd.append("<td class='text-right'><input type='hidden' name='qty[]'/></td>");
             }
 
-            sbAdd.append("<td class='text-center'>" + splittedItemAdd[3] + "</td>");
+            sbAdd.append("<td class='text-center'>" + splittedItemAdd[3]);
+            sbAdd.append("<input type='hidden' name='uoms[]' value='" + splittedItemAdd[3] + "'/></td>");
             sbAdd.append("<td class='text-center'>" + shiftAdd);
             sbAdd.append("<input type='hidden' name='shift[]' value='" + shiftAdd + "'/></td>");
             sbAdd.append("<td class='text-center'>" + timeAdd);
@@ -708,6 +798,8 @@
             sbAdd.append(" data-item-id='" + splittedItemAdd[0] + "'");
             sbAdd.append(" data-item-text='" + itemAddText + "'");
             sbAdd.append(" data-item-uom='" + splittedItemAdd[3] + "'");
+            sbAdd.append(" data-account-id='" + splittedAccountAdd[0] + "'");
+            sbAdd.append(" data-account-text='" + accountAddText + "'");
             sbAdd.append(" data-machinery-id='" + machineryAdd + "'");
             sbAdd.append(" data-machinery-text='" + machineryAddText + "'");
             sbAdd.append(" data-qty='" + qtyAdd + "'");
@@ -728,9 +820,11 @@
             // Reset add form modal
             $('#item_add').val(null).trigger('change');
             $('#item_add').text("");
+            $('#account_add').val(null).trigger('change');
+            $('#account_add').text("");
             $('#machinery_add').val(null).trigger('change');
             $('#machinery_add').text("");
-            $('#qty_add').val('');
+            qtyAddFormat.clear();
             $('#shift_add').val('');
             $('#time_add').val('');
             $('#hm_add').val('');
@@ -744,9 +838,11 @@
             // Reset add form modal
             $('#item_add').val(null).trigger('change');
             $('#item_add').text("");
+            $('#account_add').val(null).trigger('change');
+            $('#account_add').text("");
             $('#machinery_add').val(null).trigger('change');
             $('#machinery_add').text("");
-            $('#qty_add').val('');
+            qtyAddFormat.clear();
             $('#shift_add').val('');
             $('#time_add').val('');
             $('#hm_add').val('');
@@ -789,6 +885,29 @@
                 }
             });
 
+            let accountEdit = $(this).data('account-id');
+            let accountTextEdit = $(this).data('account-text');
+            $('#account_edit').append('<option value="' + accountEdit + '#' + accountTextEdit + '" selected>' + accountTextEdit + '</option>');
+            $('#account_edit').select2({
+                width: '100%',
+                minimumInputLength: 0,
+                ajax: {
+                    url: '{{ route('select.accounts.name') }}',
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            q: $.trim(params.term),
+                            type: 'fuel'
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    }
+                }
+            });
+
             $('#machinery_old_value').val($(this).data('machinery-id'));
             $('#machinery_old_text').val($(this).data('machinery-text'));
             $('#machinery_edit').select2({
@@ -797,7 +916,7 @@
                     text: $(this).data('machinery-text')
                 },
                 width: '100%',
-                minimumInputLength: 1,
+                minimumInputLength: 0,
                 ajax: {
                     url: '{{ route('select.machineries') }}',
                     dataType: 'json',
@@ -821,14 +940,12 @@
                 decimalPlaces: 0
             });
 
-
             $('#shift_edit').val($(this).data('shift'));
             $('#time_edit').val($(this).data('time'));
             $('#hm_edit').val($(this).data('hm'));
             $('#km_edit').val($(this).data('km'));
             $('#fuelman_edit').val($(this).data('fuelman'));
             $('#operator_edit').val($(this).data('operator'));
-
             $('#remark_edit').val($(this).data('remark'));
             $('#editModal').modal('show');
         });
@@ -844,6 +961,7 @@
             var kmEdit = $('#km_edit').val();
             var fuelmanEdit = $('#fuelman_edit').val();
             var operatorEdit = $('#operator_edit').val();
+            let accountEdit = $('#account_edit').val();
 
             if(!shiftEdit || shiftEdit === "" ||
                 !timeEdit || timeEdit === "" ||
@@ -856,6 +974,14 @@
             }
 
             shiftEdit = shiftEdit.toUpperCase();
+
+            if(!accountEdit || accountEdit === ""){
+                alert('Mohon Pilih Cost Code!');
+                return false;
+            }
+
+            let splittedAccountEdit = accountEdit.split('#');
+            let accountEditText = $('#account_edit').text();
 
             var machineryOldValue = $('#machinery_old_value').val();
 
@@ -904,6 +1030,9 @@
             sbEdit.append("<tr class='item" + id + "'>");
             sbEdit.append("<td class='text-center'>" + itemEditText);
             sbEdit.append("<input type='hidden' name='item[]' value='" + itemEditId + "'/></td>");
+            sbEdit.append("<td class='text-center'>" + accountEditText);
+            sbEdit.append("<input type='hidden' name='accounts[]' value='" + splittedAccountEdit[0] + "'/>");
+            sbEdit.append("<input type='hidden' name='account_textes[]' value='" + accountEditText + "'/></td>");
             sbEdit.append("<td class='text-center'>" + machineryEditText);
             sbEdit.append("<input type='hidden' name='machinery[]' value='" + machineryEditId + "'/></td>");
 
@@ -935,6 +1064,8 @@
             sbEdit.append(" data-item-id='" + itemEditId + "'");
             sbEdit.append(" data-item-text='" + itemEditText + "'");
             sbEdit.append(" data-item-uom='" + itemEditUom + "'");
+            sbEdit.append(" data-account-id='" + splittedAccountEdit[0] + "'");
+            sbEdit.append(" data-account-text='" + accountEditText + "'");
             sbEdit.append(" data-machinery-id='" + machineryEditId + "'");
             sbEdit.append(" data-machinery-text='" + machineryEditText + "'");
             sbEdit.append(" data-qty='" + qtyEdit + "'");
@@ -958,11 +1089,13 @@
             $('#item_old_value').val('');
             $('#item_old_text').val('');
             $('#item_old_uom').val('');
+            $('#account_edit').val(null).trigger('change');
+            $('#account_edit').text("");
             $('#machinery_edit').val(null).trigger('change');
             $('#machinery_edit').text("");
             $('#machinery_old_value').val('');
             $('#machinery_old_text').val('');
-            $('#qty_edit').val('');
+            qtyEditFormat.clear();
             $('#remark_edit').val('');
         });
 
@@ -973,11 +1106,13 @@
             $('#item_old_value').val('');
             $('#item_old_text').val('');
             $('#item_old_uom').val('');
+            $('#account_edit').val(null).trigger('change');
+            $('#account_edit').text("");
             $('#machinery_edit').val(null).trigger('change');
             $('#machinery_edit').text("");
             $('#machinery_old_value').val('');
             $('#machinery_old_text').val('');
-            $('#qty_edit').val('');
+            qtyEditFormat.clear();
             $('#shift_edit').val('');
             $('#time_edit').val('');
             $('#hm_edit').val('');

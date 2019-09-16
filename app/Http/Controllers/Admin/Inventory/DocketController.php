@@ -122,9 +122,7 @@ class DocketController extends Controller
         $validator = Validator::make($request->all(),[
             'code'          => 'max:40',
             'date'          => 'required',
-            'account'       => 'required'
         ],[
-            'account.required'      => 'Cost Code harus dipilih!',
             'date.required'         => 'Mohon isi tanggal dokumen!'
         ]);
 
@@ -389,10 +387,8 @@ class DocketController extends Controller
     {
         $validator = Validator::make($request->all(),[
             'code'          => 'max:40',
-            'date'          => 'required',
-            'account'       => 'required'
+            'date'          => 'required'
         ],[
-            'account.required'  => 'Cost Code harus dipilih!',
             'date.required'     => 'Mohon isi tanggal dokumen!'
         ]);
 
@@ -408,6 +404,11 @@ class DocketController extends Controller
             return redirect()->back()->withErrors('Departemen wajib diisi!', 'default')->withInput($request->all());
         }
 
+        // Validate warehouse
+        if($request->input('warehouse') === '-1'){
+            return redirect()->back()->withErrors('Gudang wajib diisi!', 'default')->withInput($request->all());
+        }
+
         // Validate KM & HM
 //        if($request->input('machinery_id') != '0'){
 //            if(!$request->filled('km') || !$request->filled('hm')){
@@ -420,6 +421,7 @@ class DocketController extends Controller
 //        $materialRequest = MaterialRequestHeader::where('code', $mrId)->first();
 
         $items = Input::get('item');
+        $accounts = Input::get('accounts');
         $machineries = Input::get('machinery');
         $qtys = Input::get('qty');
         $shifts = Input::get('shift');
@@ -551,7 +553,7 @@ class DocketController extends Controller
             'updated_by'                    => $user->id,
             'created_at'                    => $now->toDateString(),
             'updated_at'                    => $now->toDateString(),
-            'account_id'                    => $request->input('account') ?? null
+//            'account_id'                    => $request->input('account') ?? null
         ]);
 
         // Create Issued Docket Detail
@@ -573,7 +575,8 @@ class DocketController extends Controller
                     'hm'                => $hms[$idx],
                     'km'                => $kms[$idx],
                     'fuelman'           => $fuelmans[$idx],
-                    'operator'          => $operators[$idx]
+                    'operator'          => $operators[$idx],
+                    'account_id'        => $accounts[$idx]
                 ]);
 
                 if(!empty($remark[$idx])) $docketDetail->remarks = $remark[$idx];

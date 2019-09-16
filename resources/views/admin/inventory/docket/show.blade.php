@@ -62,14 +62,14 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="col-md-3 col-sm-3 col-xs-12">
-                        Kode Cost
-                    </label>
-                    <div class="col-md-6 col-sm-3 col-xs-12">
-                        : {{ $header->account->code ?? '-' }}
-                    </div>
-                </div>
+{{--                <div class="form-group">--}}
+{{--                    <label class="col-md-3 col-sm-3 col-xs-12">--}}
+{{--                        Kode Cost--}}
+{{--                    </label>--}}
+{{--                    <div class="col-md-6 col-sm-3 col-xs-12">--}}
+{{--                        : {{ $header->account->code ?? '-' }}--}}
+{{--                    </div>--}}
+{{--                </div>--}}
 
                 {{--<div class="form-group">--}}
                     {{--<label class="col-md-3 col-sm-3 col-xs-12">--}}
@@ -168,6 +168,9 @@
                                         </th>
                                     @endif
                                     <th class="text-center">
+                                        Cost Code
+                                    </th>
+                                    <th class="text-center">
                                         UOM
                                     </th>
                                     <th class="text-center">
@@ -222,6 +225,14 @@
                                                 {{ $detail->machinery->code }}
                                             </td>
                                         @endif
+                                        <td class="text-center">
+                                            @if(!empty($header->account_id))
+                                                {{ $header->account->code. ' - '. $header->account->description }}
+                                            @else
+                                                {{ !empty($detail->account_id) ? $detail->account->code. ' - '. $detail->account->description : '-' }}
+                                            @endif
+
+                                        </td>
                                         <td class="text-center">
                                             {{ $detail->item->uom }}
                                         </td>

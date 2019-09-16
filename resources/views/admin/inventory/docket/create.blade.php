@@ -71,20 +71,20 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="account">
-                    Cost Code
-                    <span class="required">*</span>
-                </label>
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                    <select id="account" name="account" class="form-control col-md-7 col-xs-12 @if($errors->has('account')) parsley-error @endif">
-                        @if(!empty(old('account')))
-                            <option value="{{ old('account') }}" selected>{{ old('account_text') }}</option>
-                        @endif
-                    </select>
-                    <input type="hidden" id="account_text" name="account_text" value="{{ old('account_text') }}"/>
-                </div>
-            </div>
+{{--            <div class="form-group">--}}
+{{--                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="account">--}}
+{{--                    Cost Code--}}
+{{--                    <span class="required">*</span>--}}
+{{--                </label>--}}
+{{--                <div class="col-md-6 col-sm-6 col-xs-12">--}}
+{{--                    <select id="account" name="account" class="form-control col-md-7 col-xs-12 @if($errors->has('account')) parsley-error @endif">--}}
+{{--                        @if(!empty(old('account')))--}}
+{{--                            <option value="{{ old('account') }}" selected>{{ old('account_text') }}</option>--}}
+{{--                        @endif--}}
+{{--                    </select>--}}
+{{--                    <input type="hidden" id="account_text" name="account_text" value="{{ old('account_text') }}"/>--}}
+{{--                </div>--}}
+{{--            </div>--}}
 
             {{--<div class="form-group">--}}
                 {{--<label class="control-label col-md-3 col-sm-3 col-xs-12" for="mr_id">--}}
@@ -216,7 +216,7 @@
                                             {{ $oldItemName[$idx] }}
                                             <input type='hidden' name='item_name[]' value='{{ $oldItemName[$idx] }}'/>
                                         </td>
-                                        <td class='text-right'>
+                                        <td class='text-center'>
                                             {{ $oldAccountCodes[$idx] }}
                                             <input type='hidden' name='accounts[]'  value="{{ $oldAccounts[$idx] }}"/>
                                             <input type='hidden' name='account_codes[]'  value="{{ $oldAccountCodes[$idx] }}"/>
@@ -231,7 +231,7 @@
                                         </td>
                                         <td class="text-center">
                                             @php($itemId = $item. "#". $oldItemCode[$idx]. "#".  $oldItemName[$idx]. "#null#null#". $oldItemPartNumber[$idx])
-                                            <a class="edit-modal btn btn-info" data-id="{{ $idx }}" data-item-id="{{ $itemId }}" data-item-text="{{ $oldItemCode[$idx]. ' - '. $oldItemName[$idx] }}" data-qty="{{ $oldQty[$idx] }}" data-remark="{{ $oldRemark[$idx] }}">
+                                            <a class="edit-modal btn btn-info" data-id="{{ $idx }}" data-item-id="{{ $itemId }}" data-item-text="{{ $oldItemCode[$idx]. ' - '. $oldItemName[$idx] }}" data-qty="{{ $oldQty[$idx] }}" data-account="{{ $oldAccounts[$idx] }}" data-account-code="{{ $oldAccountCodes[$idx] }}" data-remark="{{ $oldRemark[$idx] }}">
                                                 <span class="glyphicon glyphicon-edit"></span>
                                             </a>
                                             <a class="delete-modal btn btn-danger" data-id="{{ $idx }}" data-item-id="{{ $itemId }}" data-item-text="{{ $oldItemCode[$idx]. ' - '. $oldItemName[$idx] }}" data-qty="{{ $oldQty[$idx] }}">
@@ -295,7 +295,7 @@
 
     <!-- Modal form to add new detail -->
     <div id="addModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">×</button>
@@ -347,7 +347,7 @@
 
     <!-- Modal form to edit a detail -->
     <div id="editModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">×</button>
@@ -367,6 +367,13 @@
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" min="0" id="qty_edit" name="qty" autocomplete="off">
                                 <p class="errorQty text-center alert alert-danger hidden"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="account_edit">Cost Code:</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="account_edit" name="account_edit"></select>
+                                <p class="errorItem text-center alert alert-danger hidden"></p>
                             </div>
                         </div>
                         <div class="form-group">
@@ -470,34 +477,34 @@
 
         var i=1;
 
-        $('#account').select2({
-            placeholder: {
-                id: '-1',
-                text: ' - Pilih Nomor Cost Code - '
-            },
-            width: '100%',
-            minimumInputLength: 0,
-            allowClear: true,
-            ajax: {
-                url: '{{ route('select.accounts') }}',
-                dataType: 'json',
-                data: function (params) {
-                    return {
-                        q: $.trim(params.term)
-                    };
-                },
-                processResults: function (data) {
-                    return {
-                        results: data
-                    };
-                }
-            }
-        });
+        {{--$('#account').select2({--}}
+        {{--    placeholder: {--}}
+        {{--        id: '-1',--}}
+        {{--        text: ' - Pilih Nomor Cost Code - '--}}
+        {{--    },--}}
+        {{--    width: '100%',--}}
+        {{--    minimumInputLength: 0,--}}
+        {{--    allowClear: true,--}}
+        {{--    ajax: {--}}
+        {{--        url: '{{ route('select.accounts') }}',--}}
+        {{--        dataType: 'json',--}}
+        {{--        data: function (params) {--}}
+        {{--            return {--}}
+        {{--                q: $.trim(params.term)--}}
+        {{--            };--}}
+        {{--        },--}}
+        {{--        processResults: function (data) {--}}
+        {{--            return {--}}
+        {{--                results: data--}}
+        {{--            };--}}
+        {{--        }--}}
+        {{--    }--}}
+        {{--});--}}
 
-        $('#account').on('select2:select', function (e) {
-            var data = e.params.data;
-            $('#account_text').val(data.text);
-        });
+        {{--$('#account').on('select2:select', function (e) {--}}
+        {{--    var data = e.params.data;--}}
+        {{--    $('#account_text').val(data.text);--}}
+        {{--});--}}
 
         $('#machinery').select2({
             placeholder: {
@@ -505,7 +512,7 @@
                 text: ' - Pilih Unit Alat Berat - '
             },
             width: '100%',
-            minimumInputLength: 1,
+            minimumInputLength: 0,
             allowClear: true,
             ajax: {
                 url: '{{ route('select.machineries') }}',
@@ -608,6 +615,29 @@
                 }
             });
 
+            $('#account_add').select2({
+                placeholder: {
+                    id: '-1',
+                    text: ' - Pilih Cost Code - '
+                },
+                width: '100%',
+                minimumInputLength: 0,
+                ajax: {
+                    url: '{{ route('select.accounts.name') }}',
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            q: $.trim(params.term)
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    }
+                }
+            });
+
             $('.modal-title').text('Tambah Detail');
             $('#addModal').modal({
                 backdrop: 'static',
@@ -658,13 +688,13 @@
             sbAdd.append("<input type='hidden' name='item_part_number[]' value='" + splitted[5] + "'/></td>");
             sbAdd.append("<td>" + splitted[2]);
             sbAdd.append("<input type='hidden' name='item_name[]' value='" + splitted[2] + "'/></td>");
-            sbAdd.append("<td>" + splittedAcc[1]);
+            sbAdd.append("<td class='text-center'>" + splittedAcc[1]);
 
             if(!splittedAcc[2]){
                 sbAdd.append(" - " + splittedAcc[2]);
             }
 
-            sbAdd.append("<input type='hidden' name='accounts[]' value='" + splittedAcc[0] + "'/></td>");
+            sbAdd.append("<input type='hidden' name='accounts[]' value='" + splittedAcc[0] + "'/>");
             sbAdd.append("<input type='hidden' name='account_codes[]' value='" + splittedAcc[1] + "'/></td>");
 
             if(qtyAdd && qtyAdd !== ""){
@@ -677,7 +707,7 @@
             sbAdd.append("<td>" + remarkAdd + "<input type='hidden' name='remark[]' value='" + remarkAdd + "'/></td>");
 
             sbAdd.append("<td class='text-center'>");
-            sbAdd.append("<a class='edit-modal btn btn-info' data-id='" + idx + "' data-item-id='" + itemAdd + "' data-item-text='" + splitted[1] + " " + splitted[2] + "' data-qty='" + qtyAdd + "' data-remark='" + remarkAdd + "'><span class='glyphicon glyphicon-edit'></span></a>");
+            sbAdd.append("<a class='edit-modal btn btn-info' data-id='" + idx + "' data-item-id='" + itemAdd + "' data-item-text='" + splitted[1] + " " + splitted[2] + "' data-qty='" + qtyAdd + "' data-account='" + splittedAcc[0] + "' data-account-code='" + splittedAcc[1] + "' data-remark='" + remarkAdd + "'><span class='glyphicon glyphicon-edit'></span></a>");
             sbAdd.append("<a class='delete-modal btn btn-danger' data-id='" + idx + "' data-item-id='" + itemAdd + "' data-item-text='" + splitted[1] + " " + splitted[2] + "' data-qty='" + qtyAdd + "' data-remark='" + remarkAdd + "'><span class='glyphicon glyphicon-trash'></span></a>");
             sbAdd.append("</td>");
             sbAdd.append("</tr>");
@@ -686,6 +716,7 @@
 
             // Reset add form modal
             $('#item_add').val(null).trigger('change');
+            $('#account_add').val(null).trigger('change');
             qtyAddFormat.clear();
             $('#remark_add').val('');
         });
@@ -735,6 +766,29 @@
                 decimalPlaces: 0
             });
 
+            let accountEdit = $(this).data('account');
+            let accountNameEdit = $(this).data('account-code');
+
+            $('#account_edit').append('<option value="' + accountEdit + '#' + accountNameEdit + '" selected>' + accountNameEdit + '</option>');
+            $('#account_edit').select2({
+                width: '100%',
+                minimumInputLength: 0,
+                ajax: {
+                    url: '{{ route('select.accounts.name') }}',
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            q: $.trim(params.term)
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    }
+                }
+            });
+
             $('#remark_edit').val($(this).data('remark'));
             $('#editModal').modal('show');
         });
@@ -742,11 +796,17 @@
         $('.modal-footer').on('click', '.edit', function() {
             var itemEdit = $('#item_edit').val();
             var qtyEdit = $('#qty_edit').val();
+            var accountEdit = $('#account_edit').val();
             var remarkEdit = $('#remark_edit').val();
             var editedId = $('#edited_id').val();
 
             if(!qtyEdit || qtyEdit === "" || qtyEdit === "0"){
                 alert('Mohon Isi Kuantitas!')
+                return false;
+            }
+
+            if(!accountEdit || accountEdit === ""){
+                alert('Mohon Pilih Cost Code!');
                 return false;
             }
 
@@ -761,6 +821,10 @@
 
             var splitted = data.split('#');
 
+            // split cost code value
+            let splittedAcc = accountEdit.split('#');
+            //alert(splittedAcc[1]);
+
             var sbEdit = new stringbuilder();
 
             sbEdit.append("<tr class='item" + editedId + "'>");
@@ -772,6 +836,15 @@
             sbEdit.append("<td>" + splitted[2]);
             sbEdit.append("<input type='hidden' name='item_name[]' value='" + splitted[2] + "'/></td>");
 
+            sbEdit.append("<td class='text-center'>" + splittedAcc[1]);
+
+            if(!splittedAcc[2] && splittedAcc[2] !== undefined){
+                sbEdit.append(" - " + splittedAcc[2]);
+            }
+
+            sbEdit.append("<input type='hidden' name='accounts[]' value='" + splittedAcc[0] + "'/>");
+            sbEdit.append("<input type='hidden' name='account_codes[]' value='" + splittedAcc[1] + "'/></td>");
+
             if(qtyEdit && qtyEdit !== ""){
                 sbEdit.append("<td class='text-right'>" + qtyEdit + "<input type='hidden' name='qty[]' value='" + qtyEdit + "'/></td>");
             }
@@ -782,7 +855,7 @@
             sbEdit.append("<td>" + remarkEdit + "<input type='hidden' name='remark[]' value='" + remarkEdit + "'/></td>");
 
             sbEdit.append("<td class='text-center'>");
-            sbEdit.append("<a class='edit-modal btn btn-info' data-id='" + editedId + "' data-item-id='" + data + "' data-item-text='" + splitted[1] + " " + splitted[2] + "' data-qty='" + qtyEdit + "' data-remark='" + remarkEdit + "'><span class='glyphicon glyphicon-edit'></span></a>");
+            sbEdit.append("<a class='edit-modal btn btn-info' data-id='" + editedId + "' data-item-id='" + data + "' data-item-text='" + splitted[1] + " " + splitted[2] + "' data-qty='" + qtyEdit + "' data-account='" + splittedAcc[0] + "' data-account-code='" + splittedAcc[1] + "' data-remark='" + remarkEdit + "'><span class='glyphicon glyphicon-edit'></span></a>");
             sbEdit.append("<a class='delete-modal btn btn-danger' data-id='" + editedId + "' data-item-id='" + data + "' data-item-text='" + splitted[1] + " " + splitted[2] + "' data-qty='" + qtyEdit + "' data-remark='" + remarkEdit + "'><span class='glyphicon glyphicon-trash'></span></a>");
             sbEdit.append("</td>");
             sbEdit.append("</tr>");
@@ -792,6 +865,7 @@
             // Reset edit form modal
             $('#item_edit').val(null).trigger('change');
             $('#item_old_value').val('');
+            $('#account_edit').val(null).trigger('change');
             qtyEditFormat.clear();
             $('#remark_edit').val('');
         });
