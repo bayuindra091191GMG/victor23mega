@@ -22,6 +22,20 @@
                 </div>
             @endif
 
+{{--            <div class="form-group">--}}
+{{--                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="code">--}}
+{{--                    EXCEL--}}
+{{--                </label>--}}
+{{--                <div class="col-md-2 col-sm-2 col-xs-12">--}}
+{{--                    <input type="file" name="excel"/>--}}
+{{--                </div>--}}
+{{--                <div class="col-md-3 col-sm-3 col-xs-12">--}}
+{{--                    <a class="btn btn-primary" style="cursor: pointer;">UNGGAH</a>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+
+{{--            <hr/>--}}
+
             <div class="form-group">
                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="code">
                     Nomor Issued Docket
