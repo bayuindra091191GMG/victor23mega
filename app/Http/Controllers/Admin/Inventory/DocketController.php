@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Inventory;
 use App\Exports\IssuedDocketCostCodeExport;
 use App\Exports\IssuedDocketExport;
 use App\Http\Controllers\Controller;
+use App\Imports\IssuedDocketImport;
 use App\Libs\Utilities;
 use App\Models\Account;
 use App\Models\Department;
@@ -22,11 +23,13 @@ use App\Models\Warehouse;
 use App\Transformer\Inventory\IssuedDocketTransformer;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades;
@@ -437,14 +440,15 @@ class DocketController extends Controller
         $uniqueItems = array_unique($items);
 
         foreach($items as $item){
-            if(empty($item)) $valid = false;
+            if(empty($item) || $item == '-1') $valid = false;
             if(empty($qtys[$i]) || $qtys[$i] == '0') $valid = false;
-            if(empty($machineries[$i])) $valid = false;
+            if(empty($machineries[$i]) || $machineries[$i] == '-1') $valid = false;
+            if(empty($accounts[$i]) || $accounts[$i] == '-1') $valid = false;
             $i++;
         }
 
         if(!$valid){
-            return redirect()->back()->withErrors('Inventory, Unit Alat Berat dan Kuantitas wajib diisi!', 'default')->withInput($request->all());
+            return redirect()->back()->withErrors('Inventory, Unit Alat Berat, Cost Code dan Kuantitas wajib diisi!', 'default')->withInput($request->all());
         }
 
         // Validate item stocks
@@ -1347,5 +1351,31 @@ class DocketController extends Controller
         return DataTables::of($purchaseRequests)
             ->setTransformer(new IssuedDocketTransformer)
             ->make(true);
+    }
+
+    public function downloadExcelForImport(){
+        $excel = public_path(). "/documents/ID_BBM_EXCEL_IMPORT_FORMAT.xlsx";
+
+        $headers = [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ];
+
+        return response()->download($excel, 'ID_BBM_EXCEL_IMPORT_FORMAT.xlsx', $headers);
+    }
+
+    public function uploadExcel(Request $request){
+        try{
+            $excel = $request->file('excel');
+            $import = new IssuedDocketImport();
+            Facades\Excel::import($import, $excel);
+
+            return new JsonResponse($import->data);
+        }
+        catch (\Exception $ex){
+            Log::error('DocketController - uploadExcel error EX: '. $ex);
+            return array(
+                'fail' => true,
+            );
+        }
     }
 }

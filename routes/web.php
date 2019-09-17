@@ -491,6 +491,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('issued_dockets/download_excel', 'Inventory\DocketController@downloadReportExcel')->name('issued_dockets.download_excel');
     Route::get('issued_dockets/cost_code/report', 'Inventory\DocketController@reportCostCode')->name('issued_dockets.cost_code.report');
     Route::post('issued_dockets/cost_code/download_report', 'Inventory\DocketController@downloadReportCostCode')->name('issued_dockets.cost_code.download_report');
+    Route::post('issued_dockets/excel/upload', 'Inventory\DocketController@uploadExcel')->name('issued_dockets.excel.upload');
+    Route::get('issued_dockets/excel/download', 'Inventory\DocketController@downloadExcelForImport')->name('issued_dockets.excel.download');
 
     //Issued Docket Details
     Route::get('issued_docket_details', 'Inventory\DocketDetailController@index')->name('issued_docket_details');

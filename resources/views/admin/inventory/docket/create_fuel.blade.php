@@ -6,6 +6,21 @@
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
 
+            <div class="form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12 text-right" for="code">
+                    Input via EXCEL
+                </label>
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <a href="{{ route('admin.issued_dockets.excel.download') }}" class="btn btn-info">Unduh File Excel</a>
+                </div>
+                <div class="col-md-2 col-sm-2 col-xs-12">
+                    <input type="file" id="excel" name="excel" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                </div>
+
+            </div>
+
+            <hr/>
+
             {{ Form::open(['route'=>['admin.issued_dockets.fuel.store'],'method' => 'post','id' => 'general-form','class'=>'form-horizontal form-label-left']) }}
 
             @if(count($errors))
@@ -21,20 +36,6 @@
                     </div>
                 </div>
             @endif
-
-{{--            <div class="form-group">--}}
-{{--                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="code">--}}
-{{--                    EXCEL--}}
-{{--                </label>--}}
-{{--                <div class="col-md-2 col-sm-2 col-xs-12">--}}
-{{--                    <input type="file" name="excel"/>--}}
-{{--                </div>--}}
-{{--                <div class="col-md-3 col-sm-3 col-xs-12">--}}
-{{--                    <a class="btn btn-primary" style="cursor: pointer;">UNGGAH</a>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-
-{{--            <hr/>--}}
 
             <div class="form-group">
                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="code">
@@ -208,17 +209,35 @@
                                 @foreach(old('item') as $item)
                                         <tr class='item{{ $idx }}'>
                                             <td class='text-center'>
-                                                {{ $oldItemTextes[$idx] }}
+
+                                                @if($item == '-1')
+                                                    <span style="color: red;">DATA TIDAK DITEMUKAN!</span>
+                                                @else
+                                                    {{ $oldItemTextes[$idx] }}
+                                                @endif
+
                                                 <input type='hidden' name='item[]' value='{{ $item }}'/>
                                                 <input type='hidden' name='item_textes[]' value='{{ $oldItemTextes[$idx] }}'/>
                                             </td>
                                             <td class='text-center'>
-                                                {{ $oldAccountTextes[$idx] }}
+
+                                                @if($oldAccounts[$idx] == '-1')
+                                                    <span style="color: red;">DATA TIDAK DITEMUKAN!</span>
+                                                @else
+                                                    {{ $oldAccountTextes[$idx] }}
+                                                @endif
+
                                                 <input type='hidden' name='accounts[]' value='{{ $oldAccounts[$idx] }}'/>
                                                 <input type='hidden' name='account_textes[]' value='{{ $oldAccountTextes[$idx] }}'/>
                                             </td>
                                             <td class='text-center'>
-                                                {{ $oldMachineryTextes[$idx] }}
+
+                                                @if($oldMachineries[$idx] == '-1')
+                                                    <span style="color: red;">DATA TIDAK DITEMUKAN!</span>
+                                                @else
+                                                    {{ $oldMachineryTextes[$idx] }}
+                                                @endif
+
                                                 <input type='hidden' name='machinery[]' value='{{ $oldMachineries[$idx] }}'/>
                                                 <input type='hidden' name='machinery_textes[]' value='{{ $oldMachineryTextes[$idx] }}'/>
                                             </td>
@@ -1000,7 +1019,7 @@
             var machineryOldValue = $('#machinery_old_value').val();
 
             if(!machineryEdit || machineryEdit === ""){
-                if(!machineryOldValue || machineryOldValue === ""){
+                if(!machineryOldValue || machineryOldValue === "" || machineryOldValue === "-1"){
                     alert('Mohon Pilih Alat Berat!');
                     return false;
                 }
@@ -1025,6 +1044,11 @@
                 itemEditId = $('#item_old_value').val();
                 itemEditText = $('#item_old_text').val();
                 itemEditUom = $('#item_old_uom').val();
+            }
+
+            if(itemEditId === "-1"){
+                alert('Mohon pilih inventory!');
+                return false;
             }
 
             // Get machinery properties
@@ -1150,5 +1174,126 @@
         $('.modal-footer').on('click', '.delete', function() {
             $('.item' + deletedId).remove();
         });
+
+        $('#excel').change(function () {
+            if ($(this).val() != '') {
+                uploadExcel(this);
+            }
+        });
+
+        function uploadExcel(file){
+            var form_data = new FormData();
+            form_data.append('excel', file.files[0]);
+            form_data.append('_token', '{{ csrf_token() }}');
+            $.ajax({
+                url: "{{ route('admin.issued_dockets.excel.upload') }}",
+                data: form_data,
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    if (data.fail) {
+                        alert('FILE EXCEL YANG DIUNGGAH BERBEDA FORMAT!');
+                        document.getElementById('excel').value= null;
+                    }
+                    else {
+                        for (let j = 0; j < data.length; j++) {
+                            // Increase idx
+                            let idx = $('#index_counter').val();
+                            idx++;
+                            $('#index_counter').val(idx);
+
+                            let sbImport = new stringbuilder();
+
+                            sbImport.append("<tr class='item" + idx + "'>");
+
+                            if(data[j].item_id === -1){
+                                sbImport.append("<td class='text-center'><span style='color: red;'>DATA TIDAK DITEMUKAN!</span>");
+                            }
+                            else{
+                                sbImport.append("<td class='text-center'>" + data[j].item_text);
+                            }
+
+                            sbImport.append("<input type='hidden' name='item[]' value='" + data[j].item_id + "'/>");
+                            sbImport.append("<input type='hidden' name='item_textes[]' value='" + data[j].item_text + "'/></td>");
+
+                            if(data[j].account_id === -1){
+                                sbImport.append("<td class='text-center'><span style='color: red;'>DATA TIDAK DITEMUKAN!</span>");
+                            }
+                            else{
+                                sbImport.append("<td class='text-center'>" + data[j].account_text);
+                            }
+
+                            sbImport.append("<input type='hidden' name='accounts[]' value='" + data[j].account_id + "'/>");
+                            sbImport.append("<input type='hidden' name='account_textes[]' value='" + data[j].account_text + "'/></td>");
+
+                            if(data[j].machinery_id === -1){
+                                sbImport.append("<td class='text-center'><span style='color: red;'>DATA TIDAK DITEMUKAN!</span>");
+                            }
+                            else{
+                                sbImport.append("<td class='text-center'>" + data[j].machinery_text);
+                            }
+
+                            sbImport.append("<input type='hidden' name='machinery[]' value='" + data[j].machinery_id + "'/>");
+                            sbImport.append("<input type='hidden' name='machinery_textes[]' value='" + data[j].machinery_text + "'/></td>");
+
+                            sbImport.append("<td class='text-right'>" + data[j].qty + "<input type='hidden' name='qty[]' value='" + data[j].qty + "'/></td>");
+
+                            sbImport.append("<td class='text-center'>" + data[j].uom);
+                            sbImport.append("<input type='hidden' name='uoms[]' value='" + data[j].uom + "'/></td>");
+                            sbImport.append("<td class='text-center'>" + data[j].shift);
+                            sbImport.append("<input type='hidden' name='shift[]' value='" + data[j].shift + "'/></td>");
+                            sbImport.append("<td class='text-center'>" + data[j].time);
+                            sbImport.append("<input type='hidden' name='time[]' value='" + data[j].time + "'/></td>");
+                            sbImport.append("<td class='text-center'>" + data[j].hm);
+                            sbImport.append("<input type='hidden' name='hm[]' value='" + data[j].hm + "'/></td>");
+                            sbImport.append("<td class='text-center'>" + data[j].km);
+                            sbImport.append("<input type='hidden' name='km[]' value='" + data[j].km + "'/></td>");
+                            sbImport.append("<td class='text-center'>" + data[j].fuelman);
+                            sbImport.append("<input type='hidden' name='fuelman[]' value='" + data[j].fuelman + "'/></td>");
+                            sbImport.append("<td class='text-center'>" + data[j].operator);
+                            sbImport.append("<input type='hidden' name='operator[]' value='" + data[j].operator + "'/></td>");
+                            sbImport.append("<td>" + data[j].remark + "<input type='hidden' name='remark[]' value='" + data[j].remark  + "'/></td>");
+
+                            sbImport.append("<td class='text-center'>");
+                            sbImport.append("<a class='edit-modal btn btn-info' data-id='" + idx + "'");
+                            sbImport.append(" data-item-id='" + data[j].item_id + "'");
+                            sbImport.append(" data-item-text='" + data[j].item_text + "'");
+                            sbImport.append(" data-item-uom='" + data[j].uom + "'");
+                            sbImport.append(" data-account-id='" + data[j].account_id + "'");
+                            sbImport.append(" data-account-text='" + data[j].account_text + "'");
+                            sbImport.append(" data-machinery-id='" + data[j].machinery_id + "'");
+                            sbImport.append(" data-machinery-text='" + data[j].machinery_text + "'");
+                            sbImport.append(" data-qty='" + data[j].qty + "'");
+                            sbImport.append(" data-shift='" + data[j].shift + "'");
+                            sbImport.append(" data-time='" + data[j].time + "'");
+                            sbImport.append(" data-hm='" + data[j].hm + "'");
+                            sbImport.append(" data-km='" + data[j].km + "'");
+                            sbImport.append(" data-fuelman='" + data[j].fuelman + "'");
+                            sbImport.append(" data-operator='" + data[j].operator + "'");
+                            sbImport.append(" data-remark='" + data[j].remark + "'");
+                            sbImport.append("><span class='glyphicon glyphicon-edit'></span></a>");
+                            sbImport.append("<a class='delete-modal btn btn-danger' data-id='" + idx + "' " +
+                                "data-item-id='" + data[j].item_id + "' " +
+                                "data-item-text='" + data[j].item_text + "' " +
+                                "data-machinery-id='" + data[j].machinery_id + "' " +
+                                "data-machinery-text='" + data[j].machinery_text + "' " +
+                                "data-qty='" + data[j].qty + "' " +
+                                "data-remark='" + data[j].remark + "'><span class='glyphicon glyphicon-trash'></span></a>");
+                            sbImport.append("</td>");
+                            sbImport.append("</tr>");
+
+                            $('#detail_table').append(sbImport.toString());
+                        }
+
+                        document.getElementById('excel').value= null;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert("INTERNAL SERVER ERROR");
+                    document.getElementById('excel').value= null;
+                }
+            });
+        }
     </script>
 @endsection

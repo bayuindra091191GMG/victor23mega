@@ -14,6 +14,7 @@ use Maatwebsite\Excel\Concerns\WithStartRow;
 
 class IssuedDocketImport implements ToCollection, WithStartRow
 {
+    public $data;
 
     /**
      * @param Collection $rows
@@ -23,15 +24,19 @@ class IssuedDocketImport implements ToCollection, WithStartRow
     {
         $docketDetails = collect();
         foreach ($rows as $row){
-            $item = Item::whereRaw('LOWER(code) = '. strtolower($row[0]))->first();
+            $itemCode = strtolower(trim($row[0]));
+            $item = Item::whereRaw("LOWER(`code`) = ?", [$itemCode])->first();
             $itemId = -1;
             $itemText = '';
+            $itemUom = '';
             if(!empty($item)){
                 $itemId = $item->id;
                 $itemText = $item->code;
+                $itemUom = $item->uom;
             }
 
-            $account = Account::whereRaw('LOWER(code) = '. strtolower($row[1]))->first();
+            $accountCode = trim($row[1]);
+            $account = Account::where('code', $accountCode)->first();
             $accountId = -1;
             $accountText = '';
             if(!empty($account)){
@@ -39,7 +44,7 @@ class IssuedDocketImport implements ToCollection, WithStartRow
                 $accountText = $account->code. ' - '. $account->description. ' - '. $account->location;
             }
 
-            $machinery = Machinery::whereRaw('LOWER(code) = '. strtolower($row[2]))->first();
+            $machinery = Machinery::whereRaw("LOWER(`code`) = ?", [strtolower($row[2])])->first();
             $machineryId = -1;
             $machineryText = '';
             if(!empty($machinery)){
@@ -48,28 +53,30 @@ class IssuedDocketImport implements ToCollection, WithStartRow
             }
 
             $qtyFloat = Utilities::toFloat($row[3]);
+            //$time = strval($row[5]);
 
             $docketDetail = collect([
                 'item_id'           => $itemId,
-                'item_code'         => $itemText,
+                'item_text'         => $itemText,
                 'account_id'        => $accountId,
                 'account_text'      => $accountText,
                 'machinery_id'      => $machineryId,
                 'machinery_text'    => $machineryText,
                 'qty'               => $qtyFloat,
-                'shift'             => strtoupper($row[4]),
-                'time'              => $row[5],
-                'hm'                => $row[6],
-                'km'                => $row[7],
-                'fuelman'           => $row[8],
-                'operator'          => $row[9],
-                'remark'            => $row[10]
+                'uom'               => $itemUom,
+                'shift'             => strtoupper(trim($row[4])),
+                'time'              => trim($row[5]),
+                'hm'                => trim($row[6]),
+                'km'                => trim($row[7]),
+                'fuelman'           => trim($row[8]),
+                'operator'          => trim($row[9]),
+                'remark'            => trim($row[10])
             ]);
 
             $docketDetails->push($docketDetail);
         }
 
-        return $docketDetails;
+        $this->data = $docketDetails;
     }
 
     /**
