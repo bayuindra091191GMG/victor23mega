@@ -5,21 +5,27 @@
 @section('content')
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
-
-            <div class="form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12 text-right" for="code">
-                    Input via EXCEL
-                </label>
-                <div class="col-md-3 col-sm-3 col-xs-12">
-                    <a href="{{ route('admin.issued_dockets.excel.download') }}" class="btn btn-info">Unduh File Excel</a>
+            <form class="form-horizontal form-label-left">
+                <div class="form-group" style="margin-bottom: 1.5em;">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                        Unduh File EXCEL
+                    </label>
+                    <div class="col-md-3 col-sm-3 col-xs-12">
+                        <a href="{{ route('admin.issued_dockets.excel.download') }}" class="btn btn-info">Unduh File Excel</a>
+                    </div>
                 </div>
-                <div class="col-md-2 col-sm-2 col-xs-12">
-                    <input type="file" id="excel" name="excel" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                        Unggah File EXCEL untuk input detil inventory
+                    </label>
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                        <input type="file" id="excel" name="excel" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                    </div>
                 </div>
-
-            </div>
-
-            <hr/>
+            </form>
+            <hr style="border-top: 1px solid #ccc;"/>
+        </div>
+        <div class="col-md-12 col-sm-12 col-xs-12">
 
             {{ Form::open(['route'=>['admin.issued_dockets.fuel.store'],'method' => 'post','id' => 'general-form','class'=>'form-horizontal form-label-left']) }}
 
@@ -135,7 +141,7 @@
                 </div>
             </div>
 
-            <hr/>
+            <hr style="border-top: 1px solid #ccc;"/>
 
             <div class="form-group">
                 <div class="col-lg-12 col-md-12 col-xs-12 box-section">
