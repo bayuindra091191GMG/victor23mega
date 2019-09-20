@@ -1553,6 +1553,7 @@ class PurchaseOrderHeaderController extends Controller
                 $start->toDateTimeString(),
                 $end->toDateTimeString(),
                 (int) $request->input('department'),
+                (int) $request->input('supplier') ?? 0,
                 (int) $request->input('status'),
                 $request->filled('user') ? (int) $request->input('user') : -1
             ))->download($filenameExcel);
@@ -1575,6 +1576,20 @@ class PurchaseOrderHeaderController extends Controller
             $filterDepartment = Department::find($department)->name;
         }
 
+        // Filter supplier
+        $filterSupplier = 'Semua';
+        $supplierId = $request->input('supplier');
+        if(!empty($supplierId)){
+            $poHeaders = $poHeaders->where('supplier_id', $supplierId);
+            $supplier = Supplier::find($supplierId);
+            if($supplier->type === 'FIXED'){
+                $filterSupplier = $supplier->name. ' - TETAP';
+            }
+            else{
+                $filterSupplier = $supplier->name. ' - TIDAK TETAP';
+            }
+        }
+
         // Filter status
         $filterStatus = 'Semua';
         $status = $request->input('status');
@@ -1583,9 +1598,6 @@ class PurchaseOrderHeaderController extends Controller
             $filterStatus = Status::find($status)->description;
         }
 
-        $poHeaders = $poHeaders->orderByDesc('date')
-            ->get();
-
         // Filter created by
         $filterUser = 'Semua';
         if(!empty($request->input('user'))){
@@ -1593,6 +1605,9 @@ class PurchaseOrderHeaderController extends Controller
             $poHeaders = $poHeaders->where('created_by', $user->id);
             $filterUser = $user->email;
         }
+
+        $poHeaders = $poHeaders->orderByDesc('date')
+            ->get();
 
         // Validate Data
         if($poHeaders->count() == 0){
@@ -1608,6 +1623,7 @@ class PurchaseOrderHeaderController extends Controller
                 'start_date'        => $request->input('start_date'),
                 'end_date'          => $request->input('end_date'),
                 'filterDepartment'  => $filterDepartment,
+                'filterSupplier'    => $filterSupplier,
                 'filterStatus'      => $filterStatus,
                 'filterUser'        => $filterUser,
                 'total'             => $totalStr
@@ -1627,10 +1643,12 @@ class PurchaseOrderHeaderController extends Controller
                 'start_date'        => $request->input('start_date'),
                 'end_date'          => $request->input('end_date'),
                 'filterDepartment'  => $filterDepartment,
+                'filterSupplier'    => $filterSupplier,
                 'filterStatus'      => $filterStatus,
                 'filterUser'        => $filterUser,
                 'total'             => $totalStr,
                 'department'        => $request->input('department'),
+                'supplier'          => $request->input('supplier'),
                 'status'            => $request->input('status'),
                 'user'              => $request->input('status')
             ];

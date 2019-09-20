@@ -26,6 +26,7 @@ class PurchaseOrderExport implements FromView, ShouldAutoSize, WithStrictNullCom
     private $dateStart;
     private $dateEnd;
     private $departmentId;
+    private $supplierId;
     private $statusId;
     private $createdBy;
     private $counter = 0;
@@ -33,12 +34,14 @@ class PurchaseOrderExport implements FromView, ShouldAutoSize, WithStrictNullCom
     public function __construct(string $dateStart,
                                 string $dateEnd,
                                 int $departmentId,
+                                int $supplierId,
                                 int $statusId,
                                 int $createdBy)
     {
         $this->dateStart = $dateStart;
         $this->dateEnd = $dateEnd;
         $this->departmentId = $departmentId;
+        $this->supplierId = $supplierId;
         $this->statusId = $statusId;
         $this->createdBy = $createdBy;
     }
@@ -57,6 +60,12 @@ class PurchaseOrderExport implements FromView, ShouldAutoSize, WithStrictNullCom
                 $query->where('department_id', $department);
                 }
             );
+        }
+
+        // Filter supplier
+        $supplier = $this->supplierId;
+        if($this->statusId != 0){
+            $poHeaders = $poHeaders->where('supplier_id', $supplier);
         }
 
         // Filter status

@@ -6769,6 +6769,7 @@
     <h3>Laporan Purchase Order</h3>
     <span style="font-size: 10px;">Tanggal: {{ $start_date }} - {{ $end_date }}</span><br/>
     <span style="font-size: 10px;">Departemen: {{ $filterDepartment }}</span><br/>
+    <span style="font-size: 10px;">Vendor: {{ $filterSupplier }}</span><br/>
     <span style="font-size: 10px;">Status: {{ $filterStatus }}</span><br/>
     <span style="font-size: 10px;">Total PO : {{ $poHeaders->count() }}</span>
     <table class="table" style="font-size: 10px;">

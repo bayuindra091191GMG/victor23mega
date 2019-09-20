@@ -63,6 +63,15 @@
             </div>
 
             <div class="form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="supplier" >
+                    Vendor
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <select id="supplier" name="supplier" class="form-control col-md-7 col-xs-12"></select>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="status" >
                     Status
                 </label>
@@ -128,7 +137,7 @@
             format: "DD MMM Y"
         });
 
-        // AutoNumeric
+        // Select2
         $('#user').select2({
             placeholder: {
                 id: '-1',
@@ -138,6 +147,30 @@
             minimumInputLength: 0,
             ajax: {
                 url: '{{ route('select.users') }}',
+                dataType: 'json',
+                data: function (params) {
+                    return {
+                        q: $.trim(params.term),
+                        _token: $('input[name=_token]').val()
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                }
+            }
+        });
+
+        $('#supplier').select2({
+            placeholder: {
+                id: '-1',
+                text: ' - Pilih Vendor - '
+            },
+            width: '100%',
+            minimumInputLength: 0,
+            ajax: {
+                url: '{{ route('select.suppliers') }}',
                 dataType: 'json',
                 data: function (params) {
                     return {

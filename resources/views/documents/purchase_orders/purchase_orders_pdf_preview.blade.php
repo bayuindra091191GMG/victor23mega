@@ -6769,12 +6769,14 @@
     <h3>Laporan Purchase Order</h3>
     <span style="font-size: 10px;">Tanggal: {{ $start_date }} - {{ $end_date }}</span><br/>
     <span style="font-size: 10px;">Departemen: {{ $filterDepartment }}</span><br/>
+    <span style="font-size: 10px;">Vendor: {{ $filterSupplier }}</span><br/>
     <span style="font-size: 10px;">Status: {{ $filterStatus }}</span><br/>
     <span style="font-size: 10px;">Total PO : {{ $poHeaders->count() }}</span>
     {{ Form::open(['route'=>['admin.purchase_orders.download-report'],'method' => 'post','id' => 'general-form']) }}
         <input type="hidden" name="start_date" value="{{ $start_date }}"/>
         <input type="hidden" name="end_date" value="{{ $end_date }}"/>
         <input type="hidden" name="department" value="{{ $department }}"/>
+        <input type="hidden" name="supplier" value="{{ $supplier }}"/>
         <input type="hidden" name="status" value="{{ $status }}"/>
         <input type="hidden" name="user" value="{{ $user }}"/>
         <input type="hidden" id="is_excel" name="is_excel" value="false" />
