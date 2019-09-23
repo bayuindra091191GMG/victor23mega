@@ -437,6 +437,10 @@ class DocketController extends Controller
         $stockCheck = true;
         $i = 0;
 
+        if(empty($items)){
+            return redirect()->back()->withErrors('Tidak ada inventory yang dipilih!', 'default')->withInput($request->all());
+        }
+
         $uniqueItems = array_unique($items);
 
         foreach($items as $item){
