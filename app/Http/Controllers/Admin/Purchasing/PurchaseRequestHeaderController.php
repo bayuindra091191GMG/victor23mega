@@ -584,8 +584,8 @@ class PurchaseRequestHeaderController extends Controller
                 return redirect()->back()->withErrors('Nomor PR sudah terdaftar!', 'default')->withInput($request->all());
             }
 
-            $sysNo->next_no++;
-            $sysNo->save();
+//            $sysNo->next_no++;
+//            $sysNo->save();
         }
         else{
             $prCode = $request->input('pr_code');

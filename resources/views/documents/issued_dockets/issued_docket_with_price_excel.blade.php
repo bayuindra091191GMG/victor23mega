@@ -42,8 +42,8 @@
                 <td>{{ $header->code }}</td>
                 <td>{{ $header->date_string }}</td>
                 <td>{{ $header->site->name }}</td>
-                @php( $costCode = !empty($header->account_id) ? $header->account->code : "Tidak Ada" )
-                <td>{{ $costCode }}</td>
+                @php( $costCode = !empty($header->account_id) ? $header->account->code : $detail->account->code )
+                <td>{{ $costCode ?? 'Tidak Ada' }}</td>
                 <td>{{ $detail->item->code }}</td>
                 <td>{{ $detail->item->part_number }}</td>
                 <td>{{ $detail->item->name }}</td>
