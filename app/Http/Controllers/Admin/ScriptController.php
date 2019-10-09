@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ItemReceiptHeader;
 use App\Models\ItemStock;
+use App\Models\PurchaseRequestHeader;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 
@@ -97,6 +98,30 @@ class ScriptController extends Controller
             $itemReceipt->delete();
 
             return 'SCRIPT SUCCESS!!';
+        }
+        catch (\Exception $ex){
+            return $ex;
+        }
+    }
+
+    public function deletePurchaseRequest(int $id){
+        try{
+            $prHeader = PurchaseRequestHeader::find($id);
+            if(empty($prHeader)){
+                return 'INVALID';
+            }
+
+            if($prHeader->purchase_order_headers->count() > 0){
+                return 'PO EXISTS!';
+            }
+
+            DB::table('purchase_request_details')
+                ->where('header_id',  $id)
+                ->delete();
+
+            $prHeader->delete();
+
+            return 'SCRIPT SUCCESS!';
         }
         catch (\Exception $ex){
             return $ex;

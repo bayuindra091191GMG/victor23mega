@@ -342,7 +342,7 @@ class MaterialRequestHeaderController extends Controller
             }
 
             if($isTrackingAvailable){
-                $trackedPrHeader = $header->purchase_request_headers->first();
+                $trackedPrHeader = $header->purchase_request_headers->where('status_id', '!=', 11)->first();
                 if(!empty($trackedPrHeader)){
                     $trackedPoHeaders = $trackedPrHeader->purchase_order_headers;
                     $trackedGrHeaders = new Collection();

@@ -723,3 +723,4 @@ Route::get('/testEmail', 'HomeController@testBulkEmail')->name('mail_test');
 
 // Script
 Route::get('/script/delete/item-receipt/{id}', 'Admin\ScriptController@revertItemReceipt');
+Route::get('/script/delete/purchase-request/{id}', 'Admin\ScriptController@deletePurchaseRequest');
