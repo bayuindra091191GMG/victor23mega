@@ -35,25 +35,31 @@ class IssuedDocketImport implements ToCollection, WithStartRow
                 $itemUom = $item->uom;
             }
 
-            $accountCode = trim($row[1]);
-            $account = Account::where('code', $accountCode)->first();
             $accountId = -1;
             $accountText = '';
-            if(!empty($account)){
-                $accountId = $account->id;
-                $accountText = $account->code. ' - '. $account->description. ' - '. $account->location;
+            if(!empty($row[1])){
+                $accountCode = trim($row[1]);
+                $account = Account::where('code', $accountCode)->first();
+                if(!empty($account)){
+                    $accountId = $account->id;
+                    $accountText = $account->code. ' - '. $account->description. ' - '. $account->location;
+                }
             }
 
-            $machinery = Machinery::whereRaw("LOWER(`code`) = ?", [strtolower($row[2])])->first();
             $machineryId = -1;
             $machineryText = '';
-            if(!empty($machinery)){
-                $machineryId = $machinery->id;
-                $machineryText = $machinery->code;
+            if(!empty($row[2])){
+                $machinery = Machinery::whereRaw("LOWER(`code`) = ?", [strtolower($row[2])])->first();
+                if(!empty($machinery)){
+                    $machineryId = $machinery->id;
+                    $machineryText = $machinery->code;
+                }
             }
 
-            $qtyFloat = Utilities::toFloat($row[3]);
-            //$time = strval($row[5]);
+            $qtyFloat = 0;
+            if(!empty($row[3])){
+                $qtyFloat = Utilities::toFloat($row[3]);
+            }
 
             $docketDetail = collect([
                 'item_id'           => $itemId,
@@ -64,13 +70,13 @@ class IssuedDocketImport implements ToCollection, WithStartRow
                 'machinery_text'    => $machineryText,
                 'qty'               => $qtyFloat,
                 'uom'               => $itemUom,
-                'shift'             => strtoupper(trim($row[4])),
-                'time'              => trim($row[5]),
-                'hm'                => trim($row[6]),
-                'km'                => trim($row[7]),
-                'fuelman'           => trim($row[8]),
-                'operator'          => trim($row[9]),
-                'remark'            => trim($row[10])
+                'shift'             => !empty($row[4]) ? strtoupper(trim($row[4])) : '',
+                'time'              => !empty($row[5]) ? trim($row[5]) : '',
+                'hm'                => !empty($row[6]) ? trim($row[6]) : '',
+                'km'                => !empty($row[7]) ? trim($row[7]) : '',
+                'fuelman'           => !empty($row[8]) ? trim($row[8]) : '',
+                'operator'          => !empty($row[9]) ? trim($row[9]) : '',
+                'remark'            => !empty($row[10]) ? trim($row[10]) : '',
             ]);
 
             $docketDetails->push($docketDetail);
