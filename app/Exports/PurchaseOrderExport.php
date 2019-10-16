@@ -64,7 +64,7 @@ class PurchaseOrderExport implements FromView, ShouldAutoSize, WithStrictNullCom
 
         // Filter supplier
         $supplier = $this->supplierId;
-        if($this->statusId != 0){
+        if($this->supplierId != 0){
             $poHeaders = $poHeaders->where('supplier_id', $supplier);
         }
 
