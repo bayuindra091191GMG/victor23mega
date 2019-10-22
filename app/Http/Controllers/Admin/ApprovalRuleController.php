@@ -790,14 +790,15 @@ class ApprovalRuleController extends Controller
                             $itemStock = ItemStock::where('item_id', $detail->item_id)->where('warehouse_id', $header->warehouse_id)->first();
                             if(!empty($itemStock)){
                                 $itemStock->stock_on_order += $detail->quantity;
+                                $itemStock->save();
                             }
 
                             // Reset item on reorder
                             if($header->is_reorder === 1){
                                 $itemStock->stock_on_reorder -= $detail->quantity;
+                                $itemStock->save();
                             }
 
-                            $itemStock->save();
                         }
                     }
                     catch (\Exception $ex){

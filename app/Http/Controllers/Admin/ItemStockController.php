@@ -502,78 +502,74 @@ class ItemStockController extends Controller
     }
 
     public function downloadReport(Request $request){
-        $validator = Validator::make($request->all(),[
-            'date'              => 'required'
-        ],[
-            'date.required'     => 'Tanggal wajib diisi!'
-        ]);
+        try{
+            $validator = Validator::make($request->all(),[
+                'date'              => 'required'
+            ],[
+                'date.required'     => 'Tanggal wajib diisi!'
+            ]);
 
-        if ($validator->fails()) {
-            return redirect()
-                ->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
+            if ($validator->fails()) {
+                return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
 
-        $date = Carbon::createFromFormat('d M Y', $request->input('date'), 'Asia/Jakarta');
-        $start = Carbon::createFromFormat('d M Y', $request->input('date'), 'Asia/Jakarta');
-        $end = Carbon::createFromFormat('d M Y', $request->input('date'), 'Asia/Jakarta');
+            $date = Carbon::createFromFormat('d M Y', $request->input('date'), 'Asia/Jakarta');
+            $start = Carbon::createFromFormat('d M Y', $request->input('date'), 'Asia/Jakarta');
+            $end = Carbon::createFromFormat('d M Y', $request->input('date'), 'Asia/Jakarta');
 
-        $start->addDays(-1);
-        $end->addDays(1);
+            $start->addDays(-1);
+            $end->addDays(1);
 
-        $itemStocks = new Collection();
-        $items = Item::orderBy('code')->get();
-        foreach($items as $item){
-            if($item->stock_cards->count() > 0){
-                $exactStockCard = $item->stock_cards->where('created_at', '>', $start->toDateString())
-                    ->where('created_at', '<', $end->toDateString())
-                    ->sortByDesc('created_at')
-                    ->first();
-                if(!empty($exactStockCard)){
-                    $tmpItem = $item;
-                    $tmpItem->setGetStock($exactStockCard->result_qty);
-                    $itemStocks->add($tmpItem);
-                }
-                else{
-                    $latestStockCard = $item->stock_cards->where('created_at', '<', $date->toDateString())->sortByDesc('created_at')->first();
-                    if(!empty($latestStockCard)){
-                        $tmpItem2 = $item;
-                        $tmpItem2->setGetStock($latestStockCard->result_qty);
-                        $itemStocks->add($tmpItem2);
+            $itemStocks = new Collection();
+            $items = Item::orderBy('code')->get();
+            foreach($items as $item){
+                if($item->stock_cards->count() > 0){
+                    $exactStockCard = $item->stock_cards->where('created_at', '>', $start->toDateString())
+                        ->where('created_at', '<', $end->toDateString())
+                        ->sortByDesc('created_at')
+                        ->first();
+                    if(!empty($exactStockCard)){
+                        $tmpItem = $item;
+                        $tmpItem->setGetStock($exactStockCard->result_qty);
+                        $itemStocks->add($tmpItem);
+                    }
+                    else{
+                        $latestStockCard = $item->stock_cards->where('created_at', '<', $date->toDateString())->sortByDesc('created_at')->first();
+                        if(!empty($latestStockCard)){
+                            $tmpItem2 = $item;
+                            $tmpItem2->setGetStock($latestStockCard->result_qty);
+                            $itemStocks->add($tmpItem2);
+                        }
                     }
                 }
             }
+
+            if($itemStocks->count() == 0){
+                return redirect()->back()->withErrors('Semua inventory belum ada transaksi!', 'default')->withInput($request->all());
+            }
+
+            $data = [
+                'itemStocks'        => $itemStocks,
+                'date'              => $request->input('date')
+            ];
+
+            //ini_set("pcre.backtrack_limit", "500000000");
+
+            $now = Carbon::now('Asia/Jakarta');
+            $filename = 'STOCK_STATUS_REPORT_' . $now->toDateTimeString();
+
+            $pdf = PDF3::loadView('documents.item_stocks.item_stock_status_report_pdf', $data)
+                ->setOption('footer-right', '[page] of [toPage]');
+
+            return $pdf->download($filename.'.pdf');
         }
-
-        if($itemStocks->count() == 0){
-            return redirect()->back()->withErrors('Semua inventory belum ada transaksi!', 'default')->withInput($request->all());
+        catch (\Exception $ex){
+            Log::error('ItemStockController - downloadReport : '. $ex);
+            return redirect()->back()->withErrors('INTERNAL SERVER ERROR!', 'default')->withInput($request->all());
         }
-
-        $data = [
-            'itemStocks'        => $itemStocks,
-            'date'              => $request->input('date')
-        ];
-
-//        return view('documents.item_stocks.item_stock_status_report_pdf')->with($data);
-
-//        $pdf = PDF::loadView('documents.item_stocks.item_stock_status_report_pdf', $data)
-//            ->setPaper('a4', 'portrait');
-//        $now = Carbon::now('Asia/Jakarta');
-//        $filename = 'STOCK_STATUS_REPORT' . $now->toDateTimeString();
-//        $pdf->setOptions(["isPhpEnabled"=>true]);
-//
-//        return $pdf->download($filename.'.pdf');
-
-        //ini_set("pcre.backtrack_limit", "500000000");
-
-        $now = Carbon::now('Asia/Jakarta');
-        $filename = 'STOCK_STATUS_REPORT_' . $now->toDateTimeString();
-
-        $pdf = PDF3::loadView('documents.item_stocks.item_stock_status_report_pdf', $data)
-            ->setOption('footer-right', '[page] of [toPage]');
-
-        return $pdf->download($filename.'.pdf');
     }
 
     public function excel(){
