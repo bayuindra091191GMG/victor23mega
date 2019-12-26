@@ -61,6 +61,7 @@ class PurchaseInvoiceHeaderTransformer extends TransformerAbstract
                 'repayment_amount'  => $header->repayment_amount,
                 'department'        => $header->purchase_order_header->purchase_request_header->department->name,
                 'machinery'         => !empty($machinery) ? $machinery->code. ' ('. $machinery->machinery_category->name. ' - '. $machinery->machinery_brand->name. ')' : '-',
+                'date'              => $date,
                 'created_at'        => $date,
                 'action'            => $action
             ];

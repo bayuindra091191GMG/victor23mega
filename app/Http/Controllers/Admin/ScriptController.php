@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ItemReceiptHeader;
 use App\Models\ItemStock;
+use App\Models\PurchaseInvoiceHeader;
 use App\Models\PurchaseRequestHeader;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
@@ -125,6 +126,83 @@ class ScriptController extends Controller
         }
         catch (\Exception $ex){
             return $ex;
+        }
+    }
+
+    public function deleteInvoice(int $id){
+        try {
+            $invHeader = PurchaseInvoiceHeader::find($id);
+            if(empty($invHeader)){
+                return 'INVALID';
+            }
+
+            // Check PO
+            $purchaseOrder = $invHeader->purchase_order_header;
+            foreach($invHeader->purchase_invoice_details as $invDetail){
+                foreach($purchaseOrder->purchase_order_details as $detail){
+                    // Update PO quantity invoiced
+                    if($detail->item_id == $invDetail->item_id){
+                        $poDetail = $detail;
+                        $poDetail->quantity_invoiced -= $invDetail->quantity;;
+                        $poDetail->save();
+                    }
+                }
+            }
+
+            $isNotInvoicedPO = true;
+            foreach($purchaseOrder->purchase_order_details as $poDetail){
+                if($detail->quantity_invoiced > 0){
+                    $isNotInvoicedPO = false;
+                }
+            }
+
+            if($isNotInvoicedPO){
+                $purchaseOrder->is_all_invoiced = 0;
+            }
+            else{
+                $purchaseOrder->is_all_invoiced = 2;
+            }
+
+            $purchaseOrder->is_all_invoiced = 0;
+            $purchaseOrder->status_id = 3;
+            $purchaseOrder->closing_date = null;
+            $purchaseOrder->save();
+
+            // Check PR
+            $purchaseRequest = $purchaseOrder->purchase_request_header;
+            foreach($invHeader->purchase_invoice_details as $invDetail){
+                $isInvoicedPR = true;
+                foreach($purchaseRequest->purchase_request_details as $prDetail){
+                    // Update quantity invoiced PR
+                    if($prDetail->item_id == $invDetail->item_id){
+                        $prDetail->quantity_invoiced -= $invDetail->quantity;
+                        $prDetail->save();
+                    }
+                }
+            }
+
+            $isNotInvoicedPR = true;
+            foreach($purchaseRequest->purchase_request_details as $prDetail){
+                if($prDetail->quantity_invoiced > 0){
+                    $isNotInvoicedPR = false;
+                }
+            }
+
+            $purchaseRequest->status_id = 3;
+            $purchaseRequest->closed_at = null;
+            $purchaseRequest->save();
+
+            // Delete invoice details
+            DB::table('purchase_invoice_details')
+                ->where('header_id', $invHeader->id)
+                ->delete();
+
+            $invHeader->delete();
+
+            return 'SCRIPT SUCCESS!';
+        }
+        catch (\Exception $ex){
+            dd($ex);
         }
     }
 }

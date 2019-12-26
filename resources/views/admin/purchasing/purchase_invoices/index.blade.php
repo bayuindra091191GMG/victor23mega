@@ -14,12 +14,12 @@
         <div class="clearfix"></div>
     </div>
     <div class="row">
-        <table class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0"
+        <table class="table table-striped table-bordered dt-responsive" cellspacing="0"
                width="100%" id="pr-table">
             <thead>
             <tr>
-                <th class="text-center">No</th>
-                <th class="text-center">Nomor Invoice</th>
+{{--                <th class="text-center">No</th>--}}
+                <th style="width: 15%;" class="text-center">Nomor Invoice</th>
                 <th class="text-center">Nomor PO</th>
                 <th class="text-center">Tanggal</th>
                 <th class="text-center">Nama Vendor</th>
@@ -116,11 +116,12 @@
                 processing: true,
                 serverSide: true,
                 ajax: '{!! route('datatables.purchase_invoices') !!}',
+                order: [ [2, 'desc'] ],
                 columns: [
-                    { data: 'DT_Row_Index', orderable: false, searchable: false, class: 'text-center' },
-                    { data: 'code', name: 'code', class: 'text-center' },
-                    { data: 'po_code', name: 'po_code', class: 'text-center' },
-                    { data: 'created_at', name: 'created_at', class: 'text-center',
+                    // { data: 'DT_Row_Index', orderable: false, searchable: false, class: 'text-center' },
+                    { data: 'code', name: 'code' },
+                    { data: 'po_code', name: 'po_code', orderable: false, searchable: false, class: 'text-center' },
+                    { data: 'date', name: 'date', class: 'text-center',
                         render: function ( data, type, row ){
                             if ( type === 'display' || type === 'filter' ){
                                 return moment(data).format('DD MMM YYYY');
@@ -128,7 +129,7 @@
                             return data;
                         }
                     },
-                    { data: 'supplier', name: 'supplier', class: 'text-center' },
+                    { data: 'supplier', name: 'supplier', orderable: false, searchable: false, class: 'text-center' },
                     { data: 'total_payment', name: 'total_payment', class: 'text-right',
                         render: function ( data, type, row ){
                             if ( type === 'display' || type === 'filter' ){

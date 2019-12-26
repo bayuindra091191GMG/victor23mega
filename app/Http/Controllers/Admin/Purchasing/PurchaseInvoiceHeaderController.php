@@ -680,7 +680,7 @@ class PurchaseInvoiceHeaderController extends Controller
                 $purchaseInvoices = $temp->where('purchase_order_header.supplier_id', $supplier);
             }
             else{
-                $purchaseInvoices = PurchaseInvoiceHeader::dateDescending()->get();
+                $purchaseInvoices = PurchaseInvoiceHeader::query();
             }
 
             return DataTables::of($purchaseInvoices)
