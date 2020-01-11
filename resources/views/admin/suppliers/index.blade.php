@@ -7,17 +7,24 @@
     <div class="row">
         <div class="nav navbar-right">
             @include('partials._success')
-            @if(auth()->user()->roles->pluck('id')[0] == 1 ||
+
+            @if(auth()->user()->id === 25)
+                <a href="{{ route('admin.suppliers.create') }}" class="btn btn-app">
+                    <i class="fa fa-plus"></i> Tambah
+                </a>
+            @else
+                @if(auth()->user()->roles->pluck('id')[0] == 1 ||
                 auth()->user()->roles->pluck('id')[0] == 3 ||
                 auth()->user()->roles->pluck('id')[0] == 14 ||
                 auth()->user()->roles->pluck('id')[0] == 12 ||
                 auth()->user()->roles->pluck('id')[0] == 15 ||
                 auth()->user()->roles->pluck('id')[0] == 13)
-
-                <a href="{{ route('admin.suppliers.create') }}" class="btn btn-app">
-                    <i class="fa fa-plus"></i> Tambah
-                </a>
+                    <a href="{{ route('admin.suppliers.create') }}" class="btn btn-app">
+                        <i class="fa fa-plus"></i> Tambah
+                    </a>
+                @endif
             @endif
+
             <a href="{{ route('admin.suppliers.download_excel') }}" class="btn btn-app">
                 <i class="fa fa-file-excel-o"></i> EXCEL
             </a>

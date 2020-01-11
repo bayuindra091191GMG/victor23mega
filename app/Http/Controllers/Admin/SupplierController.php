@@ -48,29 +48,33 @@ class SupplierController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
         $user = Auth::user();
-        if($user->roles->pluck('id')[0] == 1 ||
-            $user->roles->pluck('id')[0] == 3 ||
-            $user->roles->pluck('id')[0] == 14 ||
-            $user->roles->pluck('id')[0] == 12 ||
-            $user->roles->pluck('id')[0] == 15 ||
-            $user->roles->pluck('id')[0] == 13){
+
+        if($user->id == 25){
             return view('admin.suppliers.create');
         }
         else{
-            return redirect()->route('admin.suppliers');
+            if($user->roles->pluck('id')[0] == 1 ||
+                $user->roles->pluck('id')[0] == 3 ||
+                $user->roles->pluck('id')[0] == 14 ||
+                $user->roles->pluck('id')[0] == 12 ||
+                $user->roles->pluck('id')[0] == 15 ||
+                $user->roles->pluck('id')[0] == 13){
+
+                return view('admin.suppliers.create');
+            }
+            else{
+                return redirect()->route('admin.suppliers');
+            }
         }
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {

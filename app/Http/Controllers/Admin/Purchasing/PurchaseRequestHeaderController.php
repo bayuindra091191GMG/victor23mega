@@ -992,7 +992,7 @@ class PurchaseRequestHeaderController extends Controller
     public function printDocument($id){
         $purchaseRequest = PurchaseRequestHeader::find($id);
         $purchaseRequestDetails = PurchaseRequestDetail::where('header_id', $purchaseRequest->id)->get();
-        $approvalUser = User::find(29);
+        $approvalUser = User::find(6);
 //        $approvalUser = ApprovalRule::where('document_id', 3)->get();
 //        $temp = PreferenceCompany::find(1);
 //        $setting = $temp->approval_setting;

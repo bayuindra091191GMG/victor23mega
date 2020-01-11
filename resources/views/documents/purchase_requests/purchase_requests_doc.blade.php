@@ -183,7 +183,7 @@
                     {{--&nbsp;--}}
                 {{--@endif--}}
             {{--</td>--}}
-            <td colspan="2">Andri</td>
+            <td colspan="2">Breh</td>
         </tr>
     </table>
 </div>
