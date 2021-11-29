@@ -18,7 +18,7 @@ class StockCardTransformer extends TransformerAbstract
         try{
             $itemShowUrl = route('admin.items.show', ['item' => $stockCard->item_id]);
 
-            $itemUrl = "<a style='text-decoration: underline;' href='" . $itemShowUrl. "' target='_blank'>". $stockCard->item->code. " (". $stockCard->item->name. ")</a>";
+            $itemUrl = "<a data-sort='". $stockCard->item->code."' style='text-decoration: underline;' href='" . $itemShowUrl. "' target='_blank'>". $stockCard->item->code. " (". $stockCard->item->name. ")</a>";
 
             return[
                 'reference'     => $stockCard->reference ?? '-',

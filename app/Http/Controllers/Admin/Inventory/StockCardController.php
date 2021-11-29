@@ -27,8 +27,28 @@ use PDF3;
 
 class StockCardController extends Controller
 {
-    public function index(){
-        return View('admin.inventory.stock_cards.index');
+    public function index(Request $request){
+        $filterDateStart = Carbon::today()->subDays(5)->format('d M Y');
+        $filterDateEnd = Carbon::today()->format('d M Y');
+
+        if($request->date_start != null && $request->date_end != null){
+            $dateStartDecoded = rawurldecode($request->date_start);
+            $dateEndDecoded = rawurldecode($request->date_end);
+            $start = Carbon::createFromFormat('!d M Y', $dateStartDecoded, 'Asia/Jakarta');
+            $end = Carbon::createFromFormat('!d M Y', $dateEndDecoded, 'Asia/Jakarta');
+
+            if($end->greaterThanOrEqualTo($start)){
+                $filterDateStart = $dateStartDecoded;
+                $filterDateEnd = $dateEndDecoded;
+            }
+        }
+
+        $data = [
+            'filterDateStart' => $filterDateStart,
+            'filterDateEnd' => $filterDateEnd
+        ];
+
+        return View('admin.inventory.stock_cards.index')->with($data);
     }
 
     public function create(){
@@ -62,7 +82,6 @@ class StockCardController extends Controller
         $selectedItems = $request->input('item');
         $selectedItem = $selectedItems[0];
 
-//        dd($selectedItem. " ". $request->input('warehouse'));
         $item = StockIn::create([
             'item_id'          => $selectedItem,
             'increase'          => $increase,
@@ -102,8 +121,14 @@ class StockCardController extends Controller
         return redirect()->route('admin.stock_ins');
     }
 
-    public function getIndex(){
-        $stockCards = StockCard::orderByDesc('created_at')->get();
+    public function getIndex(Request $request){
+        $start = Carbon::createFromFormat('!d M Y', $request->input('date_start'), 'Asia/Jakarta');
+        $end = Carbon::createFromFormat('!d M Y', $request->input('date_end'), 'Asia/Jakarta');
+        $end->addDays(1);
+
+        $stockCards = StockCard::with(['warehouse', 'createdBy', 'item'])
+            ->whereBetween('created_at', array($start->toDateTimeString(), $end->toDateTimeString()));
+
         return DataTables::of($stockCards)
             ->setTransformer(new StockCardTransformer())
             ->addIndexColumn()
