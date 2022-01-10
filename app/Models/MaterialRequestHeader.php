@@ -33,6 +33,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $is_retur
  * @property int $is_approved
  * @property \Carbon\Carbon $approved_date
+ * @property string $requested_by
  * @property int $created_by
  * @property \Carbon\Carbon $created_at
  * @property int $updated_by
@@ -112,6 +113,7 @@ class MaterialRequestHeader extends Eloquent
         'is_approved',
         'approved_date',
 		'closed_at',
+        'requested_by',
 		'created_by',
 		'updated_by',
         'reject_reason',

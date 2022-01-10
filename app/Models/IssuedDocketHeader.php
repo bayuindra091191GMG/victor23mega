@@ -24,6 +24,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $division
  * @property int $is_retur
  * @property int $status_id
+ * @property string $receiver_name
  * @property int $created_by
  * @property \Carbon\Carbon $created_at
  * @property int $updated_by
@@ -69,6 +70,7 @@ class IssuedDocketHeader extends Eloquent
 	protected $fillable = [
 		'code',
         'site_id',
+        'account_id',
         'type',
 		'date',
         'km',
@@ -79,10 +81,10 @@ class IssuedDocketHeader extends Eloquent
 		'department_id',
 		'division',
         'is_retur',
+        'receiver_name',
 		'status_id',
 		'created_by',
-		'updated_by',
-        'account_id'
+		'updated_by'
 	];
 
 	public function getDateStringAttribute(){

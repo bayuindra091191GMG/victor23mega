@@ -1252,6 +1252,7 @@ class MaterialRequestHeaderController extends Controller
             'is_issued'         => 0,
             'is_approved'       => 0,
             'status_id'         => 3,
+            'requested_by'      => $request->input('requested_by') ?? '',
             'created_by'        => $user->id,
             'created_at'        => $now->toDateTimeString(),
             'updated_by'        => $user->id,
@@ -1628,6 +1629,7 @@ class MaterialRequestHeaderController extends Controller
             'is_retur'          => 0,
             'is_issued'         => 0,
             'is_approved'       => 0,
+            'requested_by'      => $request->input('requested_by') ?? '',
             'status_id'         => 3,
             'created_by'        => $user->id,
             'created_at'        => $now->toDateTimeString(),
@@ -2041,6 +2043,7 @@ class MaterialRequestHeaderController extends Controller
         $material_request->km = $request->input('km');
         $material_request->hm = $request->input('hm');
         $material_request->date = $date;
+        $material_request->requested_by = $request->input('requested_by') ?? '';
         $material_request->updated_by = $user->id;
         $material_request->updated_at = $now->toDateTimeString();
 

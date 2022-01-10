@@ -117,7 +117,7 @@ class DocketController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @return Response
+     * @return \Illuminate\Http\RedirectResponse|Response
      * @throws \Exception
      */
     public function store(Request $request)
@@ -156,7 +156,6 @@ class DocketController extends Controller
         }
 
         // Validate details
-//        $mrId = Input::get('mr_id');
         $qtys = Input::get('qty');
         $accounts = $request->input('accounts');
         $mrCheck = true;
@@ -164,7 +163,6 @@ class DocketController extends Controller
         $wrCheck = true;
         $wrQtyCheck = true;
         $i = 0;
-//        $materialRequest = MaterialRequestHeader::where('code', $mrId)->first();
 
         foreach($items as $item){
             if(empty($item)) {
@@ -286,6 +284,7 @@ class DocketController extends Controller
             'hm'                            => $request->input('hm'),
             'km'                            => $request->input('km'),
             'is_retur'                      => 0,
+            'receiver_name'                 => $request->input('receiver_name') ?? '',
             'status_id'                     => 3,
             'created_by'                    => $user->id,
             'updated_by'                    => $user->id,

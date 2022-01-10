@@ -86,16 +86,6 @@
 {{--                </div>--}}
 {{--            </div>--}}
 
-            {{--<div class="form-group">--}}
-                {{--<label class="control-label col-md-3 col-sm-3 col-xs-12" for="mr_id">--}}
-                    {{--Nomor MR--}}
-                {{--</label>--}}
-                {{--<div class="col-md-6 col-sm-6 col-xs-12">--}}
-                    {{--<input id="mr_id" type="text" class="form-control col-md-7 col-xs-12"--}}
-                           {{--name="mr_id" value="{{ $materialRequest->code }}" readonly>--}}
-                {{--</div>--}}
-            {{--</div>--}}
-
             <div class="form-group">
                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="warehouse">
                     Gudang
@@ -153,6 +143,16 @@
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <input id="division" type="text" class="form-control col-md-7 col-xs-12 @if($errors->has('division')) parsley-error @endif"
                            name="division" value="{{ old('division') }}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="receiver_name">
+                    Diterima Oleh
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <input id="receiver_name" type="text" class="form-control col-md-7 col-xs-12"
+                           name="receiver_name">
                 </div>
             </div>
 

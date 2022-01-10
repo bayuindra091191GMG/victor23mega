@@ -155,6 +155,16 @@
                 {{--</div>--}}
             {{--</div>--}}
 
+            <div class="form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="requested_by">
+                    Request Oleh
+                </label>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <input id="requested_by" type="text" class="form-control col-md-7 col-xs-12 @if($errors->has('requested_by')) parsley-error @endif"
+                           name="requested_by" value="{{ $header->requested_by ?? '' }}">
+                </div>
+            </div>
+
             <input type="hidden" name="type" id="type" value="2"/>
 
             <div class="form-group">
