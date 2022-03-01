@@ -24,6 +24,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
@@ -670,5 +671,46 @@ class DeliveryOrderHeaderController extends Controller
         $pdf->setOptions(["isPhpEnabled"=>true]);
 
         return $pdf->download($filename.'.pdf');
+    }
+
+    public function partialConfirmForm($id){
+        try {
+            $deliveryOrder = DeliveryOrderHeader::with(['delivery_order_details'])->find($id);
+            if(empty($deliveryOrder)){
+                return redirect()->back();
+            }
+
+            $date = Carbon::parse($deliveryOrder->date)->format('d M Y');
+
+            $deliveryOrderDetail = [];
+            $idx = 0;
+            foreach ($deliveryOrder->delivery_order_details as $detail){
+                $deliveryOrderDetail[] = [
+                    'id' => $detail->item_id,
+                    'code' => $detail->item->code,
+                    'name' => $detail->item->name,
+                    'qty_value' => $detail->quantity,
+                    'qty_input_id' => 'qty_input_'. $idx
+                ];
+
+                $idx++;
+            }
+
+            $vueData = [
+                'delivery_order_array' => $deliveryOrderDetail
+            ];
+
+            $data = [
+                'deliveryOrder' => $deliveryOrder,
+                'date' => $date,
+                'vueData' => $vueData
+            ];
+
+            return view('admin.inventory.delivery_orders.partial_confirm')->with($data);
+        }
+        catch (\Exception $ex){
+            Log::error('DeliveryOrderHeaderController - partialConfirmForm '. $ex);
+            return 'Terjadi kesalah internal sistem';
+        }
     }
 }

@@ -51,6 +51,10 @@
         .has_notification{
             color: red !important;
         }
+
+        .page-title .title_left{
+            width: 90%;
+        }
     </style>
 @endsection
 
