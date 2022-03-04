@@ -16,6 +16,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $header_id
  * @property int $item_id
  * @property int $quantity
+ * @property int $quantity_confirmed
  * @property string $remark
  * 
  * @property \App\Models\DeliveryOrderHeader $delivery_order_header
@@ -37,6 +38,7 @@ class DeliveryOrderDetail extends Eloquent
 		'header_id',
 		'item_id',
 		'quantity',
+        'quantity_confirmed',
 		'remark'
 	];
 

@@ -36,6 +36,25 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="code" >
+                        Nomor Konfirmasi Surat Jalan
+                    </label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input id="code" type="text" class="form-control col-md-7 col-xs-12"
+                               name="code" value="{{ $documentCode }}" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="remark" >
+                        Remark
+                    </label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <textarea id="remark" name="remark" rows="5" class="form-control col-md-7 col-xs-12" style="resize: vertical" placeholder="Isi keterangan tambahan di sini">{{ old('remark') }}</textarea>
+                    </div>
+                </div>
+
                 <hr/>
 
                 <div id="vue_app" class="form-group">
@@ -54,9 +73,7 @@
                                     <th class="text-center" style="width: 20%">
                                         QTY Penerimaan
                                     </th>
-                                    <th>
-
-                                    </th>
+                                    <th></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -168,7 +185,9 @@
             methods: {
                 // Remove selected row
                 removeFirstVariantRow(item){
-                    this.delivery_order_array = this.delivery_order_array.filter(function (x) { return x !== item; });
+                    if(this.delivery_order_array.length > 0){
+                        this.delivery_order_array = this.delivery_order_array.filter(function (x) { return x !== item; });
+                    }
                 },
             }
         })

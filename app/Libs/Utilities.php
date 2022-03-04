@@ -116,4 +116,11 @@ class Utilities
 
         return (double) $valueStr2;
     }
+
+    public static function toInt($raw){
+        $valueStr1 = str_replace('.','', $raw);
+        $valueStr2 = str_replace(',', '.', $valueStr1);
+
+        return (int) $valueStr2;
+    }
 }

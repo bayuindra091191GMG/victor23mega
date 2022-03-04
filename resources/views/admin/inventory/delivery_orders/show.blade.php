@@ -10,7 +10,11 @@
             </div>
             <div class="navbar-right">
                 @if($header->status_id == 3)
-                    <a class="confirm-modal btn btn-success" data-id="{{ $header->id }}">KONFIRMASI PENUH</a>
+
+                    @if(!$isPartial)
+                        <a class="confirm-modal btn btn-success" data-id="{{ $header->id }}">KONFIRMASI PENUH</a>
+                    @endif
+
                     <a href="{{ route('admin.delivery_orders.partial_confirm', ['id' => $header->id]) }}" class="btn btn-default">KONFIRMASI PARSIAL</a>
                     <a class="cancel-modal btn btn-danger" data-id="{{ $header->id }}">BATAL</a>
                 @endif

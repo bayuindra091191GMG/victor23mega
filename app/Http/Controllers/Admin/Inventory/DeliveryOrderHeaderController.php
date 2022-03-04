@@ -11,6 +11,8 @@ namespace App\Http\Controllers\Admin\Inventory;
 
 use App\Http\Controllers\Controller;
 use App\Libs\Utilities;
+use App\Models\DeliveryOrderConfirmDetail;
+use App\Models\DeliveryOrderConfirmHeader;
 use App\Models\DeliveryOrderDetail;
 use App\Models\DeliveryOrderHeader;
 use App\Models\Item;
@@ -28,6 +30,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Barryvdh\DomPDF\Facade as PDF;
 
@@ -85,11 +88,16 @@ class DeliveryOrderHeaderController extends Controller
             }
         }
 
+        // Check for partial confirmation data
+        $isPartial = DB::table('delivery_order_confirm_headers')
+            ->where('delivery_order_id', '=', $header->id)
+            ->exists();
 
         $data = [
             'header'    => $header,
             'date'      => $date,
-            'mrShowUrl' => $mrShowUrl
+            'mrShowUrl' => $mrShowUrl,
+            'isPartial' => $isPartial
         ];
 
         return View('admin.inventory.delivery_orders.show')->with($data);
@@ -382,7 +390,39 @@ class DeliveryOrderHeaderController extends Controller
                 return Response::json(array('errors' => 'INVALID'));
             }
 
+            // Create confirmation data
+            $newConfirm = new DeliveryOrderConfirmHeader();
+            $newConfirm->delivery_order_id = $header->id;
+
+            $documentCode = $header->code. '-CONFIRM-1';
+
+            $newConfirm->code = $documentCode;
+            $newConfirm->remark = '';
+            $newConfirm->confirm_by = $user->id;
+            $newConfirm->confirm_date = Carbon::now('Asia/Jakarta')->toDateTimeString();
+            $newConfirm->created_by = $user->id;
+            $newConfirm->updated_by = $user->id;
+            $newConfirm->save();
+
             foreach($header->delivery_order_details as $detail){
+                // Create detail confirmation data
+                $newConfirmDetail = new DeliveryOrderConfirmDetail();
+                $newConfirmDetail->header_id = $newConfirm->id;
+                $newConfirmDetail->item_id = $detail->item_id;
+                $newConfirmDetail->item_code = $detail->item->code;
+                $newConfirmDetail->item_name = $detail->item->name;
+                $newConfirmDetail->item_uom = $detail->item->uom;
+                $newConfirmDetail->qty = $detail->quantity;
+                $newConfirmDetail->created_by = $user->id;
+                $newConfirmDetail->updated_by = $user->id;
+                $newConfirmDetail->save();
+
+                // Update qty confirmed
+                DB::table('delivery_order_details')
+                    ->where('id', '=', $detail->id)
+                    ->update([
+                        'quantity_confirmed' => $detail->quantity
+                    ]);
 
                 // Decrease transport warehouse stock
                 $stockTransport = ItemStock::where('warehouse_id', 0)
@@ -445,6 +485,7 @@ class DeliveryOrderHeaderController extends Controller
             }
 
             $header->status_id = 4;
+            $header->is_all_confirmed = true;
             $header->confirm_by = $user->id;
             $header->confirm_date = $now->toDateTimeString();
             $header->updated_by = $user->id;
@@ -456,6 +497,7 @@ class DeliveryOrderHeaderController extends Controller
                 $mrCreatedDate = Carbon::parse($mrHeader->date);
                 $header->lead_time = $mrCreatedDate->diffInDays($now);
             }
+
             $header->save();
 
             Session::flash('message', 'Berhasil konfirmasi barang datang pada Surat Jalan '. $header->code);
@@ -673,6 +715,11 @@ class DeliveryOrderHeaderController extends Controller
         return $pdf->download($filename.'.pdf');
     }
 
+    /**
+     * Function to show DO partial confirm form
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\View\View|string
+     */
     public function partialConfirmForm($id){
         try {
             $deliveryOrder = DeliveryOrderHeader::with(['delivery_order_details'])->find($id);
@@ -682,16 +729,25 @@ class DeliveryOrderHeaderController extends Controller
 
             $date = Carbon::parse($deliveryOrder->date)->format('d M Y');
 
+            // Get index of confirmation data
+            $confirmCount = DB::table('delivery_order_confirm_headers')
+                ->where('header_id', '=', $deliveryOrder->id)
+                ->count();
+
+            $documentCode = $deliveryOrder->code. '-CONFIRM-'. ($confirmCount + 1);
+
             $deliveryOrderDetail = [];
             $idx = 0;
             foreach ($deliveryOrder->delivery_order_details as $detail){
-                $deliveryOrderDetail[] = [
-                    'id' => $detail->item_id,
-                    'code' => $detail->item->code,
-                    'name' => $detail->item->name,
-                    'qty_value' => $detail->quantity,
-                    'qty_input_id' => 'qty_input_'. $idx
-                ];
+                if($detail->quantity_confirmed  < $detail->quantity){
+                    $deliveryOrderDetail[] = [
+                        'id' => $detail->item_id,
+                        'code' => $detail->item->code,
+                        'name' => $detail->item->name,
+                        'qty_value' => $detail->quantity - $detail->quantity_confirmed,
+                        'qty_input_id' => 'qty_input_'. $idx
+                    ];
+                }
 
                 $idx++;
             }
@@ -702,6 +758,7 @@ class DeliveryOrderHeaderController extends Controller
 
             $data = [
                 'deliveryOrder' => $deliveryOrder,
+                'documentCode' => $documentCode,
                 'date' => $date,
                 'vueData' => $vueData
             ];
@@ -711,6 +768,195 @@ class DeliveryOrderHeaderController extends Controller
         catch (\Exception $ex){
             Log::error('DeliveryOrderHeaderController - partialConfirmForm '. $ex);
             return 'Terjadi kesalah internal sistem';
+        }
+    }
+
+    public function partialConfirmSubmit(Request $request){
+        try {
+            if(!$request->filled('edited_do_id')){
+                return response()->json(collect([
+                    'code' => 400,
+                    'error' => 'bad_request',
+                    'message' => '',
+                ]), 200);
+            }
+
+            $doId = intval($request->input('edited_do_id'));
+
+            $deliveryOrder = DeliveryOrderHeader::with(['delivery_order_details'])->find($doId);
+            if(empty($deliveryOrder)){
+                return response()->json(collect([
+                    'code' => 400,
+                    'error' => 'bad_request',
+                    'message' => '',
+                ]), 200);
+            }
+
+            $user = \Auth::user();
+
+            // Validate qty of each row
+            $isValid = true;
+            $itemDetailArr = $request->input('item_detail');
+            foreach ($itemDetailArr as $itemDetail){
+                if(empty($itemDetail['qty'])){
+                    $isValid = false;
+                }
+                else{
+                    $qty = Utilities::toInt($itemDetail['qty']);
+                    if($qty === 0){
+                        $isValid = false;
+                    }
+                    else{
+                        $currentQty = DB::table('delivery_order_details')
+                            ->where('header_id', '=', $deliveryOrder->id)
+                            ->where('item_id', '=', $itemDetail['item_id'])
+                            ->value('quantity');
+
+                        if(empty($currentQty)){
+                            $isValid = false;
+                        }
+                        else{
+                            if($qty > $currentQty){
+                                $isValid = false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(!$isValid){
+                return response()->json(collect([
+                    'code' => 422,
+                    'error' => 'invalid_row_data',
+                    'message' => '',
+                ]), 200);
+            }
+
+            // Store DO confirmation data
+            $newConfirm = new DeliveryOrderConfirmHeader();
+            $newConfirm->delivery_order_id = $deliveryOrder->id;
+
+            // Get index of confirmation data
+            $confirmCount = DB::table('delivery_order_confirm_headers')
+                ->where('delivery_order_id', '=', $deliveryOrder->id)
+                ->count();
+
+            $documentCode = $deliveryOrder->code. '-CONFIRM-'. ($confirmCount + 1);
+
+            $newConfirm->code = $documentCode;
+            $newConfirm->remark = $request->input('remark');
+            $newConfirm->confirm_by = $user->id;
+            $newConfirm->confirm_date = Carbon::now('Asia/Jakarta')->toDateTimeString();
+            $newConfirm->created_by = $user->id;
+            $newConfirm->updated_by = $user->id;
+            $newConfirm->save();
+
+            foreach ($itemDetailArr as $itemDetail){
+                $itemObj = DB::table('items')
+                    ->select('id','code','name', 'uom')
+                    ->where('id', '=', $itemDetail['item_id'])
+                    ->first();
+
+                $qtyConfirmed = Utilities::toInt($itemDetail['qty']);
+
+                $newConfirmDetail = new DeliveryOrderConfirmDetail();
+                $newConfirmDetail->header_id = $newConfirm->id;
+                $newConfirmDetail->item_id = $itemDetail['item_id'];
+                $newConfirmDetail->item_code = $itemObj->code;
+                $newConfirmDetail->item_name = $itemObj->name;
+                $newConfirmDetail->item_uom = $itemObj->uom;
+                $newConfirmDetail->qty = $qtyConfirmed;
+                $newConfirmDetail->created_by = $user->id;
+                $newConfirmDetail->updated_by = $user->id;
+                $newConfirmDetail->save();
+
+                $now = Carbon::now('Asia/Jakarta')->toDateTimeString();
+
+                // Update qty confirmed
+                DB::table('delivery_order_details')
+                    ->where('header_id', '=', $deliveryOrder->id)
+                    ->where('item_id', '=', $itemDetail['item_id'])
+                    ->update([
+                        'quantity_confirmed' => $qtyConfirmed
+                    ]);
+
+                // Decrease transport warehouse stock
+                DB::table('item_stocks')
+                    ->where('warehouse_id', '=', 0)
+                    ->where('item_id', '=', $itemDetail['item_id'])
+                    ->decrement('stock', $qtyConfirmed, ['updated_at' => $now]);
+
+                // Increase arrival warehouse stock
+                $stockArrival = ItemStock::where('warehouse_id', $deliveryOrder->to_warehouse_id)
+                    ->where('item_id', $itemDetail['item_id'])
+                    ->first();
+
+
+                if(empty($stockArrival)){
+                    $newStock = new ItemStock();
+                    $newStock->warehouse_id = $deliveryOrder->to_warehouse_id;
+                    $newStock->item_id = $itemDetail['item_id'];
+                    $newStock->stock = $qtyConfirmed;
+                    $newStock->stock_min = 0;
+                    $newStock->stock_max = 0;
+                    $newStock->is_stock_warning = false;
+                    $newStock->created_by = $user->id;
+                    $newStock->created_at = $now;
+                    $newStock->updated_by = $user->id;
+                    $newStock->updated_at = $now;
+                    $newStock->save();
+
+                    $stockArrivalId = $newStock->id;
+                    $stockResultWarehouse = $qtyConfirmed;
+                }
+                else{
+                    $stockArrivalId = $stockArrival->id;
+                    $stockResultWarehouse = $stockArrival->stock + $qtyConfirmed;
+                }
+
+                DB::table('item_stocks')
+                    ->where('id', '=', $stockArrivalId)
+                    ->increment('stock', $qtyConfirmed, ['updated_at' => $now]);
+
+                // Add stock card
+                StockCard::create([
+                    'item_id'               => $itemDetail['item_id'],
+                    'in_qty'                => $qtyConfirmed,
+                    'out_qty'               => 0,
+                    'result_qty'            => 0,
+                    'result_qty_warehouse'  => $stockResultWarehouse,
+                    'warehouse_id'          => $deliveryOrder->to_warehouse_id,
+                    'created_by'            => $user->id,
+                    'created_at'            => $now,
+                    'updated_by'            => $user->id,
+                    'updated_at'            => $now,
+                    'reference'             => 'Surat Jalan '. $deliveryOrder->code. ' Confirm'
+                ]);
+            }
+
+            // Check DO confirmation status
+            $deliveryOrder = DeliveryOrderHeader::with(['delivery_order_details'])->find($doId);
+
+            $isConfirmed = true;
+            foreach ($deliveryOrder->delivery_order_details as $detail){
+                if($detail->quantity !== $detail->quantity_confirmed){
+                    $isConfirmed = false;
+                }
+            }
+
+            if($isConfirmed){
+                $deliveryOrder->is_all_confirmed = true;
+                $deliveryOrder->status_id = 4;
+                $deliveryOrder->save();
+            }
+        }
+        catch (\Exception $ex){
+            Log::error('DeliveryOrderHeaderController - partialConfirmSubmit '. $ex);
+            return response()->json(collect([
+                'code' => 500,
+                'error' => 'exception',
+                'message' => $ex->getMessage(),
+            ]), 500);
         }
     }
 }
