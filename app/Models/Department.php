@@ -16,6 +16,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $id
  * @property string $code
  * @property string $name
+ * @property bool $is_synced
  * @property int $created_by
  * @property \Carbon\Carbon $created_at
  * @property int $updated_by
@@ -33,14 +34,16 @@ class Department extends Eloquent
 {
 	protected $casts = [
 		'created_by' => 'int',
-		'updated_by' => 'int'
+		'updated_by' => 'int',
+        'is_synced' => 'bool'
 	];
 
 	protected $fillable = [
 		'code',
 		'name',
 		'created_by',
-		'updated_by'
+		'updated_by',
+        'is_synced'
 	];
 
     public function scopeCodeAscending(Builder $query){

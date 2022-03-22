@@ -25,6 +25,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $division
  * @property string $remark
  * @property string $brand
+ * @property bool $is_synced
  * 
  * @property \App\Models\Status $status
  * @property \App\Models\Auth\User\User $user
@@ -37,7 +38,8 @@ class Account extends Eloquent
 	protected $casts = [
 		'status_id' => 'int',
 		'created_by' => 'int',
-		'updated_by' => 'int'
+		'updated_by' => 'int',
+        'is_synced' => 'bool'
 	];
 
 	protected $fillable = [
@@ -50,7 +52,8 @@ class Account extends Eloquent
 		'department',
 		'division',
 		'remark',
-		'brand'
+		'brand',
+        'is_synced'
 	];
 
 	public function status()

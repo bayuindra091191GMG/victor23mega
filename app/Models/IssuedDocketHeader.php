@@ -30,6 +30,9 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $updated_by
  * @property \Carbon\Carbon $updated_at
  * @property int $account_id
+ * @property bool $is_synced
+ * @property string $km
+ * @property string $hm
  * 
  * @property \App\Models\Department $department
  * @property \App\Models\Machinery $machinery
@@ -59,7 +62,8 @@ class IssuedDocketHeader extends Eloquent
         'is_retur' => 'int',
 		'status_id' => 'int',
 		'created_by' => 'int',
-		'updated_by' => 'int'
+		'updated_by' => 'int',
+        'is_synced' => 'bool'
 	];
 
 	protected $dates = [
@@ -84,7 +88,8 @@ class IssuedDocketHeader extends Eloquent
         'receiver_name',
 		'status_id',
 		'created_by',
-		'updated_by'
+		'updated_by',
+        'is_synced'
 	];
 
 	public function getDateStringAttribute(){

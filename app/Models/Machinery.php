@@ -25,6 +25,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $purchase_date
  * @property string $location
  * @property string $description
+ * @property bool $is_synced
  * @property int $status_id
  * @property int $created_by
  * @property \Carbon\Carbon $created_at
@@ -51,7 +52,8 @@ class Machinery extends Eloquent
 		'brand_id' => 'int',
 		'status_id' => 'int',
 		'created_by' => 'int',
-		'updated_by' => 'int'
+		'updated_by' => 'int',
+        'is_synced' => 'bool'
 	];
 
 	protected $dates = [
@@ -74,6 +76,7 @@ class Machinery extends Eloquent
 		'purchase_date',
 		'location',
 		'description',
+        'is_synced',
 		'status_id',
 		'created_by',
 		'updated_by'

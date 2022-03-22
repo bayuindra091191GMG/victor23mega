@@ -6780,6 +6780,7 @@
             <th class="text-center">Tanggal</th>
             <th class="text-center">Kode</th>
             <th class="text-center">Tipe</th>
+            <th class="text-center">No. PO</th>
             <th class="text-left">Vendor</th>
             <th class="text-center">Diminta Oleh</th>
             <th class="text-center">Subtotal</th>
@@ -6791,6 +6792,14 @@
                 <td class="text-center">{{ $header->date_string }}</td>
                 <td class="text-center">{{ $header->code }}</td>
                 <td class="text-center">{{ strtoupper($header->type) }}</td>
+                <td class="text-center">
+                    @foreach($header->payment_requests_po_details as $rfpPoDetail)
+                        {{ $rfpPoDetail->purchase_order_header->code }}<br/>
+                    @endforeach
+                    @foreach($header->payment_requests_pi_details as $rfpPiDetail)
+                        {{ $rfpPiDetail->purchase_invoice_header->purchase_order_header->code }}<br/>
+                    @endforeach
+                </td>
                 <td class="text-left">{{ $header->supplier->name }}</td>
                 <td class="text-center">{{ $header->createdBy->name }}</td>
                 <td class="text-right">
@@ -6803,7 +6812,7 @@
             </tr>
         @endforeach
         <tr>
-            <td colspan="5" class="text-right">Total</td>
+            <td colspan="6" class="text-right">Total</td>
             <td class="text-right">{{ $totalStr }}</td>
         </tr>
         </tbody>
