@@ -30,6 +30,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $cancel_by
  * @property \Carbon\Carbon $cancel_date
  * @property bool $is_all_confirmed
+ * @property bool $is_synced
  * @property int $status_id
  * @property int $created_by
  * @property \Carbon\Carbon $created_at
@@ -59,6 +60,7 @@ class DeliveryOrderHeader extends Eloquent
         'lead_time' => 'int',
 		'cancel_by' => 'int',
         'is_all_confirmed' => 'bool',
+        'is_synced' => 'bool',
 		'status_id' => 'int',
 		'created_by' => 'int',
 		'updated_by' => 'int'
