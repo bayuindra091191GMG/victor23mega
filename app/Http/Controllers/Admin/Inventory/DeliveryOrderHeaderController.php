@@ -365,6 +365,7 @@ class DeliveryOrderHeaderController extends Controller
         $now = Carbon::now('Asia/Jakarta');
 
         $delivery_order->remark = $request->input('remark');
+        $delivery_order->is_synced = false;
         $delivery_order->updated_by = $user->id;
         $delivery_order->updated_at = $now->toDateTimeString();
 
@@ -383,7 +384,12 @@ class DeliveryOrderHeaderController extends Controller
             $user = \Auth::user();
             $now = Carbon::now('Asia/Jakarta');
 
-            $header = DeliveryOrderHeader::find($request->input('id'));
+            $header = DeliveryOrderHeader::with(['delivery_order_details'])
+                ->find($request->input('id'));
+
+            if(empty($header)){
+                return Response::json(array('errors' => 'INVALID'));
+            }
 
             // Validate status
             if($header->status_id !== 3){
@@ -488,6 +494,7 @@ class DeliveryOrderHeaderController extends Controller
             $header->is_all_confirmed = true;
             $header->confirm_by = $user->id;
             $header->confirm_date = $now->toDateTimeString();
+            $header->is_synced = false;
             $header->updated_by = $user->id;
             $header->updated_at = $now->toDateTimeString();
 

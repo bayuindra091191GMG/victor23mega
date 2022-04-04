@@ -27,6 +27,7 @@ use Kyslik\ColumnSortable\Sortable;
  * @property string $img_path
  * @property bool $confirmed
  * @property string $remember_token
+ * @property bool $is_synced
  * @property int $status_id
  * @property \Carbon\Carbon $created_at
  * @property int $created_by
@@ -75,6 +76,7 @@ class User extends Authenticatable
         'employee_id' => 'int',
         'active' => 'int',
         'confirmed' => 'bool',
+        'is_synced' => 'bool',
         'status_id' => 'int',
         'created_by' => 'int',
         'updated_by' => 'int'
@@ -102,9 +104,11 @@ class User extends Authenticatable
         'img_path',
         'confirmed',
         'username',
+        'is_synced',
         'status_id',
         'created_by',
-        'updated_by'];
+        'updated_by'
+    ];
 
     /**
      * The attributes that should be hidden for arrays.

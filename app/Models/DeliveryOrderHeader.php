@@ -87,6 +87,7 @@ class DeliveryOrderHeader extends Eloquent
 		'cancel_by',
 		'cancel_date',
         'is_all_confirmed',
+        'is_synced',
 		'status_id',
 		'created_by',
 		'updated_by'

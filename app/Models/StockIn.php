@@ -16,6 +16,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $item_id
  * @property int $increase
  * @property int $warehouse_id
+ * @property bool $is_synced
  * @property int $created_by
  * @property \Carbon\Carbon $created_at
  * @property int $updated_by
@@ -33,6 +34,7 @@ class StockIn extends Eloquent
 		'item_id' => 'int',
 		'warehouse_id' => 'int',
 		'increase' => 'int',
+        'is_synced' => 'bool',
 		'created_by' => 'int',
 		'updated_by' => 'int'
 	];
@@ -44,6 +46,7 @@ class StockIn extends Eloquent
 		'item_id',
 		'increase',
 		'warehouse_id',
+        'is_synced',
 		'created_by',
         'created_at'
 	];

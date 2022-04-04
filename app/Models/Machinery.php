@@ -31,8 +31,8 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $created_at
  * @property int $updated_by
  * @property \Carbon\Carbon $updated_at
- * 
- * @property \App\Models\User $user
+ *
+ * @property \App\Models\Auth\User\User $user
  * @property \App\Models\MachineryBrand $machinery_brand
  * @property \App\Models\MachineryCategory $machinery_category
  * @property \App\Models\Status $status

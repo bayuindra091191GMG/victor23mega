@@ -140,6 +140,7 @@ class DepartmentController extends Controller
 
         $department->name = $request->input('name');
         $department->code = $request->input('code');
+        $department->is_synced = false;
         $department->updated_at = $dateTimeNow->toDateTimeString();
         $department->updated_by = 1;
 

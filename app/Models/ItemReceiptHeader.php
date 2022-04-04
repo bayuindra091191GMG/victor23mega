@@ -21,7 +21,6 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $warehouse_id
  * @property string $delivery_order_vendor
  * @property int $lead_time
- * @property bool $is_synced
  * @property int $status_id
  * @property int $created_by
  * @property \Carbon\Carbon $created_at
@@ -46,8 +45,7 @@ class ItemReceiptHeader extends Eloquent
         'lead_time' => 'int',
 		'status_id' => 'int',
 		'created_by' => 'int',
-		'updated_by' => 'int',
-        'is_synced' => 'bool'
+		'updated_by' => 'int'
 	];
 
 	protected $dates = [
@@ -62,7 +60,6 @@ class ItemReceiptHeader extends Eloquent
 		'warehouse_id',
 		'delivery_order_vendor',
         'lead_time',
-        'is_synced',
 		'status_id',
 		'created_by',
 		'updated_by'

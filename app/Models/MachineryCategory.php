@@ -16,6 +16,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $code
  * @property string $name
  * @property string $description
+ * @property bool $is_synced
  * 
  * @property \Illuminate\Database\Eloquent\Collection $machineries
  *
@@ -25,10 +26,15 @@ class MachineryCategory extends Eloquent
 {
 	public $timestamps = false;
 
+    protected $casts = [
+        'is_synced' => 'bool'
+    ];
+
 	protected $fillable = [
 		'code',
 		'name',
-		'description'
+		'description',
+        'is_synced'
 	];
 
 	public function machineries()

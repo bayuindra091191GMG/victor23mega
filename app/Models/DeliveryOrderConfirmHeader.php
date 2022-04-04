@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Fri, 04 Mar 2022 16:00:51 +0700.
+ * Date: Mon, 04 Apr 2022 15:47:57 +0700.
  */
 
 namespace App\Models;
@@ -18,6 +18,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $remark
  * @property int $confirm_by
  * @property \Carbon\Carbon $confirm_date
+ * @property bool $is_synced
  * @property int $status_id
  * @property int $created_by
  * @property \Carbon\Carbon $created_at
@@ -34,6 +35,7 @@ class DeliveryOrderConfirmHeader extends Eloquent
 	protected $casts = [
 		'delivery_order_id' => 'int',
 		'confirm_by' => 'int',
+		'is_synced' => 'bool',
 		'status_id' => 'int',
 		'created_by' => 'int',
 		'updated_by' => 'int'
@@ -49,6 +51,7 @@ class DeliveryOrderConfirmHeader extends Eloquent
 		'remark',
 		'confirm_by',
 		'confirm_date',
+		'is_synced',
 		'status_id',
 		'created_by',
 		'updated_by'

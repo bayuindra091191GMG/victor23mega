@@ -91,6 +91,7 @@ class AccountController extends Controller
         $account->description = $request->input('description') ?? null;
         $account->remark = $request->input('remark') ?? null;
         $account->brand = $request->input('brand') ?? null;
+        $account->is_synced = false;
         $account->updated_by = $user->id;
         $account->updated_at = $now->toDateTimeString();
         $account->save();

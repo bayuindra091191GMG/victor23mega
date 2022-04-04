@@ -28,6 +28,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $warehouse_id
  * @property string $machinery_type
  * @property string $description
+ * @property bool $is_synced
  * @property int $created_by
  * @property \Carbon\Carbon $created_at
  * @property int $updated_by
@@ -84,6 +85,7 @@ class Item extends Eloquent
 		'is_serial' => 'int',
 		'group_id' => 'int',
 		'warehouse_id' => 'int',
+        'is_synced' => 'bool',
 		'created_by' => 'int',
 		'updated_by' => 'int'
 	];
@@ -110,6 +112,7 @@ class Item extends Eloquent
 		'warehouse_id',
 		'machinery_type',
 		'description',
+        'is_synced',
 		'created_by',
 		'updated_by'
 	];

@@ -14,6 +14,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * 
  * @property int $id
  * @property string $description
+ * @property bool $is_synced
  *
  * @package App\Models
  */
@@ -21,7 +22,12 @@ class Uom extends Eloquent
 {
 	public $timestamps = false;
 
+    protected $casts = [
+        'is_synced' => 'bool'
+    ];
+
 	protected $fillable = [
-		'description'
+		'description',
+        'is_synced'
 	];
 }
