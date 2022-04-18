@@ -397,6 +397,7 @@ class ItemController extends Controller
 //        $item->stock_minimum = $request->input('stock_min');
 //        $item->stock_notification = $request->filled('stock_notif') ? 1 : 0;
         $item->description = $request->input('description');
+        $item->is_synced = false;
         $item->updated_by = $user->id;
         $item->updated_at = $now;
 
