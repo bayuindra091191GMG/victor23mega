@@ -463,6 +463,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('delivery_orders/simpan', 'Inventory\DeliveryOrderHeaderController@store')->name('delivery_orders.store');
     Route::post('delivery_orders/konfirmasi', 'Inventory\DeliveryOrderHeaderController@confirm')->name('delivery_orders.confirm');
     Route::get('delivery_orders/konfirmasi_parsial/{id}', 'Inventory\DeliveryOrderHeaderController@partialConfirmForm')->name('delivery_orders.partial_confirm');
+    Route::get('delivery_orders/konfirmasi_parsial/{id}/simpan', 'Inventory\DeliveryOrderHeaderController@partialConfirmSubmit')->name('delivery_orders.partial_confirm.store');
     Route::post('delivery_orders/batal', 'Inventory\DeliveryOrderHeaderController@cancel')->name('delivery_orders.cancel');
     Route::get('delivery_orders/print/{delivery_order}', 'Inventory\DeliveryOrderHeaderController@print')->name('delivery_orders.print');
     Route::get('delivery_orders/report', 'Inventory\DeliveryOrderHeaderController@report')->name('delivery_orders.report');

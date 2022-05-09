@@ -109,26 +109,27 @@
             </div>
 
             <div class="form-group">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="from_warehouse" >
+                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="from_warehouse">
                     Gudang Keberangkatan
                     <span class="required">*</span>
                 </label>
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                    <select id="from_warehouse" name="from_warehouse" class="form-control col-md-7 col-xs-12 @if($errors->has('from_warehouse')) parsley-error @endif">
+                <div class="col-md-3 col-sm-6 col-xs-12">
+                    <input id="date" name="from_warehouse" type="text" class="form-control col-md-7 col-xs-12" value="Gudang HO" readonly>
+{{--                    <select id="from_warehouse" name="from_warehouse" class="form-control col-md-7 col-xs-12 @if($errors->has('from_warehouse')) parsley-error @endif">--}}
 
-                        @if(!empty($itemReceipt))
-                            <option value="-1"> - Pilih gudang - </option>
-                            @foreach($warehouses as $warehouse)
-                                <option value="{{ $warehouse->id }}" {{ $itemReceipt->warehouse_id == $warehouse->id ? "selected":"" }}>{{ $warehouse->name }}</option>
-                            @endforeach
-                        @else
-                            <option value="-1" @if(empty(old('from_warehouse'))) selected @endif> - Pilih gudang - </option>
-                            @foreach($warehouses as $warehouse)
-                                <option value="{{ $warehouse->id }}" {{ old('from_warehouse') == $warehouse->id ? "selected":"" }}>{{ $warehouse->name }}</option>
-                            @endforeach
-                        @endif
+{{--                        @if(!empty($itemReceipt))--}}
+{{--                            <option value="-1"> - Pilih gudang - </option>--}}
+{{--                            @foreach($warehouses as $warehouse)--}}
+{{--                                <option value="{{ $warehouse->id }}" {{ $itemReceipt->warehouse_id == $warehouse->id ? "selected":"" }}>{{ $warehouse->name }}</option>--}}
+{{--                            @endforeach--}}
+{{--                        @else--}}
+{{--                            <option value="-1" @if(empty(old('from_warehouse'))) selected @endif> - Pilih gudang - </option>--}}
+{{--                            @foreach($warehouses as $warehouse)--}}
+{{--                                <option value="{{ $warehouse->id }}" {{ old('from_warehouse') == $warehouse->id ? "selected":"" }}>{{ $warehouse->name }}</option>--}}
+{{--                            @endforeach--}}
+{{--                        @endif--}}
 
-                    </select>
+{{--                    </select>--}}
                 </div>
             </div>
 

@@ -770,7 +770,7 @@ Breadcrumbs::register('admin.delivery_orders', function (Generator $breadcrumbs)
 Breadcrumbs::register('admin.delivery_orders.create', function (Generator $breadcrumbs) {
     $breadcrumbs->push(__('views.admin.dashboard.title'), route('admin.dashboard'));
     $breadcrumbs->push('Daftar Surat Jalan', route('admin.delivery_orders'));
-    $breadcrumbs->push('Tambah Invoice');
+    $breadcrumbs->push('Tambah Surat Jalan');
 });
 
 Breadcrumbs::register('admin.delivery_orders.show', function (Generator $breadcrumbs, \App\Models\DeliveryOrderHeader $delivery_order) {

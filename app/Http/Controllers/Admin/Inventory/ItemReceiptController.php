@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin\Inventory;
 use App\Http\Controllers\Controller;
 use App\Libs\Utilities;
 use App\Models\Auth\Role\Role;
-use App\Models\DeliveryNoteHeader;
 use App\Models\DeliveryOrderHeader;
 use App\Models\Department;
 use App\Models\Item;
@@ -21,6 +20,7 @@ use App\Transformer\Inventory\ItemReceiptTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Input;
@@ -209,6 +209,8 @@ class ItemReceiptController extends Controller
 
         // Create Item Receipt Detail
         $remark = Input::get('remark');
+
+        $updatedMrId = 0;
         $idx = 0;
         foreach($items as $item){
             if(!empty($item)){
@@ -308,9 +310,18 @@ class ItemReceiptController extends Controller
                 if(!empty($mrDetail)){
                     $mrDetail->quantity_received += $qtyInt;
                     $mrDetail->save();
+
+                    $updatedMrId = $purchaseOrder->purchase_request_header->material_request_id;
                 }
             }
             $idx++;
+        }
+
+        if($updatedMrId > 0){
+            // Flag unsynced MR
+            DB::table('material_request_headers')
+                ->where('id', '=', $updatedMrId)
+                ->update(['is_synced' => 0]);
         }
 
         // Check MR purpose

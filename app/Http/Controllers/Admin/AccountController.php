@@ -16,6 +16,7 @@ use App\Transformer\AccountTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
@@ -65,6 +66,8 @@ class AccountController extends Controller
             'description'   => $request->input('description') ?? null,
             'remark'        => $request->input('remark') ?? null,
             'brand'         => $request->input('brand') ?? null,
+            'is_synced'     => false,
+            'created_on'    => 'online',
             'created_by'    => $user->id,
             'updated_by'    => $user->id,
             'created_at'    => $now->toDateString(),

@@ -9,26 +9,25 @@
                 <a class="btn btn-default" href="{{ route('admin.delivery_orders.show', ['delivery_order' => $deliveryOrder->id ]) }}"><i class="fa fa-arrow-circle-o-left fa-2x" aria-hidden="true"></i></a>
             </div>
             <div class="navbar-right">
-{{--                <a class="confirm-modal btn btn-success" data-id="{{ $header->id }}">KONFIRMASI</a>--}}
-{{--                <a class="cancel-modal btn btn-danger" data-id="{{ $header->id }}">BATAL</a>--}}
+                {{--                <a class="confirm-modal btn btn-success" data-id="{{ $header->id }}">KONFIRMASI</a>--}}
+                {{--                <a class="cancel-modal btn btn-danger" data-id="{{ $header->id }}">BATAL</a>--}}
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <form class="form-horizontal form-label-left box-section">
-
+            <form class="form-horizontal form-label-left box-section" method="post" action="{{ route('delivery_orders.partial_confirm.store', $deliveryOrder->id) }}">
                 <div class="form-group">
-                    <label class="col-md-3 col-sm-3 col-xs-12">
+                    <label class="col-md-3 col-sm-3 col-xs-12text-right">
                         Nomor Surat Jalan
                     </label>
-                    <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="col-md-6 col-sm-6 col-xs-12 ">
                         : {{ $deliveryOrder->code }}
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="col-md-3 col-sm-3 col-xs-12">
+                    <label class="col-md-3 col-sm-3 col-xs-12 text-right">
                         Tanggal
                     </label>
                     <div class="col-md-6 col-sm-6 col-xs-12">
@@ -105,7 +104,7 @@
                 </div>
                 <div class="form-group">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
-                        <button type="button" class="btn btn-success" onclick="formSubmit();">Simpan</button>
+                        <input type="submit" class="btn btn-success" value="Simpan"/>
                     </div>
                 </div>
             </form>

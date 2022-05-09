@@ -1251,12 +1251,12 @@ class MaterialRequestHeaderController extends Controller
             'is_retur'          => 0,
             'is_issued'         => 0,
             'is_approved'       => 0,
+            'created_on'        => 'online',
             'status_id'         => 3,
             'requested_by'      => $request->input('requested_by') ?? '',
             'created_by'        => $user->id,
             'created_at'        => $now->toDateTimeString(),
             'updated_by'        => $user->id,
-//            'warehouse_id'      => $warehouseId
         ]);
 
         if($request->filled('machinery')){
@@ -1630,6 +1630,7 @@ class MaterialRequestHeaderController extends Controller
             'is_issued'         => 0,
             'is_approved'       => 0,
             'requested_by'      => $request->input('requested_by') ?? '',
+            'created_on'        => 'online',
             'status_id'         => 3,
             'created_by'        => $user->id,
             'created_at'        => $now->toDateTimeString(),

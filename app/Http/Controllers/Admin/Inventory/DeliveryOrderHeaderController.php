@@ -130,13 +130,13 @@ class DeliveryOrderHeaderController extends Controller
 //        }
 
         // Validate from & to warehouse
-        if($request->input('from_warehouse') === '-1' || $request->input('to_warehouse') === '-1'){
-            return redirect()->back()->withErrors('Pilih gudang keberangkatan & tujuan!', 'default')->withInput($request->all());
+        if($request->input('to_warehouse') === '-1'){
+            return redirect()->back()->withErrors('Pilih tujuan!', 'default')->withInput($request->all());
         }
 
-        if($request->input('from_warehouse') === $request->input('to_warehouse')){
-            return redirect()->back()->withErrors('Gudang keberangkatan & tujuan harus berbeda!', 'default')->withInput($request->all());
-        }
+//        if($request->input('from_warehouse') === $request->input('to_warehouse')){
+//            return redirect()->back()->withErrors('Gudang keberangkatan & tujuan harus berbeda!', 'default')->withInput($request->all());
+//        }
 
         // Get GR id
         $grId = '0';
@@ -179,11 +179,12 @@ class DeliveryOrderHeaderController extends Controller
 
         $valid = true;
         // Validate stock
-        $fromWarehouse = Warehouse::find($request->input('from_warehouse'));
+//        $fromWarehouse = Warehouse::find($request->input('from_warehouse'));
+        $fromWarehouse = 1;
         $i = 0;
         foreach($items as $item){
             if(!empty($item)){
-                $valid = ItemStock::where('warehouse_id', $fromWarehouse->id)
+                $valid = ItemStock::where('warehouse_id', 1)
                     ->where('item_id', $item)
                     ->where('stock', '>=', $qtys[$i])
                     ->exists();
@@ -227,8 +228,10 @@ class DeliveryOrderHeaderController extends Controller
 
         $doHeader = DeliveryOrderHeader::create([
             'code'                  => $doCode,
-            'from_warehouse_id'     => $request->input('from_warehouse'),
+            'from_warehouse_id'     => 1,
             'to_warehouse_id'       => $request->input('to_warehouse'),
+            'is_synced'             => false,
+            'created_on'            => 'online',
             'status_id'             => 3,
             'created_by'            => $user->id,
             'created_at'            => $now->toDateTimeString(),
@@ -272,7 +275,7 @@ class DeliveryOrderHeaderController extends Controller
                 }
 
                 // Change stock
-                $stock = ItemStock::where('warehouse_id', $fromWarehouse->id)
+                $stock = ItemStock::where('warehouse_id', 1)
                     ->where('item_id', $item)
                     ->first();
 
@@ -293,7 +296,7 @@ class DeliveryOrderHeaderController extends Controller
                     'out_qty'               => $qtys[$idx],
                     'result_qty'            => $itemData->stock,
                     'result_qty_warehouse'  => $stockResultWarehouse,
-                    'warehouse_id'          => $fromWarehouse->id,
+                    'warehouse_id'          => 1,
                     'created_by'            => $user->id,
                     'created_at'            => $now->toDateTimeString(),
                     'updated_by'            => $user->id,

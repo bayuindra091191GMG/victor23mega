@@ -430,6 +430,7 @@ class ApprovalRuleController extends Controller
         // Update Document Status
         $approvalCount = ApprovalMaterialRequest::where('material_request_id', $header->id)->get()->count();
         if($approvalCount === $count){
+            $header->is_synced = false;
             $header->is_approved = 1;
             $header->approved_date = $dateTimeNow->toDateTimeString();
             $header->save();

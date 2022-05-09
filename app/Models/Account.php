@@ -26,6 +26,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $remark
  * @property string $brand
  * @property bool $is_synced
+ * @property string $created_on
  * 
  * @property \App\Models\Status $status
  * @property \App\Models\Auth\User\User $user
@@ -53,7 +54,8 @@ class Account extends Eloquent
 		'division',
 		'remark',
 		'brand',
-        'is_synced'
+        'is_synced',
+        'created_on'
 	];
 
 	public function status()

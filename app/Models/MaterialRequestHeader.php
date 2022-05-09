@@ -47,6 +47,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property int $processed_by
  * @property int $assigned_to
  * @property bool $is_synced
+ * @property string $created_on
  *
  * @property \App\Models\Site $site
  * @property \App\Models\Department $department
@@ -128,6 +129,7 @@ class MaterialRequestHeader extends Eloquent
         'processed_by',
         'assigned_to',
         'is_synced',
+        'created_on'
 	];
 
     public function scopeDateDescending(Builder $query){
