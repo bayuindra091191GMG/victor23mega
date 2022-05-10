@@ -130,13 +130,13 @@ class DeliveryOrderHeaderController extends Controller
 //        }
 
         // Validate from & to warehouse
-        if($request->input('to_warehouse') === '-1'){
-            return redirect()->back()->withErrors('Pilih tujuan!', 'default')->withInput($request->all());
+        if($request->input('from_warehouse') === '-1' || $request->input('to_warehouse') === '-1'){
+            return redirect()->back()->withErrors('Pilih gudang keberangkatan & tujuan!', 'default')->withInput($request->all());
         }
 
-//        if($request->input('from_warehouse') === $request->input('to_warehouse')){
-//            return redirect()->back()->withErrors('Gudang keberangkatan & tujuan harus berbeda!', 'default')->withInput($request->all());
-//        }
+        if($request->input('from_warehouse') === $request->input('to_warehouse')){
+            return redirect()->back()->withErrors('Gudang keberangkatan & tujuan harus berbeda!', 'default')->withInput($request->all());
+        }
 
         // Get GR id
         $grId = '0';
@@ -179,12 +179,11 @@ class DeliveryOrderHeaderController extends Controller
 
         $valid = true;
         // Validate stock
-//        $fromWarehouse = Warehouse::find($request->input('from_warehouse'));
-        $fromWarehouse = 1;
+        $fromWarehouse = Warehouse::find($request->input('from_warehouse'));
         $i = 0;
         foreach($items as $item){
             if(!empty($item)){
-                $valid = ItemStock::where('warehouse_id', 1)
+                $valid = ItemStock::where('warehouse_id', $fromWarehouse->id)
                     ->where('item_id', $item)
                     ->where('stock', '>=', $qtys[$i])
                     ->exists();
@@ -228,10 +227,8 @@ class DeliveryOrderHeaderController extends Controller
 
         $doHeader = DeliveryOrderHeader::create([
             'code'                  => $doCode,
-            'from_warehouse_id'     => 1,
+            'from_warehouse_id'     => $request->input('from_warehouse'),
             'to_warehouse_id'       => $request->input('to_warehouse'),
-            'is_synced'             => false,
-            'created_on'            => 'online',
             'status_id'             => 3,
             'created_by'            => $user->id,
             'created_at'            => $now->toDateTimeString(),
@@ -275,7 +272,7 @@ class DeliveryOrderHeaderController extends Controller
                 }
 
                 // Change stock
-                $stock = ItemStock::where('warehouse_id', 1)
+                $stock = ItemStock::where('warehouse_id', $fromWarehouse->id)
                     ->where('item_id', $item)
                     ->first();
 
@@ -296,7 +293,7 @@ class DeliveryOrderHeaderController extends Controller
                     'out_qty'               => $qtys[$idx],
                     'result_qty'            => $itemData->stock,
                     'result_qty_warehouse'  => $stockResultWarehouse,
-                    'warehouse_id'          => 1,
+                    'warehouse_id'          => $fromWarehouse->id,
                     'created_by'            => $user->id,
                     'created_at'            => $now->toDateTimeString(),
                     'updated_by'            => $user->id,
@@ -368,7 +365,6 @@ class DeliveryOrderHeaderController extends Controller
         $now = Carbon::now('Asia/Jakarta');
 
         $delivery_order->remark = $request->input('remark');
-        $delivery_order->is_synced = false;
         $delivery_order->updated_by = $user->id;
         $delivery_order->updated_at = $now->toDateTimeString();
 
@@ -387,12 +383,7 @@ class DeliveryOrderHeaderController extends Controller
             $user = \Auth::user();
             $now = Carbon::now('Asia/Jakarta');
 
-            $header = DeliveryOrderHeader::with(['delivery_order_details'])
-                ->find($request->input('id'));
-
-            if(empty($header)){
-                return Response::json(array('errors' => 'INVALID'));
-            }
+            $header = DeliveryOrderHeader::find($request->input('id'));
 
             // Validate status
             if($header->status_id !== 3){
@@ -491,13 +482,21 @@ class DeliveryOrderHeaderController extends Controller
                     'updated_at'            => $now->toDateTimeString(),
                     'reference'             => 'Surat Jalan '. $header->code. ' Confirm'
                 ]);
+
+                // Update qty confirmed
+                DB::table('delivery_order_details')
+                    ->where('id', '=', $detail->id)
+                    ->update([
+                        'quantity_confirmed' => $detail->quantity
+                    ]);
             }
 
             $header->status_id = 4;
+            $header->is_partial_confirmed = false;
             $header->is_all_confirmed = true;
+            $header->is_synced = false;
             $header->confirm_by = $user->id;
             $header->confirm_date = $now->toDateTimeString();
-            $header->is_synced = false;
             $header->updated_by = $user->id;
             $header->updated_at = $now->toDateTimeString();
 
@@ -741,7 +740,7 @@ class DeliveryOrderHeaderController extends Controller
 
             // Get index of confirmation data
             $confirmCount = DB::table('delivery_order_confirm_headers')
-                ->where('header_id', '=', $deliveryOrder->id)
+                ->where('delivery_order_id', '=', $deliveryOrder->id)
                 ->count();
 
             $documentCode = $deliveryOrder->code. '-CONFIRM-'. ($confirmCount + 1);
@@ -751,7 +750,7 @@ class DeliveryOrderHeaderController extends Controller
             foreach ($deliveryOrder->delivery_order_details as $detail){
                 if($detail->quantity_confirmed  < $detail->quantity){
                     $deliveryOrderDetail[] = [
-                        'id' => $detail->item_id,
+                        'item_id' => $detail->item_id,
                         'code' => $detail->item->code,
                         'name' => $detail->item->name,
                         'qty_value' => $detail->quantity - $detail->quantity_confirmed,
@@ -781,25 +780,13 @@ class DeliveryOrderHeaderController extends Controller
         }
     }
 
-    public function partialConfirmSubmit(Request $request){
+    public function partialConfirmSubmit(Request $request, $id){
         try {
-            if(!$request->filled('edited_do_id')){
-                return response()->json(collect([
-                    'code' => 400,
-                    'error' => 'bad_request',
-                    'message' => '',
-                ]), 200);
-            }
-
-            $doId = intval($request->input('edited_do_id'));
+            $doId = $id;
 
             $deliveryOrder = DeliveryOrderHeader::with(['delivery_order_details'])->find($doId);
             if(empty($deliveryOrder)){
-                return response()->json(collect([
-                    'code' => 400,
-                    'error' => 'bad_request',
-                    'message' => '',
-                ]), 200);
+                return redirect()->back()->withErrors('BAD REQUEST!', 'default')->withInput($request->all());
             }
 
             $user = \Auth::user();
@@ -807,40 +794,39 @@ class DeliveryOrderHeaderController extends Controller
             // Validate qty of each row
             $isValid = true;
             $itemDetailArr = $request->input('item_detail');
+
             foreach ($itemDetailArr as $itemDetail){
                 if(empty($itemDetail['qty'])){
-                    $isValid = false;
+                    return redirect()->back()->withErrors('Wajib isi QTY Penerimaan!', 'default')->withInput($request->all());
                 }
                 else{
                     $qty = Utilities::toInt($itemDetail['qty']);
                     if($qty === 0){
-                        $isValid = false;
+                        return redirect()->back()->withErrors('QTY Penerimaan tidak boleh nol!', 'default')->withInput($request->all());
                     }
                     else{
-                        $currentQty = DB::table('delivery_order_details')
+                        $doDetail = DB::table('delivery_order_details')
                             ->where('header_id', '=', $deliveryOrder->id)
                             ->where('item_id', '=', $itemDetail['item_id'])
-                            ->value('quantity');
+                            ->first();
 
-                        if(empty($currentQty)){
-                            $isValid = false;
+                        if(empty($doDetail)){
+                            return redirect()->back()->withErrors('Tidak ditemukan detil barang pada Surat Jalan!', 'default')->withInput($request->all());
                         }
                         else{
-                            if($qty > $currentQty){
-                                $isValid = false;
+                            $qtyLeft = $doDetail->quantity - $doDetail->quantity_confirmed;
+                            if($qty > $qtyLeft){
+                                return redirect()->back()->withErrors('QTY Penerimaan tidak boleh melebihi QTY Surat Jalan!', 'default')->withInput($request->all());
                             }
                         }
                     }
                 }
             }
 
-            if(!$isValid){
-                return response()->json(collect([
-                    'code' => 422,
-                    'error' => 'invalid_row_data',
-                    'message' => '',
-                ]), 200);
-            }
+            $siteName = DB::table('sites')
+                ->where('id', '=', $deliveryOrder->toWarehouse->site_id)
+                ->value('name');
+            $siteName = strtolower($siteName);
 
             // Store DO confirmation data
             $newConfirm = new DeliveryOrderConfirmHeader();
@@ -859,6 +845,8 @@ class DeliveryOrderHeaderController extends Controller
             $newConfirm->confirm_date = Carbon::now('Asia/Jakarta')->toDateTimeString();
             $newConfirm->created_by = $user->id;
             $newConfirm->updated_by = $user->id;
+            $newConfirm->is_synced = false;
+            $newConfirm->created_on = 'offline-'. $siteName;
             $newConfirm->save();
 
             foreach ($itemDetailArr as $itemDetail){
@@ -886,9 +874,7 @@ class DeliveryOrderHeaderController extends Controller
                 DB::table('delivery_order_details')
                     ->where('header_id', '=', $deliveryOrder->id)
                     ->where('item_id', '=', $itemDetail['item_id'])
-                    ->update([
-                        'quantity_confirmed' => $qtyConfirmed
-                    ]);
+                    ->increment('quantity_confirmed', $qtyConfirmed);
 
                 // Decrease transport warehouse stock
                 DB::table('item_stocks')
@@ -900,7 +886,6 @@ class DeliveryOrderHeaderController extends Controller
                 $stockArrival = ItemStock::where('warehouse_id', $deliveryOrder->to_warehouse_id)
                     ->where('item_id', $itemDetail['item_id'])
                     ->first();
-
 
                 if(empty($stockArrival)){
                     $newStock = new ItemStock();
@@ -955,18 +940,25 @@ class DeliveryOrderHeaderController extends Controller
             }
 
             if($isConfirmed){
+                $deliveryOrder->is_partial_confirmed = false;
                 $deliveryOrder->is_all_confirmed = true;
                 $deliveryOrder->status_id = 4;
+                $deliveryOrder->is_synced = false;
                 $deliveryOrder->save();
             }
+            else{
+                $deliveryOrder->is_partial_confirmed = true;
+                $deliveryOrder->is_all_confirmed = false;
+                $deliveryOrder->is_synced = false;
+                $deliveryOrder->save();
+            }
+
+            Session::flash('message', 'Berhasil konfirmasi parsial Surat Jalan ', $deliveryOrder->code);
+            return redirect()->route('admin.delivery_orders.show', ['delivery_order' => $deliveryOrder->id]);
         }
         catch (\Exception $ex){
             Log::error('DeliveryOrderHeaderController - partialConfirmSubmit '. $ex);
-            return response()->json(collect([
-                'code' => 500,
-                'error' => 'exception',
-                'message' => $ex->getMessage(),
-            ]), 500);
+            return redirect()->back()->withErrors('Terjadi kesalahan internal sistem', 'default')->withInput($request->all());
         }
     }
 }

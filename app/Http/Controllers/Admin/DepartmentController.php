@@ -78,6 +78,7 @@ class DepartmentController extends Controller
         $department = Department::create([
             'code'          => $request->input('code'),
             'name'          => $request->input('name'),
+            'is_synced'     => false,
             'updated_by'    => 1,
             'created_by'    => 1,
             'created_at'    => $dateTimeNow->toDateTimeString()

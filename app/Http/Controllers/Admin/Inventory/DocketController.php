@@ -276,7 +276,6 @@ class DocketController extends Controller
             'type'                          => 1,
             'site_id'                       => $user->employee->site_id,
             'date'                          => $date->toDateTimeString(),
-//            'material_request_header_id'    => $materialRequest->id,
             'department_id'                 => $request->input('department'),
             'unit_id'                       => $request->filled('machinery') ? null : $request->input('machinery'),
             'division'                      => $request->input('division'),
@@ -285,11 +284,12 @@ class DocketController extends Controller
             'km'                            => $request->input('km'),
             'is_retur'                      => 0,
             'receiver_name'                 => $request->input('receiver_name') ?? '',
+            'is_synced'                     => $user->employee->site_id !== 3,
+            'created_on'                    => 'online',
             'status_id'                     => 3,
             'created_by'                    => $user->id,
             'updated_by'                    => $user->id,
-            'created_at'                    => $now->toDateString(),
-//            'account_id'                    => $request->input('account') ?? null
+            'created_at'                    => $now->toDateString()
         ]);
 
         if(!empty($request->input('account'))){
@@ -549,18 +549,17 @@ class DocketController extends Controller
             'site_id'                       => $user->employee->site_id,
             'type'                          => 2,
             'date'                          => $date->toDateTimeString(),
-//            'material_request_header_id'    => $materialRequest->id,
             'department_id'                 => $request->input('department'),
-//            'unit_id'                       => $materialRequest->machinery_id,
             'division'                      => $request->input('division'),
             'warehouse_id'                  => $request->input('warehouse'),
             'is_retur'                      => 0,
+            'is_synced'                     => $user->employee->site_id !== 3,
+            'created_on'                    => 'online',
             'status_id'                     => 3,
             'created_by'                    => $user->id,
             'updated_by'                    => $user->id,
             'created_at'                    => $now->toDateString(),
-            'updated_at'                    => $now->toDateString(),
-//            'account_id'                    => $request->input('account') ?? null
+            'updated_at'                    => $now->toDateString()
         ]);
 
         // Create Issued Docket Detail

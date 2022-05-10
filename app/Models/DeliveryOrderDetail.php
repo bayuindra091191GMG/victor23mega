@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Thu, 08 Mar 2018 14:21:50 +0700.
+ * Date: Tue, 10 May 2022 10:13:35 +0700.
  */
 
 namespace App\Models;
@@ -31,14 +31,15 @@ class DeliveryOrderDetail extends Eloquent
 	protected $casts = [
 		'header_id' => 'int',
 		'item_id' => 'int',
-		'quantity' => 'int'
+		'quantity' => 'int',
+		'quantity_confirmed' => 'int'
 	];
 
 	protected $fillable = [
 		'header_id',
 		'item_id',
 		'quantity',
-        'quantity_confirmed',
+		'quantity_confirmed',
 		'remark'
 	];
 

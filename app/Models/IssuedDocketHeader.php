@@ -31,9 +31,10 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property \Carbon\Carbon $updated_at
  * @property int $account_id
  * @property bool $is_synced
+ * @property string $created_on
  * @property string $km
  * @property string $hm
- * 
+ *
  * @property \App\Models\Department $department
  * @property \App\Models\Machinery $machinery
  * @property \App\Models\MaterialRequestHeader $material_request_header_id
@@ -89,7 +90,8 @@ class IssuedDocketHeader extends Eloquent
 		'status_id',
 		'created_by',
 		'updated_by',
-        'is_synced'
+        'is_synced',
+        'created_on'
 	];
 
 	public function getDateStringAttribute(){

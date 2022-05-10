@@ -53,7 +53,12 @@
                     </label>
                     <div class="col-md-6 col-sm-6 col-xs-12">
                         @if($header->status_id == 3)
-                            : <span style="font-weight: bold; color: green;">OPEN</span>
+                            @if($header->is_partial_confirmed)
+                                : <span style="font-weight: bold; color: green;">OPEN - TERKONFIRMASI PARSIAL</span>
+                            @else
+                                : <span style="font-weight: bold; color: green;">OPEN</span>
+                            @endif
+
                         @elseif($header->status_id == 4)
                             : <span style="font-weight: bold; color: red;">CLOSED</span>
                         @elseif($header->status_id == 5)
