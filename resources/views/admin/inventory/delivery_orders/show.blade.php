@@ -236,17 +236,23 @@
                             <table class="table table-bordered table-hover">
                                 <thead>
                                 <tr >
-                                    <th class="text-center" style="width: 10%">
+                                    <th class="text-center" style="width: 5%">
                                         No
                                     </th>
-                                    <th class="text-center" style="width: 25%">
+                                    <th class="text-center" style="width: 20%">
                                         Kode Inventory
                                     </th>
                                     <th class="text-center" style="width: 25%">
                                         Nama Inventory
                                     </th>
-                                    <th class="text-center" colspan="2" style="width: 20%">
+                                    <th class="text-center" style="width: 10%">
+                                        UOM
+                                    </th>
+                                    <th class="text-center" style="width: 10%">
                                         QTY
+                                    </th>
+                                    <th class="text-center" style="width: 10%">
+                                        QTY Terkonfirmasi
                                     </th>
                                     <th class="text-center" style="width: 20%">
                                         Keterangan
@@ -271,6 +277,9 @@
                                         </td>
                                         <td class="text-center">
                                             {{ $detail->quantity }}
+                                        </td>
+                                        <td class="text-center">
+                                            {{ $detail->quantity_confirmed }}
                                         </td>
                                         <td>
                                             {{ $detail->remark ?? '-' }}
