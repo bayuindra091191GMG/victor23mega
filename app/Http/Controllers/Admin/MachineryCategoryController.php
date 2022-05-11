@@ -42,13 +42,18 @@ class MachineryCategoryController extends Controller
 
         if ($validator->fails()) return redirect()->back()->withErrors($validator->errors())->withInput($request->all());
 
-        $machineryCategory = MachineryCategory::create([
-            'name'          => Input::get('name')
-        ]);
+        $description = '';
+        if($request->filled('description')){
+            $description = trim($request->input('description'));
+        }
 
-        if(!empty(Input::get('code'))) $machineryCategory->code = Input::get('code');
-        if(!empty(Input::get('description'))) $machineryCategory->description = Input::get('description');
-        $machineryCategory->save();
+        $newMachineryCategory = MachineryCategory::create([
+            'name' => trim($request->input('name')),
+            'code' => trim($request->input('code')),
+            'description' => $description,
+            'is_synced' => false,
+            'created_on' => 'online'
+        ]);
 
         Session::flash('message', 'Berhasil membuat data kategori alat berat baru!');
 
@@ -76,9 +81,10 @@ class MachineryCategoryController extends Controller
 
         if ($validator->fails()) return redirect()->back()->withErrors($validator->errors())->withInput($request->all());
 
-        $machineryCategory->name = Input::get('name');
-        $machineryCategory->code = Input::get('code');
-        $machineryCategory->description = Input::get('description');
+        $machineryCategory->name = trim($request->input('name'));
+        $machineryCategory->code = trim($request->input('code'));
+        $machineryCategory->description = trim($request->input('description'));
+        $machineryCategory->is_synced = false;
         $machineryCategory->save();
 
         Session::flash('message', 'Berhasil mengubah data kategori alat berat!');

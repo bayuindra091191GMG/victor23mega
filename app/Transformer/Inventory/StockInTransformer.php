@@ -27,9 +27,9 @@ class StockInTransformer extends TransformerAbstract
 
         return[
             'item_code'   => $stockIns->item->code,
-            'item'   => $stockIns->item->name,
+            'item_name'   => $stockIns->item->name,
             'increase'   => $stockIns->increase,
-            'warehouse'   => $stockIns->warehouse->name,
+            'warehouse_name'   => $stockIns->warehouse->name,
             'created_by'    => $createdBy,
             'created_at'    => $createdDate
         ];

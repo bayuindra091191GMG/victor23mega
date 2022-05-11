@@ -42,7 +42,7 @@ class MachineryTypeController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
@@ -57,13 +57,18 @@ class MachineryTypeController extends Controller
 
         if ($validator->fails()) return redirect()->back()->withErrors($validator->errors())->withInput($request->all());
 
-        $machineryType = MachineryType::create([
-            'name'          => Input::get('name')
-        ]);
+        $description = '';
+        if($request->filled('description')){
+            $description = trim($request->input('description'));
+        }
 
-        if(!empty(Input::get('code'))) $machineryType->code = Input::get('code');
-        if(!empty(Input::get('description'))) $machineryType->description = Input::get('description');
-        $machineryType->save();
+        $newMachineryType = MachineryType::create([
+            'name' => trim($request->input('name')),
+            'code' => trim($request->input('code')),
+            'description' => $description,
+            'is_synced' => false,
+            'created_on' => 'online'
+        ]);
 
         Session::flash('message', 'Berhasil membuat data tipe alat berat baru!');
 
@@ -85,7 +90,7 @@ class MachineryTypeController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param MachineryType $machineryType
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
     public function edit(MachineryType $machineryType)
     {
@@ -117,10 +122,10 @@ class MachineryTypeController extends Controller
 
         if ($validator->fails()) return redirect()->back()->withErrors($validator->errors());
 
-        $machineryType->name = Input::get('name');
-        $machineryType->code = Input::get('code');
-        $machineryType->description = Input::get('description');
-
+        $machineryType->name = trim($request->input('name'));
+        $machineryType->code = trim($request->input('code'));
+        $machineryType->description = trim($request->input('description'));
+        $machineryType->is_synced = false;
         $machineryType->save();
 
         Session::flash('message', 'Berhasil mengubah data tipe alat berat!');

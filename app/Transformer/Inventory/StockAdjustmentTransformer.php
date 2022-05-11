@@ -19,7 +19,7 @@ class StockAdjustmentTransformer extends TransformerAbstract
 
         $createdDate = '-';
         if(!empty($stockAdjustments->created_at)){
-            $createdDate = Carbon::parse($stockAdjustments->created_at)->format('d M Y');
+            $createdDate = Carbon::parse($stockAdjustments->created_at)->toIso8601String();
         }
         $createdBy = '-';
         if(!empty($stockAdjustments->created_by)){
@@ -27,12 +27,12 @@ class StockAdjustmentTransformer extends TransformerAbstract
         }
 
         return[
-            'item_code'   => $stockAdjustments->item->code,
-            'item'   => $stockAdjustments->item->name,
-            'depreciation'   => $stockAdjustments->depreciation,
-            'warehouse'   => $stockAdjustments->warehouse->name,
-            'created_by'    => $createdBy,
-            'created_at'    => $createdDate
+            'item_code' => $stockAdjustments->item->code,
+            'item_name' => $stockAdjustments->item->name,
+            'depreciation' => $stockAdjustments->depreciation,
+            'warehouse_name' => $stockAdjustments->warehouse->name,
+            'created_by' => $createdBy,
+            'created_at' => $createdDate
         ];
     }
 }

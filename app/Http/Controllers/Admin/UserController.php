@@ -25,7 +25,7 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
     public function index(Request $request)
     {
@@ -33,14 +33,13 @@ class UserController extends Controller
             'filterStatus'      => $request->input('status') ?? 1
         ];
 
-
         return view('admin.users.index')->with($data);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
     public function create()
     {
@@ -61,7 +60,7 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
@@ -94,6 +93,8 @@ class UserController extends Controller
             return redirect()->back()->withErrors('Pilih level akses!', 'default')->withInput($request->all());
         }
 
+        $siteId = intval($request->input('site'));
+
         $user = Auth::user();
         $now = Carbon::now('Asia/Jakarta');
 
@@ -103,7 +104,7 @@ class UserController extends Controller
             'email'         => $request->input('email'),
             'address'       => $request->input('address'),
             'department_id' => $request->input('department'),
-            'site_id'       => $request->input('site'),
+            'site_id'       => $siteId,
             'status_id'     => 1,
             'created_by'    => $user->id,
             'created_at'    => $now
@@ -132,6 +133,7 @@ class UserController extends Controller
             $user->img_path = $filename;
         }
 
+        $user->is_synced = $siteId !== 3;
         $user->created_by = $user->id;
         $user->updated_by = $user->id;
         $user->save();
@@ -158,7 +160,7 @@ class UserController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param User $user
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\View\View
      */
     public function edit(User $user)
     {
@@ -255,6 +257,7 @@ class UserController extends Controller
         }
 
         $user->email_address = $request->input('email_address');
+        $user->is_synced = false;
         $user->status_id = $request->input('status');
         $user->created_by = $userAuth->id;
         $user->updated_by = $userAuth->id;
@@ -389,12 +392,8 @@ class UserController extends Controller
             }
         }
 
-
         $formatted_tags = [];
-
-
         foreach ($userCollects as $userCollect) {
-//            dd($userCollect['id']);
             $formatted_tags[] = ['id' => $userCollect['id'], 'text' => $userCollect['email']. ' - '. $userCollect['name']];
         }
 

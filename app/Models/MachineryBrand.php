@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Thu, 01 Feb 2018 02:38:52 +0000.
+ * Date: Wed, 11 May 2022 10:31:14 +0700.
  */
 
 namespace App\Models;
@@ -17,6 +17,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $name
  * @property string $description
  * @property bool $is_synced
+ * @property string $created_on
  * 
  * @property \Illuminate\Database\Eloquent\Collection $machineries
  *
@@ -26,15 +27,16 @@ class MachineryBrand extends Eloquent
 {
 	public $timestamps = false;
 
-    protected $casts = [
-        'is_synced' => 'bool'
-    ];
+	protected $casts = [
+		'is_synced' => 'bool'
+	];
 
 	protected $fillable = [
 		'code',
 		'name',
 		'description',
-        'is_synced'
+		'is_synced',
+		'created_on'
 	];
 
 	public function machineries()

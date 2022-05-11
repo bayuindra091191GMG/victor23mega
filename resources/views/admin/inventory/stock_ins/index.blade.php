@@ -18,13 +18,12 @@
                width="100%" id="stock-in-table">
             <thead>
             <tr>
-                <th class="text-center">No</th>
-                <th class="text-center">Kode Inventory</th>
-                <th class="text-center">Nama nama Inventory</th>
+                <th class="text-center">Tanggal</th>
+                <th class="text-center">Kode Barang</th>
+                <th class="text-center">Nama Barang</th>
                 <th class="text-center">QTY Penambahan</th>
                 <th class="text-center">Gudang</th>
                 <th class="text-center">Dibuat Oleh</th>
-                <th class="text-center">Tanggal Dibuat</th>
             </tr>
             </thead>
             <tbody>
@@ -47,14 +46,21 @@
                 processing: true,
                 serverSide: true,
                 ajax: '{!! route('datatables.stock_ins') !!}',
+                order: [ [0, 'desc'] ],
                 columns: [
-                    { data: 'DT_Row_Index', orderable: false, searchable: false, class: 'text-center' },
+                    { data: 'created_at', name: 'created_at', class: 'text-center',
+                        render: function ( data, type, row ){
+                            if ( type === 'display' || type === 'filter' ){
+                                return moment(data).format('DD MMM YYYY HH:mm');
+                            }
+                            return data;
+                        }
+                    },
                     { data: 'item_code', name: 'item_code', class: 'text-center' },
-                    { data: 'item', name: 'item', class: 'text-center' },
+                    { data: 'item_name', name: 'item_name', class: 'text-center' },
                     { data: 'increase', name: 'increase', class: 'text-center' },
-                    { data: 'warehouse', name: 'warehouse', class: 'text-center' },
-                    { data: 'created_by', name: 'created_by', class: 'text-center' },
-                    { data: 'created_at', name: 'created_at', class: 'text-center' }
+                    { data: 'warehouse_name', name: 'warehouse_name', class: 'text-center' },
+                    { data: 'created_by', name: 'created_by', class: 'text-center' }
                 ],
                 language: {
                     url: "//cdn.datatables.net/plug-ins/1.10.16/i18n/Indonesian-Alternative.json"

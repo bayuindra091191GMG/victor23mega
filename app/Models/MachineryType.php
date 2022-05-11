@@ -2,7 +2,7 @@
 
 /**
  * Created by Reliese Model.
- * Date: Thu, 01 Feb 2018 07:57:22 +0000.
+ * Date: Wed, 11 May 2022 10:33:03 +0700.
  */
 
 namespace App\Models;
@@ -17,8 +17,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $name
  * @property string $description
  * @property bool $is_synced
- * 
- * @property \Illuminate\Database\Eloquent\Collection $machineries
+ * @property string $created_on
  *
  * @package App\Models
  */
@@ -26,19 +25,15 @@ class MachineryType extends Eloquent
 {
 	public $timestamps = false;
 
-    protected $casts = [
-        'is_synced' => 'bool'
-    ];
+	protected $casts = [
+		'is_synced' => 'bool'
+	];
 
 	protected $fillable = [
 		'code',
 		'name',
 		'description',
-        'is_synced'
+		'is_synced',
+		'created_on'
 	];
-
-	public function machineries()
-	{
-		return $this->hasMany(\App\Models\Machinery::class, 'type_id');
-	}
 }

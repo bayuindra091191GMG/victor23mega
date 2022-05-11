@@ -78,7 +78,7 @@ class MachineryController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
@@ -118,6 +118,8 @@ class MachineryController extends Controller
             'production_year'       => $request->input('production_year'),
             'location'              => $request->input('location'),
             'description'           => $request->input('description'),
+            'is_synced'             => false,
+            'created_on'            => 'online',
             'created_by'            => $user->id,
             'created_at'            => $dateTimeNow->toDateTimeString(),
             'updated_by'            => $user->id
@@ -202,6 +204,7 @@ class MachineryController extends Controller
         $machinery->sn_engine = $request->input('sn_engine');
         $machinery->location = $request->input('location');
         $machinery->production_year = $request->input('production_year');
+        $machinery->is_synced = false;
         $machinery->status_id = $request->input('status');
         $machinery->updated_at = $dateTimeNow->toDateTimeString();
         $machinery->updated_by = $user->id;

@@ -19,6 +19,7 @@ use App\Transformer\Inventory\StockAdjustmentTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
@@ -66,15 +67,21 @@ class StockAdjustmentController extends Controller
 
         // Add to stock adjustment list
         $user = Auth::user();
-        $now = Carbon::now('Asia/Jakarta');
         $depreciation = (int) str_replace('.','', Input::get('depreciation'));
+
+        // For offline sync
+        $warehouseId = intval($request->input('warehouse'));
+        $siteId = DB::table('warehouses')
+            ->where('id', '=', $warehouseId)
+            ->value('site_id');
 
         $stockAdjustment = StockAdjustment::create([
             'item_id'           => $selectedItem,
             'depreciation'      => $depreciation,
-            'warehouse_id'      => $request->input('warehouse'),
+            'warehouse_id'      => $warehouseId,
+            'is_synced'         => $siteId !== 3,
             'created_by'        => $user->id,
-            'created_at'        => $now->toDateTimeString()
+            'created_at'        => Carbon::now('Asia/Jakarta')->toDateTimeString()
         ]);
 
         // Update item stock
@@ -83,7 +90,7 @@ class StockAdjustmentController extends Controller
 
         $itemStock->stock = $itemStockPerWarehouse;
         $itemStock->updated_by = $user->id;
-        $itemStock->updated_at = $now->toDateTimeString();
+        $itemStock->updated_at = Carbon::now('Asia/Jakarta')->toDateTimeString();
 
         $itemStock->save();
 
@@ -105,9 +112,9 @@ class StockAdjustmentController extends Controller
             'result_qty_warehouse'  => $stockResultWarehouse,
             'reference'             => "Stock Adjustment",
             'created_by'            => $user->id,
-            'created_at'            => $now->toDateTimeString(),
+            'created_at'            => Carbon::now('Asia/Jakarta')->toDateTimeString(),
             'updated_by'            => $user->id,
-            'updated_at'            => $now->toDateTimeString()
+            'updated_at'            => Carbon::now('Asia/Jakarta')->toDateTimeString()
         ]);
 
         Session::flash('message', 'Berhasil membuat Stock Adjustment baru!');
@@ -120,10 +127,9 @@ class StockAdjustmentController extends Controller
      * @throws \Exception
      */
     public function getIndex(){
-        $stockAdjustments = StockAdjustment::all();
+        $stockAdjustments = StockAdjustment::with(['item', 'warehouse'])->get();
         return DataTables::of($stockAdjustments)
             ->setTransformer(new StockAdjustmentTransformer)
-            ->addIndexColumn()
             ->make(true);
     }
 }

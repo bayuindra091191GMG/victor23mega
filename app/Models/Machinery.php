@@ -26,6 +26,7 @@ use Reliese\Database\Eloquent\Model as Eloquent;
  * @property string $location
  * @property string $description
  * @property bool $is_synced
+ * @property string $created_on
  * @property int $status_id
  * @property int $created_by
  * @property \Carbon\Carbon $created_at
@@ -78,6 +79,7 @@ class Machinery extends Eloquent
 		'description',
         'is_synced',
 		'status_id',
+        'created_on',
 		'created_by',
 		'updated_by'
 	];

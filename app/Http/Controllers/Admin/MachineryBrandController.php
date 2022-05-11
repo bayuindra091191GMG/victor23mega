@@ -42,13 +42,18 @@ class MachineryBrandController extends Controller
 
         if ($validator->fails()) return redirect()->back()->withErrors($validator->errors())->withInput($request->all());
 
-        $machineryBrand = MachineryBrand::create([
-            'name'          => Input::get('name')
-        ]);
+        $description = '';
+        if($request->filled('description')){
+            $description = trim($request->input('description'));
+        }
 
-        if(!empty(Input::get('code'))) $machineryBrand->code = Input::get('code');
-        if(!empty(Input::get('description'))) $machineryBrand->description = Input::get('description');
-        $machineryBrand->save();
+        $newMachineryBrand = MachineryBrand::create([
+            'name' => trim($request->input('name')),
+            'code' => trim($request->input('code')),
+            'description' => $description,
+            'is_synced' => false,
+            'created_on' => 'online'
+        ]);
 
         Session::flash('message', 'Berhasil membuat data merek alat berat baru!');
 
@@ -76,10 +81,10 @@ class MachineryBrandController extends Controller
 
         if ($validator->fails()) return redirect()->back()->withErrors($validator->errors());
 
-        $machineryBrand->name = Input::get('name');
-        $machineryBrand->code = Input::get('code');
-        $machineryBrand->description = Input::get('description');
-
+        $machineryBrand->name = trim($request->input('name'));
+        $machineryBrand->code = trim($request->input('code'));
+        $machineryBrand->description = trim($request->input('description'));
+        $machineryBrand->is_synced = false;
         $machineryBrand->save();
 
         Session::flash('message', 'Berhasil mengubah data merek alat berat!');
